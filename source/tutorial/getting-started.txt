@@ -8,73 +8,63 @@ Getting Started
 
 .. default-domain:: mongodb
 
-`MongoDB Atlas <https://cloud.mongodb.com?jmp=docs>`_ is a cloud-hosted service
-for provisioning, running, monitoring, and maintaining MongoDB deployments. It
-is a fast, easy, and free way to get started with MongoDB. To install and run
-MongoDB locally, see :ref:`Install MongoDB<tutorial-installation>`.
+.. tabs-top::
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
-       name: Mongo Shell
        content: |
-         The following tutorial uses
-         :program:`mongo` shell to connect to an Atlas free-tier cluster, insert
-         data, and perform query operations.
+         The following tutorial uses the :binary:`~bin.mongo` shell to
+         insert data and perform query operations.
 
      - id: compass
-       name: Compass
        content: |
-         `MongoDB Compass <https://docs.mongodb.com/compass/current/>`_ is the
-         GUI for MongoDB. The following tutorial uses MongoDB Compass to connect
-         to an Atlas free-tier cluster, insert data, and perform query
-         operations.
+         `MongoDB Compass <https://docs.mongodb.com/compass/current/>`_
+         is the GUI for MongoDB. The following tutorial uses MongoDB
+         Compass to connect to insert data and perform query operations.
 
      - id: python
-       name: Python
        content: |
          The following tutorial uses the
-         `PyMongo <https://api.mongodb.com/python/current/index.html>`_ Python
-         driver to connect to an Atlas free-tier cluster, insert data, and
-         perform query operations.
+         `PyMongo <https://api.mongodb.com/python/current/index.html>`_
+         Python driver to insert data and perform query operations.
 
      - id: nodejs
-       name: Node.js
        content: |
-         The following tutorial uses the :node-docs:`MongoDB Node.js Driver <>`
-         to connect to an Atlas free-tier cluster, then perform insert and query
-         operations.
-         
+         The following tutorial uses the
+         :node-docs:`MongoDB Node.js Driver <>` to insert data and
+         perform query operations.
 
-To learn more about the MongoDB query language and other MongoDB fundamentals,
-sign up for `M001: MongoDB Basics <https://university.mongodb.com/courses/M001/about>`_.
+Prerequisites
+-------------
 
-.. include:: /includes/steps/getting-started.rst
+This tutorial requires you to be connected to one of the following:
 
-Documents and Collections
--------------------------
+- **MongoDB Atlas Free Tier Cluster**. MongoDB Atlas is a fast, easy, and
+  free way to get started with MongoDB. Follow the
+  :ref:`create-free-tier-manual` tutorial to get started with MongoDB
+  Atlas.
 
-MongoDB stores data as :ref:`BSON documents <bson-document-format>`
-(binary represenatation of JSON) in :term:`collections<collection>`.
-MongoDB databases hold collections of documents.
+- **Local MongoDB installation**. For more information on installing MongoDB
+  locally, see :ref:`Install MongoDB<tutorial-installation>`.
 
 Insert Documents
 ----------------
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
-       name: Mongo Shell
        content: |
          :method:`db.collection.insertMany()` can insert *multiple*
-         :ref:`documents <bson-document-format>` into a collection. Pass an
-         array of documents to the method.
+         :doc:`documents </core/document>` into a
+         :doc:`collection</core/databases-and-collections>`. Pass an array of
+         documents to the method.
 
          The following example inserts new documents into the ``inventory``
          collection:
-         
+
          .. class:: copyable-code
          .. code-block:: javascript
 
@@ -99,33 +89,34 @@ Insert Documents
          Use :method:`db.collection.insertOne()` to insert a single document.
 
      - id: compass
-       name: Compass
        content: |
          1. Click :guilabel:`Create Database`.
-            
+
 
             .. include:: /images/compass-create-database.rst
-            
 
-         2. Enter "retail" for the :guilabel:`Database Name` and "inventory"
-            for the :guilabel:`Collection Name` then click :guilabel:`Create Database`.
-            
+
+         2. Enter "retail" for the :guilabel:`Database Name` and
+            "inventory" for the :guilabel:`Collection Name` then click
+            :guilabel:`Create Database`. For more information, see
+            :doc:`/core/databases-and-collections`.
 
             .. include:: /images/compass-create-database-collection.rst
-            
+
 
          3. From the :guilabel:`Collections` tab, click the "inventory"
             collection link.
 
          4. Click the :guilabel:`Insert Document` button.
-            
+
 
             .. include:: /images/compass-insert-document.rst
-            
 
-         5. Insert the following document by entering the ``fields`` and
-            ``values``, then selecting the appropriate types from the dropdowns.
-            Add fields by clicking the last line number, then clicking
+
+         5. Insert the following :doc:`document </core/document>` by
+            entering the ``fields`` and ``values``, then selecting the
+            appropriate types from the dropdowns. Add fields by clicking
+            the last line number, then clicking
             :guilabel:`Add Field After ...`.
 
             .. code-block:: javascript
@@ -141,7 +132,6 @@ Insert Documents
               :guilabel:`Add Array Element After ...`.
 
             .. include:: /images/compass-insert-document-field.rst
-            
 
             .. include:: /images/compass-insert-document-field-type.rst
 
@@ -159,15 +149,15 @@ Insert Documents
                    size: { h: 10, w: 15.25, uom: "cm" }, tags: [ "blue" ] }
 
      - id: python
-       name: Python
        content: |
          :py:meth:`pymongo.collection.Collection.insert_many` can insert
-         *multiple* :ref:`documents <bson-document-format>` into a collection.
-         Pass an array of documents to the method.
+         *multiple* :doc:`documents </core/document>` into a
+         :doc:`collection</core/databases-and-collections>`. Pass an array of
+         documents to the method.
 
          The following example inserts new documents into the ``inventory``
          collection:
-         
+
          .. class:: copyable-code
          .. code-block:: python
 
@@ -193,15 +183,15 @@ Insert Documents
          single document.
 
      - id: nodejs
-       name: Node.js
        content: |
-         :node-api:`Collection.insertMany() <Collection.html#insertMany>` can
-         insert *multiple* :ref:`documents <bson-document-format>` into a
-         collection. Pass an array of documents to the method.
+         :node-api:`Collection.insertMany() <Collection.html#insertMany>`
+         can insert *multiple* :doc:`documents </core/document>`
+         into a :doc:`collection</core/databases-and-collections>`. Pass an
+         array of documents to the method.
 
-         The following example inserts new documents into the ``inventory``
-         collection:
-         
+         The following example inserts new documents into the
+         ``inventory`` collection:
+
          .. class:: copyable-code
          .. code-block:: javascript
 
@@ -238,50 +228,45 @@ Query Documents
 Select All Documents
 ~~~~~~~~~~~~~~~~~~~~
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
-       name: Mongo Shell
        content: |
          To select all documents in the collection, pass an empty document as the
          :ref:`query filter document <document-query-filter>` to the
          :method:`db.collection.find()` method:
 
      - id: compass
-       name: Compass
        content: |
          Select the ``inventory`` collection from the :guilabel:`Collections`
          tab or the left-hand pane. By default, all documents are selected and
          additional documents are loaded by scrolling down.
-         
+
          To explicitly select all documents in the collection, pass an empty
          :ref:`query filter document <document-query-filter>` ``{ }`` to
          the :guilabel:`Filter` input and click :guilabel:`Find`.
-         
+
          .. include:: /images/compass-find-all.rst
 
      - id: python
-       name: Python
        content: |
          To select all documents in the collection, pass an empty document as the
          :ref:`query filter document <document-query-filter>` to the
          :py:meth:`pymongo.collection.Collection.find` method:
 
      - id: nodejs
-       name: Node.js
        content: |
          To select all documents in the collection, pass an empty document as the
          :ref:`query filter document <document-query-filter>` to the
          :node-api:`Collection.find() <Collection.html#find>` method:
 
-.. include:: /includes/driver-example-query-7.rst
+.. include:: /includes/driver-examples/driver-example-query-7.rst
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
-       name: Mongo Shell
        content: |
          To query for documents that match specific equality conditions, pass the
          :method:`~db.collection.find()` method a :ref:`query filter document <document-query-filter>`
@@ -290,14 +275,13 @@ Select All Documents
          equals ``"D"``:
 
      - id: compass
-       name: Compass
        content: |
          To query for documents that match specific equality conditions, pass
          a :ref:`query filter document <document-query-filter>` to the
          :guilabel:`Filter` with the ``<field>: <value>`` of the desired
          documents. The following query filter document selects all documents
          where the ``status`` equals ``"D"`` from the ``inventory`` collection:
-         
+
          .. class:: copyable-code
          .. code-block:: javascript
 
@@ -306,7 +290,6 @@ Select All Documents
          .. include:: /images/compass-find-filter.rst
 
      - id: python
-       name: Python
        content: |
          To query for documents that match specific equality conditions, pass the
          :py:meth:`~pymongo.collection.Collection.find` method a
@@ -315,8 +298,7 @@ Select All Documents
          selects from the ``inventory`` collection all documents where the
          ``status`` equals ``"D"``:
 
-     - id: nodejs 
-       name: Node.js
+     - id: nodejs
        content: |
          To query for documents that match specific equality conditions, pass the
          :node-api:`find() <Collection.html#find>` method a
@@ -325,7 +307,7 @@ Select All Documents
          selects from the ``inventory`` collection all documents where the
          ``status`` equals ``"D"``:
 
-.. include:: /includes/driver-example-query-9.rst
+.. include:: /includes/driver-examples/driver-example-query-9.rst
 
 Match an Embedded Document
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -334,13 +316,12 @@ match of the specified ``<value>`` document, including the field order. For
 example, the following query selects all documents where the field ``size``
 equals the document ``{ h: 14, w: 21, uom: "cm" }``:
 
-.. include:: /includes/driver-example-query-15.rst
+.. include:: /includes/driver-examples/driver-example-query-15.rst
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: compass
-       name: Compass
        content: |
          .. class:: copyable-code
          .. code-block:: javascript
@@ -355,13 +336,12 @@ Match a Field in an Embedded Document
 The following example selects all documents where the field ``uom``
 nested in the ``size`` field equals the string value ``"in"``:
 
-.. include:: /includes/driver-example-query-17.rst
+.. include:: /includes/driver-examples/driver-example-query-17.rst
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: compass
-       name: Compass
        content: |
          .. class:: copyable-code
          .. code-block:: javascript
@@ -376,13 +356,12 @@ Match an Element in an Array
 The following example queries for all documents where ``tags`` is an
 array that contains the string ``"red"`` as one of its elements:
 
-.. include:: /includes/driver-example-query-23.rst
+.. include:: /includes/driver-examples/driver-example-query-23.rst
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: compass
-       name: Compass
        content: |
          .. class:: copyable-code
          .. code-block:: javascript
@@ -398,13 +377,12 @@ The following example queries for all documents where the field ``tags``
 value is an array with exactly two elements, ``"red"`` and ``"blank"``,
 in the specified order:
 
-.. include:: /includes/driver-example-query-21.rst
+.. include:: /includes/driver-examples/driver-example-query-21.rst
 
-.. tabs-gs::
+.. tabs-drivers::
 
    tabs:
      - id: compass
-       name: Compass
        content: |
          .. class:: copyable-code
          .. code-block:: javascript
@@ -469,4 +447,3 @@ sign up for `M001: MongoDB Basics <https://university.mongodb.com/courses/M001/a
        :doc:`Reference </reference>`
 
        :doc:`/reference/glossary`
-

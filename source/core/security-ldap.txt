@@ -16,17 +16,17 @@ LDAP Proxy Authentication
 <http://www.mongodb.com/products/mongodb-enterprise?jmp=docs>`_ supports
 proxying authentication requests to a Lightweight Directory Access Protocol
 (LDAP) service.
-   
+
 MongoDB 3.4 supports simple and SASL binding to LDAP servers via:
 
 - Operating system libraries
 
-  .. versionadded:: 3.4 
-  
+  .. versionadded:: 3.4
+
      MongoDB 3.4 supports binding to an LDAP server via operating system
      libraries. This allows Linux and Windows MongoDB 3.4 servers to use an
      LDAP server for authentication.
-  
+
 - ``saslauthd``
 
   Linux MongoDB servers supports binding to an LDAP server via the
@@ -62,6 +62,8 @@ on the ``$external`` database whose name exactly matches the authentication
 username. Changes to a user on the LDAP server may require changes to the
 corresponding MongoDB ``$external`` user.
 
+.. include:: /includes/extracts/sessions-external-username-limit.rst
+
 .. example::
 
    A user authenticates as ``sam@dba.example.com``. The MongoDB server
@@ -77,7 +79,7 @@ whose corresponding MongoDB ``$external`` user has user administrative
 privileges on the ``$external`` database, such as those provided by
 :authrole:`userAdmin`.
 
-.. important:: 
+.. important::
 
    If no ``$external`` users have user administrative privileges on
    ``$external`` database, you cannot perform user management for LDAP
@@ -96,11 +98,12 @@ the following requirements for each user to ensure continued access:
 - User exists on the ``$external`` database with equivalent roles and
   privileges
 
-If you want to continue allowing access by users *not* on the ``$external``
-database, you must configure :setting:`setParameter`
-:parameter:`authenticationMechanisms` to include ``SCRAM-SHA-1``. Users
-must then specify :option:`--authenticationMechanism` ``SCRAM-SHA-1`` when
-authenticating.
+If you want to continue allowing access by users *not* on the
+``$external`` database, you must configure :setting:`setParameter`
+:parameter:`authenticationMechanisms` to include ``SCRAM-SHA-1`` and/or
+``SCRAM-SHA-256`` as appropriate. Users must then specify
+``--authenticationMechanism SCRAM-SHA-1`` or
+``SCRAM-SHA-256`` when authenticating.
 
 Deploying LDAP authentication on a replica set
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -117,7 +120,7 @@ Deploying LDAP authentication on a sharded cluster
 
 In :term:`sharded clusters <sharded cluster>`, you must configure LDAP
 authentication on the :term:`config servers <config server>` and each
-:program:`mongos` for cluster-level users. You can optionally configure LDAP
+:binary:`~bin.mongos` for cluster-level users. You can optionally configure LDAP
 authorization on each :term:`shard` for shard-local users.
 
 .. _security-ldap-connect-native:
@@ -161,7 +164,7 @@ The LDAP authentication via OS libraries process is summarized below:
    authenticated user roles or privileges.
 
 To use LDAP for authentication via operating system libraries, specify the
-following settings as a part of your :program:`mongod` or :program:`mongos`
+following settings as a part of your :binary:`~bin.mongod` or :binary:`~bin.mongos`
 configuration file:
 
 .. list-table::
@@ -180,7 +183,7 @@ configuration file:
 
    * - :setting:`security.ldap.bind.method`
 
-     - Used to specify the method the :program:`mongod` or :program:`mongos`
+     - Used to specify the method the :binary:`~bin.mongod` or :binary:`~bin.mongos`
        uses to authenticate, or bind, to the LDAP server. Specify ``sasl`` to
        use one of the SASL protocols defined in
        :setting:`security.ldap.bind.saslMechanisms`.
@@ -191,8 +194,8 @@ configuration file:
 
    * - :setting:`security.ldap.bind.saslMechanisms`
 
-     - Used to specify the SASL mechanisms :program:`mongod` or
-       :program:`mongos` can use when authenticating or binding to the LDAP
+     - Used to specify the SASL mechanisms :binary:`~bin.mongod` or
+       :binary:`~bin.mongos` can use when authenticating or binding to the LDAP
        server. MongoDB and the LDAP server must agree on at least one SASL
        mechanism.
 
@@ -329,11 +332,10 @@ parameters:
 
      - Set to ``PLAIN``.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/configure-ldap-sasl-activedirectory
-      /tutorial/configure-ldap-sasl-openldap
-      /tutorial/authenticate-nativeldap-activedirectory
+   /tutorial/configure-ldap-sasl-activedirectory
+   /tutorial/configure-ldap-sasl-openldap
+   /tutorial/authenticate-nativeldap-activedirectory

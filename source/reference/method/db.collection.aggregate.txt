@@ -46,12 +46,12 @@ Error Handling
 Cursor Behavior
 ~~~~~~~~~~~~~~~
 
-In the :program:`mongo` shell, if the cursor returned from the
+In the :binary:`~bin.mongo` shell, if the cursor returned from the
 :method:`db.collection.aggregate()` is not assigned to a variable using
-the ``var`` keyword, then the :program:`mongo` shell automatically
+the ``var`` keyword, then the :binary:`~bin.mongo` shell automatically
 iterates the cursor up to 20 times. See
 :doc:`/tutorial/iterate-a-cursor` for handling cursors in the
-:program:`mongo` shell.
+:binary:`~bin.mongo` shell.
 
 Cursors returned from aggregation only supports cursor methods that
 operate on evaluated cursors (i.e. cursors whose first batch has been
@@ -72,6 +72,39 @@ retrieved), such as the following methods:
 .. seealso:: For more information, see
    :doc:`/core/aggregation-pipeline`, :doc:`/reference/aggregation`,
    :doc:`/core/aggregation-pipeline-limits`, and :dbcommand:`aggregate`.
+
+Sessions
+~~~~~~~~
+
+.. versionadded:: 4.0
+
+For cursors created inside a session, you cannot call
+:dbcommand:`getMore` outside the session.
+
+Similarly, for cursors created outside of a session, you cannot call
+:dbcommand:`getMore` inside a session.
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+However, the following stages are not allowed within transactions:
+
+- :pipeline:`$collStats`
+- :pipeline:`$currentOp`
+- :pipeline:`$indexStats`
+- :pipeline:`$listLocalSessions`
+- :pipeline:`$listSessions`
+- :pipeline:`$out`
+
+You also cannot specify the ``explain`` option.
+
+.. include:: /includes/extracts/transactions-operations-getMore.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :method:`db.collection.aggregate()`
 
 Examples
 --------

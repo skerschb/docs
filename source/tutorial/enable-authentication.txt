@@ -22,7 +22,7 @@ For authentication, MongoDB supports various
 :doc:`/core/authentication-mechanisms`.
 
 The following tutorial enables access control on a standalone
-:program:`mongod` instance and uses the :ref:`default authentication
+:binary:`~bin.mongod` instance and uses the :ref:`default authentication
 mechanism <authentication-mechanism-default>`.
 
 Replica sets and sharded clusters
@@ -48,6 +48,8 @@ create a user administrator in the ``admin`` database. Once created,
 you must authenticate as the user administrator to create additional
 users as needed.
 
+.. _enable-auth-procedure:
+
 Procedure
 ---------
 
@@ -59,11 +61,9 @@ instance running without access control and then enables access control.
 .. seealso::
    :doc:`/tutorial/manage-users-and-roles`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/manage-users-and-roles
-      /tutorial/change-own-password-and-custom-data
-
+   /tutorial/manage-users-and-roles
+   /tutorial/change-own-password-and-custom-data

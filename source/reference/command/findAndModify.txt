@@ -26,8 +26,6 @@ Definition
 
    The command has the following syntax:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: none
 
       {
@@ -42,9 +40,7 @@ Definition
         bypassDocumentValidation: <boolean>,
         writeConcern: <document>, 
         collation: <document>,
-        arrayFilters: <array>,
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        arrayFilters: <array>
       }
 
    The :dbcommand:`findAndModify` command takes the following
@@ -139,7 +135,7 @@ When using :dbcommand:`findAndModify` in a :term:`sharded
 <sharding>` environment, the ``query`` must contain the
 :term:`shard key` for all operations against the shard
 cluster. :dbcommand:`findAndModify` operations issued against
-:program:`mongos` instances for non-sharded collections function
+:binary:`~bin.mongos` instances for non-sharded collections function
 normally.
 
 Document Validation
@@ -157,6 +153,17 @@ Comparisons with the ``update`` Method
    document, as well as the status of the operation
 
 .. include:: /includes/fact-findAndModify-update-comparison.rst
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+If the operation results in an upsert, the collection must already exist.
+
+.. include:: /includes/extracts/transactions-operations-write-concern.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
 
 Examples
 --------
@@ -235,7 +242,7 @@ field:
 
   { "value" : null, "ok" : 1 }
 
-The :program:`mongo` shell and many :term:`drivers <driver>`
+The :binary:`~bin.mongo` shell and many :term:`drivers <driver>`
 provide a :method:`~db.collection.findAndModify()` helper method.
 Using the shell helper, this previous operation can take the
 following form:

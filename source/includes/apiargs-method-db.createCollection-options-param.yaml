@@ -16,10 +16,13 @@ description: |
   ``_id`` field.
 
   .. important::
-     For replica sets, do not set ``autoIndexId`` to ``false``.
+
+     Starting in MongoDB 4.0, you cannot set the option ``autoIndexId``
+     to ``false`` when creating collections in databases other than the
+     ``local`` database.
 
   .. deprecated:: 3.2
-     
+
 interface: method
 name: autoIndexId
 operation: db.createCollection
@@ -131,8 +134,8 @@ type: document
 arg_name: field
 description: |
   Allows users to specify :doc:`validation rules or expressions
-  </core/document-validation>` for the collection. For more information,
-  see :doc:`/core/document-validation`.
+  </core/schema-validation>` for the collection. For more information,
+  see :doc:`/core/schema-validation`.
 
   .. versionadded:: 3.2
 
@@ -166,7 +169,7 @@ description: |
 
    .. versionadded:: 3.2
 
-   .. include:: /includes/table/validationLevel-values.rst
+   .. include:: /includes/extracts/table-validationLevel-values.rst
 
 interface: method
 name: validationLevel
@@ -187,7 +190,7 @@ description: |
       Validation of documents only applies to those documents as
       determined by the ``validationLevel``.
 
-   .. include:: /includes/table/validationAction-values.rst
+   .. include:: /includes/extracts/table-validationAction-values.rst
 
 interface: method
 name: validationAction
@@ -277,4 +280,19 @@ description: |
 
 replacement:
    example: ":ref:`createCollection-collation-example`"
+---
+position: 15
+name: writeConcern
+description: |
+  A document that expresses the :doc:`write concern </reference/write-concern>`
+  for the operation. Omit to use the default write
+  concern.
+
+  .. include:: /includes/extracts/mongos-operations-wc-create.rst
+
+optional: true
+type: document
+interface: method
+operation: db.createCollection
+arg_name: field
 ...

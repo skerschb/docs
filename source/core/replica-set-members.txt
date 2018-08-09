@@ -10,7 +10,7 @@ Replica Set Members
    :depth: 1
    :class: singlecol
 
-A *replica set* in MongoDB is a group of :program:`mongod` processes
+A *replica set* in MongoDB is a group of :binary:`~bin.mongod` processes
 that provide redundancy and high availability. The members of a
 replica set are:
 
@@ -39,12 +39,8 @@ a three member replica set with *two* data-bearing members: a
 <replica-set-arbiters>`, but replica sets with at least three
 data-bearing members offer better redundancy.
 
-.. versionchanged:: 3.0.0
-
-   A replica set can have up to :ref:`50 members
-   <3.0-replica-sets-max-members>` but only 7 voting members.
-   [#master-slave]_ In previous versions, replica sets can have up to
-   12 members.
+A replica set can have up to :ref:`50 members
+<3.0-replica-sets-max-members>` but only 7 voting members.
 
 .. only:: (website or singlehtml)
 
@@ -57,12 +53,11 @@ data-bearing members offer better redundancy.
       :start-after: start-content
       :end-before: start-content-election-example
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /core/replica-set-primary
+   /core/replica-set-primary
 
 .. only:: (website or singlehtml)
 
@@ -79,12 +74,11 @@ data-bearing members offer better redundancy.
       :start-after: end-content-election-example
       :end-before: end-content
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /core/replica-set-secondary
+   /core/replica-set-secondary
 
 .. only:: (website or singlehtml)
 
@@ -97,15 +91,11 @@ data-bearing members offer better redundancy.
       :start-after: start-content
       :end-before: end-content
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /core/replica-set-arbiter
-
-.. [#master-slave]
-   .. include:: /includes/fact-master-slave-workaround.rst
+   /core/replica-set-arbiter
 
 .. [#edge-cases-2-primaries]
 

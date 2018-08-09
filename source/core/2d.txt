@@ -56,8 +56,8 @@ criteria. A compound ``2d`` index can cover queries.
 ``sparse`` Property
 -------------------
 
-``2d`` indexes are :doc:`sparse </core/index-sparse>` by default and
-ignores the :doc:`sparse: true </core/index-sparse>` option. If a
+``2d`` indexes are always :doc:`sparse </core/index-sparse>` and
+ignore the :doc:`sparse </core/index-sparse>` option. If a
 document lacks a ``2d`` index field (or the field is ``null`` or an
 empty array), MongoDB does not add an entry for the document to the
 ``2d`` index. For inserts, MongoDB inserts the document but does not
@@ -67,13 +67,21 @@ For a compound index that includes a ``2d`` index key along with keys
 of other types, only the ``2d`` index field determines whether the
 index references a document.
 
-.. class:: hidden
+Collation Option
+----------------
 
-   .. toctree::
-      :titlesonly: 
+``2d`` indexes only support simple binary comparison and do not support
+the :ref:`collation <collation>` option.
 
-      /tutorial/build-a-2d-index
-      /tutorial/query-a-2d-index
-      /core/geospatial-indexes
-      /tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes
+To create a ``2d`` index on a a collection that has a non-simple
+collation, you must explicitly specify ``{collation: {locale: "simple"}
+}`` when creating the index.
 
+.. toctree::
+   :titlesonly:
+   :hidden:
+
+   /tutorial/build-a-2d-index
+   /tutorial/query-a-2d-index
+   /core/geospatial-indexes
+   /tutorial/calculate-distances-using-spherical-geometry-with-2d-geospatial-indexes

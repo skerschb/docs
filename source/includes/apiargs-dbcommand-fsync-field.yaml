@@ -21,41 +21,15 @@ type: boolean
 ---
 arg_name: field
 description: |
-  Locks :program:`mongod` instance and blocks all write operations.
+  
+  Takes a lock on the :binary:`~bin.mongod` instance and blocks all
+  write operations. Each :dbcommand:`fsync` with ``lock`` operation
+  takes a lock. 
+
 interface: dbcommand
 name: lock
 operation: fsync
 optional: true
 position: 3
 type: boolean
----
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: document
 ...

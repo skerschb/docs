@@ -13,9 +13,12 @@ Install MongoDB Community Edition on Ubuntu
 Overview
 --------
 
-Use this tutorial to install MongoDB Community Edition on LTS Ubuntu Linux systems from
-``.deb`` packages. While Ubuntu includes its own MongoDB packages, the official
-MongoDB Community Edition packages are generally more up-to-date.
+Use this tutorial to install MongoDB Community Edition on LTS Ubuntu
+Linux systems using ``.deb`` packages.
+
+.. |package-name| replace:: ``{+package-name-org+}``
+.. |distro-name| replace:: Ubuntu
+.. include:: /includes/important-dont-use-distro-packages.rst
 
 .. admonition:: Platform Support
 
@@ -40,7 +43,25 @@ Install MongoDB Community Edition
 
 .. include:: /includes/fact-ubuntu-lts-support.rst
 
+Using ``.deb`` Packages (Recommended)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. include:: /includes/steps/install-mongodb-on-ubuntu.rst
+
+Using ``.tgz`` Tarballs
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Prerequisites
+`````````````
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. include:: /includes/extracts/install-mongodb-community-manually-debian.rst
+
+Procedure
+`````````
+
+.. include:: /includes/steps/install-mongodb-on-linux.rst
 
 Run MongoDB Community Edition
 -----------------------------

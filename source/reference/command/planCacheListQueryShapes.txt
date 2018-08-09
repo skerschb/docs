@@ -22,20 +22,16 @@ Definition
 
    .. include:: /includes/fact-query-optimizer-cache-behavior.rst
 
-   The :program:`mongo` shell provides the wrapper
+   The :binary:`~bin.mongo` shell provides the wrapper
    :method:`PlanCache.listQueryShapes()` for this command.
 
    The command has the following syntax:
-
-   .. versionchanged:: 3.6
 
    .. code-block:: javascript
 
       db.runCommand(
          {
-            planCacheListQueryShapes: <collection>,
-            txnNumber: <long>,
-            lsid: { id: <UUID> }
+            planCacheListQueryShapes: <collection>
          }
       )
 

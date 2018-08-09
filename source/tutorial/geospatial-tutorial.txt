@@ -13,15 +13,15 @@ Find Restaurants with Geospatial Queries
 Overview
 --------
 
-MongoDB's :term:`geospatial` indexing allows you to efficiently execute spatial
-queries on a collection that contains geospatial shapes and points. This
-tutorial will briefly introduce the concepts of geospatial indexes, and
-then demonstrate their use with :query:`$geoWithin`, :query:`$geoIntersects`,
-and :dbcommand:`geoNear`.
+MongoDB's :term:`geospatial` indexing allows you to efficiently execute
+spatial queries on a collection that contains geospatial shapes and
+points. To showcase the capabilities of geospatial features and compare
+different approaches, this tutorial will guide you through the process
+of writing queries for a simple geospatial application.
 
-To showcase the capabilities of geospatial features and compare different
-approaches, this tutorial will guide you through the process of writing queries
-for a simple geospatial application.
+This tutorial will briefly introduce the concepts of geospatial
+indexes, and then demonstrate their use with :query:`$geoWithin`,
+:query:`$geoIntersects`, and :query:`$nearSphere`.
 
 Suppose you are designing a mobile application to help users find
 restaurants in New York City. The application must:
@@ -69,12 +69,12 @@ After downloading the datasets, import them into the database:
    mongoimport <path to restaurants.json> -c restaurants
    mongoimport <path to neighborhoods.json> -c neighborhoods
 
-The :dbcommand:`geoNear` command requires a geospatial index, and almost
+A geospatial index, and almost
 always improves performance of :query:`$geoWithin` and :query:`$geoIntersects`
 queries.
 
 Because this data is geographical, create a ``2dsphere`` index on each
-collection using the :program:`mongo` shell:
+collection using the :binary:`~bin.mongo` shell:
 
 .. code-block:: javascript
 
@@ -85,7 +85,7 @@ Exploring the Data
 ~~~~~~~~~~~~~~~~~~
 
 Inspect an entry in the newly-created ``restaurants`` collection from within the
-:program:`mongo` shell:
+:binary:`~bin.mongo` shell:
 
 .. code-block:: javascript
 
@@ -178,7 +178,7 @@ Find all Restaurants in the Neighborhood
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can also query to find all restaurants contained in a given neighborhood.
-Run the following in the :program:`mongo` shell to find the neighborhood
+Run the following in the :binary:`~bin.mongo` shell to find the neighborhood
 containing the user, and then count the restaurants within that neighborhood:
 
 .. code-block:: javascript

@@ -39,7 +39,11 @@ extensions = [
     'directives',
     'intermanual',
     'testcode',
-    'tabs'
+    'tabs',
+    'markdown',
+    'fasthtml',
+    'source_constants',
+    'icon'
 ]
 
 locale_dirs = [ os.path.join(conf.paths.projectroot, conf.paths.locale) ]
@@ -64,10 +68,20 @@ rst_epilog = '\n'.join([
     '.. |hardlink| replace:: {0}/{1}'.format(conf.project.url, conf.git.branches.current),
     '.. |branch| replace:: ``{0}``'.format(conf.git.branches.current),
     '.. |bi| replace:: MongoDB Connector for BI',
-    '.. |version| replace:: {0}'.format(version)
+    '.. |version| replace:: {0}'.format(version),
+    '.. |compass| replace:: MongoDB Compass'
 ])
 
-pygments_style = 'sphinx'
+source_constants = {
+    'package-branch': '4.0',
+    'package-name-org': 'mongodb-org',
+    'package-name-enterprise': 'mongodb-enterprise',
+    'version': version,
+    'release': release,
+    'pgp-version': '4.0',
+    'pgp-fingerprint': '9DA31620334BD75D9DCB49F368818C72E52529D4'
+}
+
 
 extlinks = {
     'hardlink' : ( 'http://docs.mongodb.com/{0}/%s'.format(conf.git.branches.current), ''),
@@ -166,6 +180,12 @@ html_theme_options = {
 }
 
 html_sidebars = sconf.sidebars
+
+# Set up PHP syntax highlights
+from sphinx.highlighting import lexers
+from pygments.lexers.web import PhpLexer
+lexers["php"] = PhpLexer(startinline=True)
+lexers["php-annotations"] = PhpLexer(startinline=True)
 
 # -- Options for LaTeX output --------------------------------------------------
 

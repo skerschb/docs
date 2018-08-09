@@ -2,9 +2,9 @@ file: /core/data-modeling-introduction
 description: |
    An introduction to data modeling in MongoDB.
 ---
-file: /core/document-validation
+file: /core/schema-validation
 description: |
-  MongoDB provides the capability to validate documents during updates and
+  MongoDB provides the capability for schema validation during updates and
   insertions.
 ---
 file: /core/data-models
@@ -22,4 +22,5 @@ file: /reference/data-models
 description: |
    Reference material for data modeling for developers of MongoDB
    applications.
+
 ...

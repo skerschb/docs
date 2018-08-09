@@ -45,6 +45,7 @@ theme:
     - /core/replica-set-architectures
     - /core/replica-set-high-availability
     - /core/replica-set-members
+    - /core/transactions
     - /geospatial-queries
     - /replication
     - /core/sharded-cluster-components
@@ -61,6 +62,7 @@ theme:
     - /text-search
     - /tutorial/manage-the-database-profiler
     - /core/index-text
+    - /reference/configuration-options
     - /reference/indexes
     - /reference/method
     - /reference/operator/aggregation
@@ -68,6 +70,7 @@ theme:
     - /reference/operator/query-modifier
     - /reference/operator/update
     - /reference/replication
+    - /reference/read-concern
     - /reference/security
     - /reference/sharding
     - /reference/write-concern
@@ -78,8 +81,10 @@ theme:
     - /release-notes/3.2
     - /release-notes/3.4
     - /release-notes/3.6
+    - /release-notes/4.0
     - /security
     - /sharding
+    - /changeStreams
     - /core/zone-sharding
     - /core/hashed-sharding
     - /core/ranged-sharding

@@ -28,9 +28,9 @@ There is no connection handshake.
 Port
 ~~~~
 
-The default port number for :program:`mongod` and :program:`mongos`
-instances is 27017. The port number for :program:`mongod` and
-:program:`mongos` is configurable and may vary.
+The default port number for :binary:`~bin.mongod` and :binary:`~bin.mongos`
+instances is 27017. The port number for :binary:`~bin.mongod` and
+:binary:`~bin.mongos` is configurable and may vary.
 
 Byte Ordering
 ~~~~~~~~~~~~~
@@ -435,8 +435,7 @@ collection. The format of the OP_QUERY message is:
      - BSON document that represents the query. The query will contain
        one or more elements, all of which must match for a document to
        be included in the result set. Possible elements include
-       ``$query``, ``$orderby``, ``$hint``, ``$explain``, and
-       ``$snapshot``.
+       ``$query``, ``$orderby``, ``$hint``, and ``$explain``.
 
    * - ``returnFieldsSelector``
 
@@ -912,7 +911,7 @@ The ``OP_REPLY`` message is sent by the database in response to an
          describing the failure.
 
        - ``2`` corresponds to ShardConfigStale. Drivers should ignore
-         this. Only :program:`mongos` will ever see this set, in which
+         this. Only :binary:`~bin.mongos` will ever see this set, in which
          case, it needs to update config from the server.
 
        - ``3`` corresponds to AwaitCapable. Is set when the server

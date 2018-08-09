@@ -32,7 +32,7 @@ Definition
 
    The fields correspond to *all* the keys of a particular index *in
    order*. You can explicitly specify the particular index with the
-   :method:`~cursor.hint()` method. Otherwise, :program:`mongod`
+   :method:`~cursor.hint()` method. Otherwise, :binary:`~bin.mongod`
    selects the index using the fields in the ``indexBounds``; however,
    if multiple indexes exist on same fields with different sort
    orders, the selection of the index may be ambiguous.
@@ -40,7 +40,7 @@ Definition
    .. seealso:: :method:`~cursor.min()`.
 
    :method:`~cursor.max()` exists primarily to support the
-   :program:`mongos` (sharding) process, and is a shell wrapper around the query
+   :binary:`~bin.mongos` (sharding) process, and is a shell wrapper around the query
    modifier :operator:`$max`.
    
    .. include:: /includes/extracts/mongo-shell-deprecated-meta-operator-max.rst
@@ -67,9 +67,15 @@ Index Bounds
 ~~~~~~~~~~~~
 
 If you use :method:`~cursor.max()` with :method:`~cursor.min()` to
-specify a range, the index bounds specified in
-:method:`~cursor.min()` and :method:`~cursor.max()`
-must both refer to the keys of the same index.
+specify a range:
+
+- the index bounds specified in :method:`~cursor.min()` and
+  :method:`~cursor.max()` must both refer to the keys of the same index.
+
+- the bound specified by :method:`~cursor.max()` must be greater than
+  the bound specified by :method:`~cursor.min()`.
+
+  .. versionchanged:: 4.0
 
 ``max()`` without ``min()``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,7 +129,7 @@ The collection has the following indexes:
 
   If the query did not explicitly specify the index with the
   :method:`~cursor.hint()` method, it is ambiguous as to
-  whether :program:`mongod` would select the ``{ item: 1, type: 1
+  whether :binary:`~bin.mongod` would select the ``{ item: 1, type: 1
   }`` index ordering or the ``{ item: 1, type: -1 }`` index ordering.
 
 - Using the ordering of the index ``{ price: 1 }``, :method:`~cursor.max()` limits the query to the documents that are below
@@ -131,6 +137,13 @@ The collection has the following indexes:
   :method:`~cursor.min()` limits the query to the documents
   that are at or above the index key bound of ``price`` equal to
   ``1.39``:
+  
+  .. note::
+  
+     .. versionchanged:: 4.0
+
+        The bound specified by :method:`~cursor.max()` must be greater
+        than the bound specified by :method:`~cursor.min()`.
 
   .. code-block:: javascript
 

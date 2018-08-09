@@ -46,10 +46,19 @@ Availability
 ~~~~~~~~~~~~
 
 The :method:`rs.reconfig()` shell method can trigger the current primary
-to step down in some situations. When the
-primary steps down, it forcibly closes all client connections. This is
-by design. Since it may take a period of time to elect a new primary, 
-schedule reconfiguration changes during maintenance periods to minimize loss of write availability.
+to step down in some situations. When the primary steps down, it 
+forcibly closes all client connections. Primary step-down triggers an 
+:ref:`election <replica-set-elections>` to select a new :term:`primary`.
+  
+.. include:: /includes/fact-election-latency.rst
+
+During the election process, the cluster cannot
+accept write operations until it elects the new primary.
+
+.. include:: /includes/fact-retryable-writes-failover-election.rst
+
+To further reduce potential impact to a production cluster,
+reconfigure only during scheduled maintenance periods.
 
 ``{ force: true }``
 ~~~~~~~~~~~~~~~~~~~
@@ -57,7 +66,8 @@ schedule reconfiguration changes during maintenance periods to minimize loss of 
 .. warning::
 
    Using :method:`rs.reconfig()` with ``{ force: true }`` can lead to
-   :term:`rollback` of committed writes. Exercise caution when using this option.
+   :term:`rollback` of majority-committed writes. Exercise caution when
+   using this option.
 
 Member Priority and Votes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -141,7 +151,7 @@ A replica set named ``rs0`` has the following configuration:
    
 The following sequence of operations updates the
 :rsconf:`members[n].priority` of the second member.
-The operations are issued through a :program:`mongo` shell connected to
+The operations are issued through a :binary:`~bin.mongo` shell connected to
 the primary.
 
 .. code-block:: javascript
@@ -234,6 +244,13 @@ the primary.
       }
    }
 
-.. seealso:: :method:`rs.conf()`,
-   :ref:`replSetGetConfig-output` and
-   :doc:`/administration/replica-sets`.
+.. seealso:: 
+
+   - :method:`rs.conf()`
+
+   - :ref:`replSetGetConfig-output`
+
+   - :doc:`/administration/replica-set-member-configuration`
+
+   - :doc:`/administration/replica-set-maintenance`
+

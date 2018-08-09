@@ -15,34 +15,41 @@ Build Indexes on Replica Sets
    :depth: 1
    :class: singlecol
 
-For replica sets, secondaries will begin building indexes *after* the
-:term:`primary` finishes building the index. In :term:`sharded clusters
-<sharded cluster>`, the :program:`mongos` will send :method:`createIndex()
-<db.collection.createIndex()>` to the primary members of the replica
-set for each shard, which then replicate to the secondaries after the
-primary finishes building the index.
+To minimize the impact of building an index on replica sets and sharded
+clusters with replica set shards, use the following procedure to build
+indexes in a rolling fashion.
 
-To minimize the impact of building an index on your replica set, use
-the following procedure to build indexes.
+This procedure *does* take one member out of the replica set at a time.
+However, this procedure will only affect one member of the set at a
+time rather than *all* secondaries at the same time.
 
 Considerations
 --------------
 
-- Ensure that your :term:`oplog` is large enough to permit the
-  indexing or re-indexing operation to complete without falling
-  too far behind to catch up. See the :ref:`oplog sizing
-  <replica-set-oplog-sizing>` documentation for additional
-  information.
+Unique Indexes
+~~~~~~~~~~~~~~
 
-- This procedure *does* take one member out of the replica set at a
-  time. However, this procedure will only affect one member of the
-  set at a time rather than *all* secondaries at the same time.
+To create :ref:`unique indexes <index-type-unique>` using the following
+procedure, you must stop all writes to the collection during this
+procedure.
 
-- Before version 2.6 :ref:`Background index creation operations
-  <index-creation-background>` become *foreground* indexing operations
-  on :term:`secondary` members of replica sets. After 2.6, background
-  index builds replicate as background index builds on the
-  secondaries.
+If you cannot stop all writes to the collection during this procedure,
+do not use the procedure on this page. Instead, build your unique index
+on the collection by:
+
+- issuing :method:`db.collection.createIndex()` on the primary for a
+  replica set, or
+
+- issuing :method:`db.collection.createIndex()` on the
+  :binary:`~bin.mongos` for a sharded cluster.
+
+Oplog Size
+~~~~~~~~~~
+
+Ensure that your :term:`oplog` is large enough to permit the indexing
+or re-indexing operation to complete without falling too far behind to
+catch up. See the :ref:`oplog sizing <replica-set-oplog-sizing>`
+documentation for additional information.
 
 
 Procedure
@@ -54,25 +61,96 @@ Procedure
    the following procedure for each replica set that provides each
    :term:`shard`.
 
+   To create :ref:`unique indexes <index-type-unique>` using the
+   following procedure, you must stop all writes to the collection
+   during the index build. Otherwise, you may end up with inconsistent
+   data across the replica set members. If you cannot stop all writes to
+   the collection, do not use the following procedure to create unique
+   indexes.
+
 .. _tutorial-index-on-replica-sets-stop-one-member:
 
-Stop One Secondary
-~~~~~~~~~~~~~~~~~~
+Stop One Secondary and Restart as a Standalone
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Stop the :program:`mongod` process on one secondary. Restart the
-:program:`mongod` process *without* the :option:`--replSet <mongod --replSet>`
-option and running on a different port. [#different-port]_ This
-instance is now in "standalone" mode.
+Stop the :binary:`~bin.mongod` process on one secondary. Restart the
+:binary:`~bin.mongod` process, making the following configuration updates:
 
-For example, if your :program:`mongod` *normally* runs with on the
-default port of ``27017`` with the :option:`--replSet
-<mongod --replSet>` option you would use the following invocation:
+.. tabs::
 
-.. code-block:: sh
+   tabs:
+      - id: config-file
+        name: Configuration File
+        content: |
 
-   mongod --port 47017
+           If you are using a configuration file, make the following
+           configuration updates:
 
-.. [#different-port] By running the :program:`mongod` on a different
+           - Comment out the :setting:`replication.replSetName` option.
+
+           - Change the :setting:`net.port` to a different port. [#different-port]_
+             Make a note of the original port setting as a comment.
+
+           - If the :binary:`~bin.mongod` is a :term:`shard` or
+             :term:`config server` member, you must also:
+
+             - Comment out the :setting:`sharding.clusterRole` option.
+
+             - Set parameter :parameter:`skipShardingConfigurationChecks`
+               (also available for MongoDB 3.6.3+, 3.4.11+, 3.2.19+) to
+               ``true`` in the :setting:`setParameter` section.
+
+           For example, for a shard/config server replica set member,
+           the updated configuration file will include content like the
+           following example:
+
+           .. code-block:: yaml
+
+              net:
+                 bindIp: localhost,<ip address of the mongod host>
+                 port: 27218
+              #   port: 27018
+              #replication:
+              #   replSetName: shardA
+              #sharding:
+              #   clusterRole: shardsvr
+              setParameter:
+                 skipShardingConfigurationChecks: true
+
+      - id: command-line
+        name: Command-line Options
+        content: |
+
+           If using command-line options, make the following
+           configuration updates:
+
+           - Remove :option:`--replSetName <mongod --replSet>`.
+
+           - Modify :option:`--port <mongod --port>` to a different port. [#different-port]_
+
+           - If the :binary:`~bin.mongod` is a :term:`shard` or
+             :term:`config server` member, you must also:
+
+             - Remove :option:`--shardsvr <mongod --shardsvr>` if a
+               shard member and :option:`--configsvr <mongod
+               --configsvr>` if a config server member.
+
+             - Set parameter
+               :parameter:`skipShardingConfigurationChecks`
+               (also available for MongoDB 3.6.3+, 3.4.11+, 3.2.19+) to
+               ``true`` in the :setting:`setParameter` section.
+
+
+           For example, if your replica set member that is not part of
+           a sharded cluster *normally* runs with on the default port
+           of ``27017`` with the :option:`--replSet <mongod --replSet>`
+           option you would use the following invocation:
+
+           .. code-block:: sh
+
+              mongod --port 27218
+
+.. [#different-port] By running the :binary:`~bin.mongod` on a different
    port, you ensure that the other members of the replica set and all
    clients will not contact the member while you are building the
    index.
@@ -83,12 +161,12 @@ Build the Index
 ~~~~~~~~~~~~~~~
 
 Create the new index using the :method:`~db.collection.createIndex()`
-in the :program:`mongo` shell, or comparable method in your
+in the :binary:`~bin.mongo` shell, or comparable method in your
 driver. This operation will create or rebuild the index on this
-:program:`mongod` instance
+:binary:`~bin.mongod` instance
 
 For example, to create an ascending index on the ``username`` field of
-the ``records`` collection, use the following :program:`mongo` shell
+the ``records`` collection, use the following :binary:`~bin.mongo` shell
 operation:
 
 .. code-block:: sh
@@ -97,61 +175,51 @@ operation:
 
 .. _tutorial-index-on-replica-sets-restart-mongod:
 
-Restart the Program ``mongod``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Restart the Program ``mongod`` as a Replica Set Member
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When the index build completes, start the :program:`mongod` instance
-with the :option:`--replSet <mongod --replSet>` option on its usual port:
+When the index build completes, restart the :binary:`~bin.mongod`
+instance as a member of the replica set using its normal configuration
+file or command-line arguments. That is, undo the configuration changes
+made when starting as a standalone. For shard or config server replica
+set members, be sure to remove the
+:parameter:`skipShardingConfigurationChecks` parameter.
+
+For example, to restart your replica set member that is not part of a
+sharded cluster:
 
 .. code-block:: sh
 
    mongod --port 27017 --replSet rs0
 
-Modify the port number (e.g. ``27017``) or the replica set name
-(e.g. ``rs0``) as needed.
-
 Allow replication to catch up on this member.
 
-Build Indexes on all Secondaries
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Repeat the Procedure for the Remaining Secondaries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. versionchanged:: 2.6
-   Secondary members can now :ref:`build indexes in the background 
-   <index-creation-background>`. Previously all index builds on secondaries were in 
-   the foreground.
-
-For each secondary in the set, build an index according to the
-following steps:
+Once the member catches up with the other members of the set, repeat
+the procedure one member at a time for the remaining secondary members:
 
 #. :ref:`tutorial-index-on-replica-sets-stop-one-member`
+
 #. :ref:`tutorial-index-on-replica-sets-build-index`
+
 #. :ref:`tutorial-index-on-replica-sets-restart-mongod`
 
 Build the Index on the Primary
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To build an index on the primary you can either:
+When all the secondaries have the new index, step down the primary,
+restart it as a standalone using the procedure described above, 
+and build the index on the former primary:
 
-#. :ref:`Build the index in the background
-   <index-creation-background>` on the primary.
+#. Use the :method:`rs.stepDown()` method in the :binary:`~bin.mongo` shell
+   to step down the primary. Upon successful stepdown, the current primary
+   becomes a secondary and the replica set members elect a new primary.
 
-#. Step down the primary using the :method:`rs.stepDown()` method in
-   the :program:`mongo` shell to cause the current primary to become a
-   secondary graceful and allow the set to elect another member as
-   primary.
+#. :ref:`tutorial-index-on-replica-sets-stop-one-member`
 
-   Then repeat the index building procedure, listed below, to build the
-   index on the primary:
+#. :ref:`tutorial-index-on-replica-sets-build-index`
 
-   #. :ref:`tutorial-index-on-replica-sets-stop-one-member`
+#. :ref:`tutorial-index-on-replica-sets-restart-mongod`
 
-   #. :ref:`tutorial-index-on-replica-sets-build-index`
-
-   #. :ref:`tutorial-index-on-replica-sets-restart-mongod`
-
-Building the index on the background, takes longer than the foreground
-index build and results in a less compact index structure. Additionally,
-the background index build may impact write performance on the
-primary. However, building the index in the background allows the set to
-be continuously up for write operations while MongoDB builds the
-index.

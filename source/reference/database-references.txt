@@ -15,11 +15,25 @@ Database References
    :depth: 1
    :class: singlecol
 
-MongoDB does not support joins. In MongoDB some data is
-*denormalized*, or stored with related data in :term:`documents
-<document>` to remove the need for joins. However, in some cases it
-makes sense to store related information in separate documents,
-typically in different collections or databases.
+For many use cases in MongoDB, the denormalized data model where
+related data is stored within a single :term:`document <document>` will
+be optimal. However, in some cases, it makes sense to store related
+information in separate documents, typically in different collections
+or databases.
+
+.. important::
+
+   MongoDB 3.2 introduces :pipeline:`$lookup` pipeline stage to perform
+   a left outer join to an unsharded collection in the same database.
+   For more information and examples, see :pipeline:`$lookup`.
+
+   Starting in MongoDB 3.4, you can also use :pipeline:`$graphLookup`
+   pipeline stage to join an unsharded collection to perform recursive
+   search. For more information and examples, see
+   :pipeline:`$graphLookup`.
+
+This page outlines alternative procedures that predate the
+:pipeline:`$lookup` and :pipeline:`$graphLookup` pipeline stages.
 
 MongoDB applications use one of two methods for relating documents:
 
@@ -210,7 +224,7 @@ Driver Support for DBRefs
 
    * - **JavaScript**
 
-     - The :program:`mongo` shell's :doc:`JavaScript </reference/method>`
+     - The :binary:`~bin.mongo` shell's :doc:`JavaScript </reference/method>`
        interface provides a DBRef.
 
    * - **Node.js**
@@ -229,9 +243,8 @@ Driver Support for DBRefs
 
    * - **PHP**
 
-     - The PHP driver supports DBRefs, including the optional ``$db``
-       reference, using `the MongoDBRef
-       <http://www.php.net/manual/en/class.mongodbref.php/>`_ class.
+     - The PHP driver contains no support for DBRefs. You can traverse
+       references manually.
 
    * - **Python**
 

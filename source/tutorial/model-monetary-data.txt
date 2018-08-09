@@ -33,7 +33,7 @@ Numeric Model
 The numeric model may be appropriate if you need to query the
 database for exact, mathematically valid matches or need to perform
 server-side arithmetic, e.g., :update:`$inc`, :update:`$mul`, and
-:doc:`aggregation framework arithmetic </reference/operator/aggregation-arithmetic>`.
+:ref:`aggregation framework arithmetic <agg-quick-ref-operator-arithmetic>`.
   
 **The following approaches follow the numeric model:**
 
@@ -64,7 +64,7 @@ using the non-numeric model may be suitable.
 .. note::
 
    Arithmetic mentioned on this page refers to server-side
-   arithmetic performed by :program:`mongod` or :program:`mongos`, and
+   arithmetic performed by :binary:`~bin.mongod` or :binary:`~bin.mongos`, and
    not to client-side arithmetic.
 
 .. _monetary-value-numeric:
@@ -85,7 +85,7 @@ Unlike binary-based floating-point formats (i.e., the ``double`` BSON
 type), decimal128 does not approximate decimal values and is able to
 provide the exact precision required for working with monetary data.
 
-From the :program:`mongo` shell ``decimal`` values are assigned and
+From the :binary:`~bin.mongo` shell ``decimal`` values are assigned and
 queried using the ``NumberDecimal()`` constructor.  The following
 example adds a document containing gas prices to a ``gasprices``
 collection:
@@ -109,6 +109,12 @@ Converting Values to Decimal
 A collection's values can be transformed to the ``decimal`` type by
 performing a one-time transformation or by modifying application logic
 to perform the transformation as it accesses records.
+
+.. tip::
+
+   Alternative to the procedure outlined below, starting in version
+   4.0, you can use the :expression:`$convert` and its helper
+   :expression:`$toDecimal` operator to convert values to ``NumberDecimal()``.
 
 One-Time Collection Transformation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

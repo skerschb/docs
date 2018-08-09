@@ -15,34 +15,52 @@ reIndex
    The :dbcommand:`reIndex` command drops all indexes on a
    collection and recreates them. This operation may be expensive for
    collections that have a large amount of data and/or a large number
-   of indexes.
+   of indexes. 
 
-   The command has the following form:
+   .. warning::
 
-   .. versionchanged:: 3.6
+      - For most users, the :dbcommand:`reIndex` command is unnecessary.
 
-   .. code-block:: javascript
+      - Avoid running :dbcommand:`reIndex` for a replica set.
 
-      { reIndex: "collection", txnNumber: <long>, lsid: { id: <UUID> } }
+      - Do not run :dbcommand:`reIndex` for a sharded cluster.
 
-   .. include:: /includes/extracts/sessions-option-table-options.rst
-
-   Normally, MongoDB compacts indexes during routine updates. For most
-   users, the :dbcommand:`reIndex` command is unnecessary. However, it
-   may be worth running if the collection size has changed significantly
-   or if the indexes are consuming a disproportionate amount of disk space.
-
-   From the :program:`mongo` shell, you can call :dbcommand:`reIndex`
-   using the following form:
+   Use the following syntax:
 
    .. code-block:: javascript
 
-      db.collection.reIndex();
+      { reIndex: <collection>, writeConcern: <document>}
 
-   .. |cmd-name| replace:: :dbcommand:`reIndex`
-   .. include:: /includes/note-reindex-impact-on-replica-sets.rst
+   The command takes the following fields:
 
-   .. include:: /includes/important-reindex-locking.rst
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
+
+      * - Field
+        - Description
+
+      * - reIndex
+        - The name of the collection to reindex.
+
+      * - writeConcern
+
+        - Optional. A document expressing the :doc:`write concern
+          </reference/write-concern>` of the :dbcommand:`drop` command.
+          Omit to use the default write concern.
+
+   The :binary:`~bin.mongo` shell provides a wrapper :method:`db.collection.reIndex()`.
+
+Behavior
+--------
+
+.. |cmd-name| replace:: :dbcommand:`reIndex`
+.. include:: /includes/note-reindex-impact-on-replica-sets.rst
+
+.. include:: /includes/important-reindex-locking.rst
+
+
+
 
 .. see:: :doc:`/core/index-creation` for more information on the
    behavior of indexing operations in MongoDB.

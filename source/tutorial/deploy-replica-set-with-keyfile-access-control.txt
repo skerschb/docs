@@ -1,9 +1,9 @@
 .. _deploy-repl-set-with-keyfile:
 .. _deploy-repl-set-with-auth:
 
-==============================================
-Deploy Replica Set With Keyfile Access Control
-==============================================
+==================================================
+Deploy New Replica Set With Keyfile Access Control
+==================================================
 
 .. default-domain:: mongodb
 
@@ -28,33 +28,34 @@ For this tutorial, each member of the replica set uses the same internal
 authentication mechanism and settings.
 
 Enforcing internal authentication also enforces user access control. To
-connect to the replica set, clients like the :program:`mongo` shell need to
+connect to the replica set, clients like the :binary:`~bin.mongo` shell need to
 use a :doc:`user account</core/authorization>`. See
 :ref:`security-repSetDeploy-access-control`.
 
 Cloud Manager and Ops Manager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are currently using or are planning to use Cloud Manager or
-Ops Manager, consider using the built-in features for
-deploying a replica set with access control enforced.
-
-See ``Deploy Replica Set`` in the
-:mms-docs:`Cloud Manager manual</tutorial/deploy-replica-set>` or in the
-:opsmgr:`Ops Manager manual</tutorial/deploy-replica-set>`.
-
-See ``Access Control for MongoDB Deployments`` in the
-:mms-docs:`Cloud Manager manual</nav/security-enable-authentication>` or in the
-:opsmgr:`Ops manager manual</nav/security-enable-authentication>`.
+If you are currently using or are planning to use Cloud Manager or Ops
+Manager, see the :mms-docs:`Cloud Manager manual
+</tutorial/edit-host-authentication-credentials>` or the :opsmgr:`Ops
+Manager manual </tutorial/edit-host-authentication-credentials>` for
+enforcing access control.
 
 Considerations
 --------------
 
+IP Binding
+~~~~~~~~~~~
+
+.. versionchanged:: 3.6
+
+.. include:: /includes/extracts/default-bind-ip-security.rst
+
 Operating System
 ~~~~~~~~~~~~~~~~
 
-This tutorial primarily refers to the :program:`mongod` process.
-Windows users should use the :program:`mongod.exe` program instead.
+This tutorial primarily refers to the :binary:`~bin.mongod` process.
+Windows users should use the :binary:`~bin.mongod.exe` program instead.
 
 Keyfile Security
 ~~~~~~~~~~~~~~~~
@@ -65,8 +66,8 @@ development environments. For production environments we recommend using
 
 .. _security-repSetDeploy-access-control:
 
-Access Control
-~~~~~~~~~~~~~~
+Users and Authentication Mechanisms
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: /includes/internal-authentication-tutorials-access-control-consideration.rst
 

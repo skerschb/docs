@@ -27,8 +27,6 @@ Definition
 
    :dbcommand:`shardCollection` has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
       {
@@ -37,8 +35,7 @@ Definition
          unique: <boolean>,
          numInitialChunks: <integer>,
          collation: { locale: "simple" },
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
+         writeConcern: <document>
       }
 
    :dbcommand:`shardCollection` has the following fields:
@@ -65,11 +62,14 @@ Choosing the best shard key to effectively distribute load among your
 shards requires some planning. Review :ref:`sharding-shard-key`
 regarding choosing a shard key and restrictions.
 
+.. _hashed-shard-keys:
+
 Hashed Shard Keys
 ~~~~~~~~~~~~~~~~~
 
 :ref:`Hashed shard keys <sharding-hashed-sharding>` use a
-hashed index of a single field as the shard key.
+:doc:`hashed index </core/index-hashed>` of a
+single field as the shard key.
 
 Use the form ``{field: "hashed"}`` to specify a hashed shard key.
 Hashed shard keys may not be compound indexes.
@@ -90,6 +90,11 @@ See also :ref:`Sharded Collection and Unique Indexes
 
 .. include:: /includes/fact-shardCollection-collation.rst
 
+Write Concern
+~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/mongos-operations-wc-shard-collection.rst
+
 Example
 -------
 
@@ -99,7 +104,6 @@ in the ``records`` database and uses the ``zipcode`` field as the
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( { shardCollection: "records.people", key: { zipcode: 1 } } )
+   db.adminCommand( { shardCollection: "records.people", key: { zipcode: 1 } } )
 
 .. seealso::  :doc:`/sharding`

@@ -3,21 +3,22 @@
    {
      "inprog": [
           {
+            "host" : <string>,
             "desc" : <string>,
-            "threadId" : <string>,
             "connectionId" : <number>,
             "client" : <string>,
             "appName" : <string>,
-            "opid" : <number>,
+            "clientMetadata" : <document>,
             "active" : <boolean>,
+            "currentOpTime" : <string>,
+            "opid" : <number>,
             "secs_running" : <NumberLong()>,
             "microsecs_running" : <number>,
             "op" : <string>,
             "ns" : <string>,
-            "query" : <document>,
-            "insert" : <document>,
+            "command" : <document>,
+            "originatingCommand" : <document>,
             "planSummary": <string>,
-            "appName" : <string>,
             "msg": <string>,
             "progress" : {
                 "done" : <number>,

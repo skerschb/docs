@@ -1,7 +1,10 @@
 arg_name: field
 description: |
   The user(s) about whom to return information.
-  See :ref:`usersInfo-field-specification` for type and syntax.
+
+  The argument to ``usersInfo`` has multiple forms depending on the
+  requested information.  See :ref:`usersInfo-field-specification`.
+
 interface: dbcommand
 name: usersInfo
 operation: usersInfo
@@ -32,33 +35,29 @@ optional: true
 position: 3
 type: boolean
 ---
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
 arg_name: field
-type: 64-bit integer/long
+description: |
+  Set the field to true to show the user's authentication restrictions. By
+  default, this field is ``false``. If viewing all users, you cannot specify
+  this field.
+interface: dbcommand
+name: showAuthenticationRestrictions
+operation: usersInfo
+optional: true
+position: 4
+type: boolean
 ---
-name: lsid
+name: filter
+type: document
 description: |
 
-   Optional.
+   A document that specifies :pipeline:`$match` stage conditions to
+   return information for users that match the filter conditions.
 
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
+   .. versionadded:: 4.0
 
-   .. versionadded:: 3.6
-
+optional: true
 interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
+operation: usersInfo
 arg_name: field
-type: document
 ...

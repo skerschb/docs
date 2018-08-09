@@ -59,6 +59,11 @@ new IS or S requests have been queued in the meantime. As a grant
 will always move all other requests ahead in the queue, no starvation
 of any request is possible.
 
+In :method:`db.serverStatus()` and :method:`db.currentOp()` output, the
+lock modes are represented as follows:
+
+.. include:: /includes/fact-lock-modes.rst
+
 .. [#mgl-ref] See the Wikipedia page on
    `Multiple granularity locking
    <http://en.wikipedia.org/wiki/Multiple_granularity_locking>`_ for
@@ -92,8 +97,8 @@ the other five collections are still available for read and write operations.
 An exclusive database lock makes all six collections unavailable
 for the duration of the operation holding the lock.
 
-How do I see the status of locks on my :program:`mongod` instances?
--------------------------------------------------------------------
+How do I see the status of locks on my :binary:`~bin.mongod` instances?
+-----------------------------------------------------------------------
 
 For reporting on lock utilization information on locks, use any of the
 following methods:
@@ -111,7 +116,12 @@ Specifically, the :serverstatus:`locks` document in the :doc:`output of
 serverStatus </reference/command/serverStatus>`, or the :data:`~currentOp.locks` field
 in the :doc:`current operation reporting </reference/method/db.currentOp>`
 provides insight into the type of locks and amount of lock
-contention in your :program:`mongod` instance.
+contention in your :binary:`~bin.mongod` instance.
+
+In :method:`db.serverStatus()` and :method:`db.currentOp()` output, the
+lock modes are represented as follows:
+
+.. include:: /includes/fact-lock-modes.rst
 
 To terminate an operation, use :method:`db.killOp()`.
 
@@ -130,6 +140,22 @@ also yield locks between individual document modifications in write
 operations that affect multiple documents like
 :method:`~db.collection.update()` with the ``multi`` parameter.
 
+For storage engines supporting document level :term:`concurrency
+control`, such as :doc:`WiredTiger </core/wiredtiger>`, yielding is not
+necessary when accessing storage as the :term:`intent locks <intent
+lock>`, held at the global, database and collection level, do not block
+other readers and writers. However, operations will periodically yield,
+such as:
+
+- to avoid long-lived storage transactions because these can
+  potentially require holding a large amount of data in memory;
+
+- to serve as interruption points so that you can kill long running
+  operations;
+
+- to allow operations that require exclusive access to a collection
+  such as index/collection drops and creations.
+
 MongoDB's :ref:`MMAPv1 <storage-mmapv1>` storage engine uses
 heuristics based on its access pattern to predict whether data is
 likely in physical memory before performing a read. If MongoDB
@@ -138,80 +164,184 @@ will yield its lock while MongoDB loads the data into memory. Once
 data is available in memory, the operation will reacquire the lock
 to complete the operation.
 
-For storage engines supporting document level :term:`concurrency
-control`, such as :doc:`WiredTiger </core/wiredtiger>`, yielding is not
-necessary when accessing storage as the :term:`intent locks <intent
-lock>`, held at the global, database and collection level, do not block
-other readers and writers.
-
-.. versionchanged:: 2.6
-   MongoDB does not yield locks when scanning an index even if it
-   predicts that the index is not in memory.
-
 .. _faq-concurrency-operations-locks:
 
-Which operations lock the database?
------------------------------------
+What locks are taken by some common client operations?
+------------------------------------------------------
 
-The following table lists common database operations and the types of
-locks they use.
+The following table lists some operations and the types of locks they
+use for document level locking storage engines:
 
-.. todo In the table below (in the include), the issue of blocked
-   JavaScript might no longer apply in version 2.4, which will use V8.
+.. list-table::
+   :header-rows: 1
 
-.. include:: /includes/table/lock-behavior-per-operation.rst
+   * - Operation
+
+     - Database
+
+     - Collection
+
+   * - Issue a query
+
+     - ``r`` (Intent Shared)
+
+     - ``r`` (Intent Shared)
+
+   * - Insert data
+
+     - ``w`` (Intent Exclusive)
+
+     - ``w`` (Intent Exclusive)
+
+   * - Remove data
+
+     - ``w`` (Intent Exclusive)
+
+     - ``w`` (Intent Exclusive)
+
+   * - Update data
+
+     - ``w`` (Intent Exclusive)
+
+     - ``w`` (Intent Exclusive)
+
+   * - Perform Aggregation
+
+     - ``r`` (Intent Shared)
+
+     - ``r`` (Intent Shared)
+
+   * - Create an index (Foreground)
+
+     - ``W`` (Exclusive)
+
+     - 
+
+   * - Create an index (Background)
+
+     - ``w`` (Intent Exclusive)
+
+     - ``w`` (Intent Exclusive)
+
+   * - List collections
+
+     - ``r`` (Intent Shared)
+
+       .. versionchanged:: 4.0
+
+     - 
+
+   * - Map-reduce
+
+     - ``W`` (Exclusive) and ``R`` (Shared)
+
+     - ``w`` (Intent Exclusive) and ``r`` (Intent Shared)
 
 Which administrative commands lock the database?
 ------------------------------------------------
 
 Certain administrative commands can exclusively lock the database for
 extended periods of time. In some deployments, for large databases,
-you may consider taking the :program:`mongod` instance offline so that
-clients are not affected. For example, if a :program:`mongod` is part
-of a :term:`replica set`, take the :program:`mongod` offline and let
+you may consider taking the :binary:`~bin.mongod` instance offline so that
+clients are not affected. For example, if a :binary:`~bin.mongod` is part
+of a :term:`replica set`, take the :binary:`~bin.mongod` offline and let
 other members of the set service load while maintenance is in progress.
 
 The following administrative operations require an exclusive
 lock at the database level for extended periods:
 
-- :method:`db.collection.createIndex()`, when issued
-  *without* setting ``background`` to ``true``,
-- :dbcommand:`reIndex`,
-- :dbcommand:`compact`,
-- :method:`db.repairDatabase()`,
-- :method:`db.createCollection()`, when creating a very large
-  (i.e. many gigabytes) capped collection,
-- :method:`db.collection.validate()`, and
-- :method:`db.copyDatabase()`. This operation may lock all
-  databases. See :ref:`faq-concurrency-lock-multiple-dbs`.
+.. list-table::
 
-The following administrative commands lock the database but only hold
+   * - Commands
+     - Methods
+
+   * - :dbcommand:`cloneCollectionAsCapped`
+     -
+
+   * - :dbcommand:`compact`
+     -
+
+   * - :dbcommand:`convertToCapped`
+     -
+
+   * - :dbcommand:`copydb`. This operation may lock all databases. See
+       :ref:`faq-concurrency-lock-multiple-dbs`.
+
+     - :method:`db.copyDatabase()`. This operation may lock all
+       databases. See :ref:`faq-concurrency-lock-multiple-dbs`.
+
+   * - :dbcommand:`create` when creating a very large (i.e. many
+       gigabytes) capped collection
+     - :method:`db.createCollection()` when creating a very large (i.e.
+       many gigabytes) capped collection
+
+   * - :dbcommand:`createIndexes` for indexes *without* ``background``
+       set to ``true``
+
+     - :method:`db.collection.createIndex()` and
+       :method:`db.collection.createIndexes()` issued *without*
+       ``background`` set to ``true``
+
+   * - :dbcommand:`repairDatabase`
+     - :method:`db.repairDatabase()`
+
+
+The following administrative operations lock the database but only hold
 the lock for a very short time:
 
-- :method:`db.collection.dropIndex()`,
-- :method:`db.getLastError()`,
-- :method:`db.isMaster()`,
-- :method:`rs.status()` (i.e. :dbcommand:`replSetGetStatus`),
-- :method:`db.serverStatus()`,
-- :method:`db.auth()`, and
-- :method:`db.addUser()`.
+.. list-table::
+
+   * - Commands
+     - Methods
+
+   * - :dbcommand:`authenticate`
+
+     - :method:`db.auth()`
+
+
+   * - :dbcommand:`createUser`
+     - :method:`db.createUser()`
+   
+
+   * - :dbcommand:`dropIndexes`
+     - :method:`db.collection.dropIndex()`
+
+   * - :dbcommand:`getLastError`
+     - :method:`db.getLastError()`
+
+   * - :dbcommand:`isMaster`
+     - :method:`db.isMaster()`
+
+   * - :dbcommand:`replSetGetStatus`
+     - :method:`rs.status()`
+
+
+   * - :dbcommand:`renameCollection`
+     - :method:`db.collection.renameCollection()`
+
+   * - :dbcommand:`serverStatus`
+
+     - :method:`db.serverStatus()`
+
+.. seealso:: :ref:`faq-concurrency-lock-multiple-dbs`
 
 .. _faq-concurrency-lock-multiple-dbs:
 
 Does a MongoDB operation ever lock more than one database?
 ----------------------------------------------------------
 
-The following MongoDB operations lock multiple databases:
+The following MongoDB operations take a global exclusive lock:
 
-- :method:`db.copyDatabase()` must lock the entire :program:`mongod`
-  instance at once.
+- :method:`db.copyDatabase()` obtains a :serverstatus:`global exclusive
+  (W) lock <locks>` and will block other operations until it finishes.
 
-- :method:`db.repairDatabase()` obtains a global write lock and will block
+- :method:`db.repairDatabase()` obtains a :serverstatus:`global
+  exclusive (W) lock <locks>` and will block other operations until it
+  finishes.
+
+- Starting in MongoDB 4.0, :method:`db.collection.reIndex()` takes a
+  :serverstatus:`global exclusive (W) lock <locks>` and will block
   other operations until it finishes.
-
-- :term:`Journaling <journal>`, which is an internal operation, locks
-  all databases for short intervals. All databases share a single
-  journal.
 
 - :doc:`User authentication </core/authentication>` requires a read
   lock on the ``admin`` database for deployments using :ref:`2.6 user
@@ -222,16 +352,19 @@ The following MongoDB operations lock multiple databases:
 - All writes to a replica set's :term:`primary` lock both the database
   receiving the writes and then the ``local`` database for a short
   time. The lock for the ``local`` database allows the
-  :program:`mongod` to write to the primary's :term:`oplog` and
+  :binary:`~bin.mongod` to write to the primary's :term:`oplog` and
   accounts for a small portion of the total time of the operation.
+
+- Replica set member :doc:`state transitions
+  </reference/replica-states>` take global exlusive lock.
 
 How does sharding affect concurrency?
 -------------------------------------
 
 :term:`Sharding <sharding>` improves concurrency by distributing
-collections over multiple :program:`mongod` instances, allowing shard
-servers (i.e. :program:`mongos` processes) to perform any number of
-operations concurrently to the various downstream :program:`mongod`
+collections over multiple :binary:`~bin.mongod` instances, allowing shard
+servers (i.e. :binary:`~bin.mongos` processes) to perform any number of
+operations concurrently to the various downstream :binary:`~bin.mongod`
 instances.
 
 .. include:: /includes/extracts/lock-sharding.rst
@@ -245,7 +378,7 @@ With replica sets, when MongoDB writes to a collection on the
 :term:`primary`, MongoDB also writes to the primary's :term:`oplog`,
 which is a special collection in the ``local`` database. Therefore,
 MongoDB must lock both the collection's database and the ``local``
-database. The :program:`mongod` must lock both databases at the same
+database. The :binary:`~bin.mongod` must lock both databases at the same
 time to keep the database consistent and ensure that write operations,
 even with replication, are "all-or-nothing" operations.
 
@@ -263,75 +396,26 @@ operations in the order that they appear in the oplog.
 Does MongoDB support transactions?
 ----------------------------------
 
-MongoDB does not support multi-document transactions.
+.. include:: /includes/extracts/transactions-faq.rst
 
-However, MongoDB does provide atomic operations on a single
-document. Often these document-level atomic operations are sufficient
-to solve problems that would require ACID transactions in a relational
-database.
+.. include:: /includes/extracts/transactions-usage.rst
 
-For example, in MongoDB, you can embed related data in nested arrays or
-nested documents within a single document and update the entire
-document in a single atomic operation. Relational databases might
-represent the same kind of data with multiple tables and rows, which
-would require transaction support to update the data atomically.
+.. [#upcoming]
 
-.. seealso:: :doc:`/core/write-operations-atomicity`
+   .. include:: /includes/fact-upcoming.rst
 
 What isolation guarantees does MongoDB provide?
 -----------------------------------------------
 
-MongoDB provides the following guarantees in the presence of concurrent read and
-write operations. These guarantees hold on systems configured with either the
-MMAPv1 or WiredTiger storage engines.
+Depending on the read concern, clients can see the results of writes
+before the writes are :term:`durable`. To control whether the data read
+may be rolled back or not, clients can use the ``readConcern`` option.
 
-#. .. include:: /includes/extracts/concurrent-operations-single-document-write.rst
+For information, see:
 
-#. Correctness with respect to query predicates, e.g.
-   :method:`db.collection.find()` will only return documents that match and
-   :method:`db.collection.update()` will only write to matching documents.
+- :doc:`/core/read-isolation-consistency-recency`
 
-#. Correctness with respect to sort. For read operations that request a sort
-   order (e.g. :method:`db.collection.find()` or
-   :method:`db.collection.aggregate()`), the sort order will not be violated due
-   to concurrent writes.
+- :doc:`/core/write-operations-atomicity`
 
-Although MongoDB provides these strong guarantees for single-document
-operations, read and write operations may access an arbitrary number of
-documents during execution.  Multi-document operations do *not* occur
-transactionally and are not isolated from concurrent writes. This means that the
-following behaviors are expected under the normal operation of the system,
-for both the MMAPv1 and WiredTiger storage engines:
-
-.. include:: /includes/extracts/concurrent-operations-multi-document-writes-no-isolation.rst
-
-.. seealso:: :doc:`/core/write-operations-atomicity`
-
-Can reads see changes that have not been committed to disk?
------------------------------------------------------------
-
-.. versionchanged:: 3.2
-
-   MongoDB 3.2 introduced the :ref:`3.2-rel-notes-readConcern` option.
-   Clients using :readconcern:`majority` ``readConcern`` cannot see the
-   results of writes before they are made :term:`durable`.
-
-Readers using :readconcern:`"local"` ``readConcern`` can see the
-results of writes before they are made :term:`durable`, regardless of
-write concern level or journaling configuration. As a result,
-applications may observe the following behaviors:
-
-#. MongoDB will allow a concurrent reader to see the result of the write
-   operation before the write is acknowledged to the client application. For details
-   on when writes are acknowledged for different write concern levels, see
-   :doc:`/reference/write-concern`.
-
-#. Reads can see data which may subsequently be rolled back in cases such
-   as replica set failover or power loss. It does *not* mean that read operations
-   can see documents in a partially written or otherwise inconsistent state.
-
-Other systems refer to these semantics as *read uncommitted*.
-
-.. versionchanged:: 3.2
-
+- :doc:`/reference/read-concern`
 

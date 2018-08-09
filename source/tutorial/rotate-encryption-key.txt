@@ -25,32 +25,67 @@ Rotate a Member of Replica Set
 
 For a replica set, to rotate out a member:
 
-#. Start a new :program:`mongod` instance, configured to use a new key.
-   Include the ``--replSet`` option with the name of the replica set as
+#. Start a new :binary:`~bin.mongod` instance, configured to use a new key.
+   Include the :option:`--replSet <mongod --replSet>` option with the name of the replica set as
    well as any other options specific to your configuration, such as
-   ``--dbpath``.
+   :option:`--dbpath <mongod --dbpath>` and :option:`--bind_ip <mongod --bind_ip>`.
 
    .. code-block:: sh
 
-      mongod --replSet myReplSet --enableEncryption --kmipServerName
-      <KMIP Server HostName> \ --kmipServerCAFile ca.pem
-      --kmipClientCertificateFile client.pem
+      mongod --replSet myReplSet --enableEncryption \
+      --kmipServerName <KMIP Server HostName> \ 
+      --kmipServerCAFile ca.pem --kmipClientCertificateFile client.pem
 
-#. Connect a :program:`mongo` shell to the replica set's primary.
+#. Connect a :binary:`~bin.mongo` shell to the replica set's primary.
 
-#. Add the instance to the replica set.
+#. Add the instance to the replica set, initially adding the member as
+   a :ref:`non-voting <replica-set-non-voting-members>`, :doc:`priority 0
+   </core/replica-set-priority-0-member>` member:
 
    .. code-block:: javascript
 
-      rs.add("<hostname>:<port>")
+      rs.add( { host: <host:port>, priority: 0, votes: 0 } )
+
+   .. tip::
+
+      .. include:: /includes/tip-repl-set-add-members.rst
 
    During the initial sync process, the re-encryption of the data with
    an entirely new set of database keys as well as a new system key
    occurs.
 
-#. Once the new node completes its initial sync process, remove the old
-   node from the replica set and delete all its data. For instructions,
-   see :doc:`/tutorial/remove-replica-set-member`
+#. Ensure that the new member has reached :replstate:`SECONDARY` state.
+   To check the state of the replica set members, run
+   :method:`rs.status()`:
+
+   .. cssclass:: copyable-code
+   .. code-block:: javascript
+
+      rs.status()
+
+#. Once the new node completes its initial sync process, use
+   :method:`rs.reconfig()` to update the newly added secondary's vote and
+   priority settings. See :ref:`rs-add-member-configuration-document` for
+   details:
+
+
+   .. cssclass:: copyable-code
+   .. code-block:: javascript
+
+      var cfg = rs.conf();
+
+      cfg.members[n].priority = 1;  // Substitute the correct array index for the new member
+      cfg.members[n].votes = 1;     // Substitute the correct array index for the new member
+
+      rs.reconfig(cfg)
+
+   where ``n`` is the array index of the new member in the
+   :rsconf:`members` array.
+
+   .. include:: /includes/warning-rs-reconfig.rst
+
+#. Remove the old node from the replica set and delete all its data.
+   For instructions, see :doc:`/tutorial/remove-replica-set-member`
 
 .. _kmip-master-key-rotation:
 
@@ -68,11 +103,12 @@ to re-encrypt the entire data set.
    time.
 
    a. Restart the secondary, including the
-      :option:`--kmipRotateMasterKey` parameter. Include any other
-      options specific to your configuration. If the member already
-      includes the :option:`--kmipKeyIdentifier` option, either update
-      the :option:`--kmipKeyIdentifier` option with the new key to use
-      or omit to request a new key from the KMIP server:
+      :option:`--kmipRotateMasterKey <mongod --kmipRotateMasterKey>` option. Include any other
+      options specific to your configuration, such as :option:`--bind_ip <mongod --bind_ip>`. If
+      the member already includes the :option:`--kmipKeyIdentifier <mongod --kmipKeyIdentifier>`
+      option, either update the :option:`--kmipKeyIdentifier <mongod --kmipKeyIdentifier>` option
+      with the new key to use or omit to request a new key from the
+      KMIP server:
 
       .. code-block:: sh
 
@@ -84,12 +120,12 @@ to re-encrypt the entire data set.
       :setting:`security.kmip.rotateMasterKey`.
 
    b. Upon successful completion of the master key rotation and
-      re-encryption of the database keystore, the :program:`mongod`
+      re-encryption of the database keystore, the :binary:`~bin.mongod`
       will exit.
 
-   c. Restart the secondary without the :option:`--kmipRotateMasterKey`
+   c. Restart the secondary without the :option:`--kmipRotateMasterKey <mongod --kmipRotateMasterKey>`
       parameter. Include any other options specific to your
-      configuration.
+      configuration, such as ``--bind_ip``.
 
       .. code-block:: sh
 
@@ -101,7 +137,7 @@ to re-encrypt the entire data set.
 
 #. Step down the replica set primary.
 
-   Connect a :program:`mongo` shell to the primary and use
+   Connect a :binary:`~bin.mongo` shell to the primary and use
    :method:`rs.stepDown()` to step down the primary and force an
    election of a new primary:
 
@@ -114,10 +150,10 @@ to re-encrypt the entire data set.
    has assumed ``PRIMARY`` state, rotate the master key for the stepped down member:
 
    a. Restart the stepped-down member, including the
-      :option:`--kmipRotateMasterKey` parameter. Include any other
-      options specific to your configuration. If the member already
-      includes the :option:`--kmipKeyIdentifier` option, either update
-      the :option:`--kmipKeyIdentifier` option with the new key to use
+      :option:`--kmipRotateMasterKey <mongod --kmipRotateMasterKey>` option. Include any other
+      options specific to your configuration, such as ``--bind_ip``. If the member already
+      includes the :option:`--kmipKeyIdentifier <mongod --kmipKeyIdentifier>` option, either update
+      the :option:`--kmipKeyIdentifier  <mongod --kmipKeyIdentifier>` option with the new key to use
       or omit.
 
       .. code-block:: sh
@@ -130,12 +166,12 @@ to re-encrypt the entire data set.
       :setting:`security.kmip.rotateMasterKey`.
 
    b. Upon successful completion of the master key rotation and
-      re-encryption of the database keystore, the :program:`mongod`
+      re-encryption of the database keystore, the :binary:`~bin.mongod`
       will exit.
 
    c. Restart the stepped-down member without the
-      :option:`--kmipRotateMasterKey` parameter. Include any other options
-      specific to your configuration.
+      :option:`--kmipRotateMasterKey <mongod --kmipRotateMasterKey>` option. Include any other options
+      specific to your configuration, such as ``--bind_ip``.
 
       .. code-block:: sh
 

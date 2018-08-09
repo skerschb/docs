@@ -30,7 +30,7 @@ Definition
    creating new collections that use specific options. For example, you use
    :method:`db.createCollection()` to create a :term:`capped collection
    <capped collection>`, or to create a new collection that uses
-   :doc:`document validation </core/document-validation>`. :method:`db.createCollection()` is also
+   :doc:`document validation </core/schema-validation>`. :method:`db.createCollection()` is also
    used to pre-allocate space for an ordinary collection.
 
    :method:`db.createCollection()` is a wrapper around the database
@@ -52,7 +52,8 @@ Definition
                                     indexOptionDefaults: <document>,
                                     viewOn: <string>,
                                     pipeline: <pipeline>,
-                                    collation: <document> } )
+                                    collation: <document>, 
+                                    writeConcern: <document>} )
 
    The :method:`db.createCollection()` method has the following parameters:
 
@@ -103,27 +104,39 @@ on the ``validationLevel`` and ``validationAction``, MongoDB either
 returns a warning, or refuses to insert or update the document if it
 fails to meet the specified criteria.
 
-The following example creates a ``contacts`` collection with a validator
-that specifies that inserted or updated documents should match at least
-one of three following conditions:
+The following example creates a ``contacts`` collection with a JSON
+Schema validator:
 
-- the ``phone`` field is a string
-- the ``email`` field matches the regular expression
-- the ``status`` field is either ``Unknown`` or ``Incomplete``.
+.. note::
 
-.. code-block:: javascript
+   MongoDB 3.6 adds the :query:`$jsonSchema` operator to support JSON
+   Schema validation.
 
-   db.createCollection( "contacts",
-      {
-         validator: { $or:
-            [
-               { phone: { $type: "string" } },
-               { email: { $regex: /@mongodb\.com$/ } },
-               { status: { $in: [ "Unknown", "Incomplete" ] } }
-            ]
+.. cssclass:: copyable-code
+
+.. code-block:: json
+
+   db.createCollection( "contacts", {
+      validator: { $jsonSchema: {
+         bsonType: "object",
+         required: [ "phone" ],
+         properties: {
+            phone: {
+               bsonType: "string",
+               description: "must be a string and is required"
+            },
+            email: {
+               bsonType : "string",
+               pattern : "@mongodb\.com$",
+               description: "must be a string and match the regular expression pattern"
+            },
+            status: {
+               enum: [ "Unknown", "Incomplete" ],
+               description: "can only be one of the enum values"
+            }
          }
-      }
-   )
+      } }
+   } )
 
 With the validator in place, the following insert operation fails validation:
 
@@ -132,6 +145,8 @@ With the validator in place, the following insert operation fails validation:
    db.contacts.insert( { name: "Amanda", status: "Updated" } )
 
 The method returns the error in the ``WriteResult``:
+
+.. cssclass:: copyable-code
 
 .. code-block:: javascript
 
@@ -143,7 +158,7 @@ The method returns the error in the ``WriteResult``:
       }
    })
 
-For more information, see :doc:`/core/document-validation`. To view the
+For more information, see :doc:`/core/schema-validation`. To view the
 validation specifications for a collection, use the
 :method:`db.getCollectionInfos()` method.
 

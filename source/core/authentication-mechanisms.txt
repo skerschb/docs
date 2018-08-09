@@ -12,18 +12,14 @@ Authentication Mechanisms
    :depth: 1
    :class: singlecol
 
+.. note::
+
+   Starting in version 4.0, MongoDB removes support for the deprecated
+   MongoDB Challenge-Response (``MONGODB-CR``) authentication mechanism.
+
 MongoDB supports the following authentication mechanisms:
 
-- :doc:`SCRAM-SHA-1 </core/security-scram-sha-1>`
-
-- :doc:`MongoDB Challenge and Response (MONGODB-CR)
-  </core/security-mongodb-cr>`
-
-  .. versionchanged:: 3.0
-
-     New challenge-response users created in 3.0 will use
-     ``SCRAM-SHA-1``. If using 2.6 user data, MongoDB 3.0 will continue
-     to use ``MONGODB-CR``.
+- :doc:`/core/security-scram` (*Default*)
 
 - :doc:`x.509 Certificate Authentication </core/security-x.509>`.
 
@@ -36,28 +32,25 @@ additional mechanisms available in MongoDB Enterprise.
 Default Authentication Mechanism
 --------------------------------
 
-.. versionchanged:: 3.0
+As of MongoDB 3.0, :ref:`Salted Challenge Response Authentication
+Mechanism (SCRAM) <authentication-scram>` is the default
+authentication mechanism for MongoDB.
 
-MongoDB uses the :ref:`SCRAM-SHA-1 <authentication-scram-sha-1>` as the default
-challenge and response authentication mechanism. Previous versions used :doc:`MONGODB-CR
-</core/security-mongodb-cr>` as the default.
 
 Specify Authentication Mechanism
 --------------------------------
 
 To specify the authentication mechanism to use, set the
-:parameter:`authenticationMechanisms` parameter for :program:`mongod` and
-:program:`mongos`.
+:parameter:`authenticationMechanisms` parameter for :binary:`~bin.mongod` and
+:binary:`~bin.mongos`.
 
 Clients specify the authentication mechanism in the :method:`db.auth()` method.
-For the :program:`mongo` shell and the MongoDB tools, you can also specify the
+For the :binary:`~bin.mongo` shell and the MongoDB tools, you can also specify the
 authentication mechanism from the command line.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly: 
-
-      /core/security-scram-sha-1
-      /core/security-mongodb-cr
-      /core/security-x.509
+   /core/security-scram
+   /core/security-x.509

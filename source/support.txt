@@ -19,9 +19,11 @@ Discuss, learn about, and get help with MongoDB.
 MongoDB Manual and Guides
 -------------------------
 
-- `MongoDB Manual <https://docs.mongodb.com>`_
+- `MongoDB Manual <https://docs.mongodb.com/manual>`_
 
-- `Getting Started with MongoDB <https://docs.mongodb.com/getting-started/shell/>`_
+- :doc:`Getting Started with MongoDB </tutorial/getting-started>`
+
+.. _support-community:
 
 Community Support
 -----------------
@@ -41,12 +43,14 @@ community-supported forums. Also check out office hours in your area.
   networking, such as hardware or operating system tuning.
 
 - `Community Support Forum
-  <http://groups.google.com/group/mongodb-user>`_: A community forum
+  <https://groups.google.com/forum/#!forum/mongodb-user>`_: A community forum
   best suited for open-ended, opinion-based, or general questions about
   MongoDB. You can post and view the forum via the Google Groups web
   interface or subscribe to updates via email.
 
 - `IRC Chat and Support <irc://irc.freenode.net/#mongodb>`_ (``irc://irc.freenode.net/#mongodb``)
+
+.. _support-commercial:
 
 Commercial Support
 ------------------
@@ -60,7 +64,7 @@ production faster with less effort and risk, including:
   MongoDB engineers; on-demand training; platform certification; and a
   commercial license.
 
-- `MongoDB Cloud Manager <https://cloud.mongodb.com/?jmp=docs>`_ offers
+- `MongoDB Cloud Manager <https://www.mongodb.com/cloud/cloud-manager?jmp=docs>`__ offers
   automated deployment and zero-downtime upgrades, disaster recovery
   and continuous monitoring in the cloud.
 
@@ -68,7 +72,7 @@ production faster with less effort and risk, including:
   <https://www.mongodb.com/products/mongodb-professional?jmp=docs>`_
   helps you manage your deployment and keep it running smoothly. It
   includes support from MongoDB engineers as well as access to `MongoDB
-  Cloud Manager <https://cloud.mongodb.com/?jmp=docs>`_.
+  Cloud Manager <https://www.mongodb.com/cloud/cloud-manager?jmp=docs>`__.
 
 - `Development Support <https://www.mongodb.com/products/development-support?jmp=docs>`_
   helps you move swiftly through application development by providing

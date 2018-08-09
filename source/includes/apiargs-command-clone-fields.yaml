@@ -6,33 +6,15 @@ source:
   file: apiargs-method-db.cloneDatabase-param.yaml
 position: 1
 ---
-name: txnNumber
+name: writeConcern
 description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
+  A document that expresses the :doc:`write concern </reference/write-concern>`
+  for the operation. Omit to use the default write
+  concern.
+optional: true
 arg_name: field
 type: document
+interface: dbcommand
+operation: clone
+position: 2
 ...

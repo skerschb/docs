@@ -86,6 +86,11 @@ description: |
   Accepts either three expressions in an ordered list or three named
   parameters.
 ---
+name: :expression:`$convert`
+file: /reference/operator/aggregation/convert
+description: |
+  Converts a value to a specified type.
+---
 name: :expression:`$dateFromParts`
 file: /reference/operator/aggregation/dateFromParts
 description: |
@@ -285,6 +290,11 @@ description: |
   Returns ``true`` if the first value is less
   than or equal to the second.
 ---
+name: :expression:`$ltrim`
+description: |
+   Removes whitespace or the specified characters from the beginning of a string.
+file: /reference/operator/aggregation/ltrim
+---
 name: :expression:`$map`
 file: /reference/operator/aggregation/map
 description: |
@@ -398,6 +408,11 @@ name: :expression:`$reverseArray`
 file: /reference/operator/aggregation/reverseArray
 description: |
   Returns an array with the elements in reverse order.
+---
+name: :expression:`$rtrim`
+description: |
+   Removes whitespace or the specified characters from the end of a string.
+file: /reference/operator/aggregation/rtrim
 ---
 name: :expression:`$second`
 file: /reference/operator/aggregation/second
@@ -544,6 +559,47 @@ description: |
    Evaluates a series of case expressions. When it finds an expression
    which evaluates to ``true``, ``$switch`` executes a specified
    expression and breaks out of the control flow.
+
+---
+name: :expression:`$toBool`
+file: /reference/operator/aggregation/toBool
+description: |
+  Converts value to a boolean.
+---
+name: :expression:`$toDate`
+file: /reference/operator/aggregation/toDate
+description: |
+  Converts value to a Date.
+---
+name: :expression:`$toDecimal`
+file: /reference/operator/aggregation/toDecimal
+description: |
+  Converts value to a Decimal128.
+---
+name: :expression:`$toDouble`
+file: /reference/operator/aggregation/toDouble
+description: |
+  Converts value to a double.
+---
+name: :expression:`$toInt`
+file: /reference/operator/aggregation/toInt
+description: |
+  Converts value to an integer.
+---
+name: :expression:`$toLong`
+file: /reference/operator/aggregation/toLong
+description: |
+  Converts value to a long.
+---
+name: :expression:`$toObjectId`
+file: /reference/operator/aggregation/toObjectId
+description: |
+  Converts value to an ObjectId.
+---
+name: :expression:`$toString`
+file: /reference/operator/aggregation/toString
+description: |
+  Converts value to a string.
 ---
 name: :expression:`$toLower`
 file: /reference/operator/aggregation/toLower
@@ -554,6 +610,12 @@ name: :expression:`$toUpper`
 file: /reference/operator/aggregation/toUpper
 description: |
   Converts a string to uppercase. Accepts a single argument expression.
+---
+name: :expression:`$trim`
+description: |
+   Removes whitespace or the specified characters from the beginning
+   and end of a string.
+file: /reference/operator/aggregation/trim
 ---
 name: :expression:`$trunc`
 description: Truncates a number to its integer.

@@ -40,12 +40,14 @@ Definition
            ],
            pwd: "<cleartext password>",
            authenticationRestrictions: [
-              { 
+              {
                 clientSource: ["<IP>" | "<CIDR range>", ...],
-                serverAddress: ["<IP>", ...]
+                serverAddress: ["<IP>", | "<CIDR range>", ...]
               },
               ...
-           ]
+           ],
+           mechanisms: [ "<SCRAM-SHA-1|SCRAM-SHA-256>", ... ],
+           passwordDigestor: "<server|client>"
          },
          writeConcern: { <write concern> }
       )
@@ -79,9 +81,17 @@ command.
 Behavior
 --------
 
-:method:`db.updateUser()` sends password to the MongoDB instance
-*without* encryption. To encrypt the password during transmission,
-use :doc:`TLS/SSL </tutorial/configure-ssl>`.
+Replica set
+~~~~~~~~~~~
+
+.. |command| replace:: :method:`db.updateUser()`
+
+.. include:: /includes/fact-management-methods-write-concern.rst
+
+Encyption
+~~~~~~~~~
+
+.. include:: /includes/fact-cleartext-passwords-tls.rst
 
 Required Access
 ---------------
@@ -104,11 +114,11 @@ user info:
       db : "products",
       customData : { empID : "12345", badge : "9156" },
       roles : [
-          { 
+          {
             role : "readWrite",
             db : "products"
           },
-          { 
+          {
             role : "read",
             db : "inventory"
           }
@@ -145,9 +155,46 @@ user information:
       db : "products",
       customData : { employeeId : "0x3039" },
       roles : [
-          { 
+          {
             role : "read",
             db : "assets"
           }
       ]
    }
+   
+Update User to Use ``SCRAM-SHA-256`` Credentials Only
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   To use :ref:`SCRAM-SHA-256 <authentication-scram-sha-256>`, the
+   ``featureCompatibilityVersion`` must be set to ``4.0``. For more
+   information on featureCompatibilityVersion, see :ref:`view-fcv` and
+   :dbcommand:`setFeatureCompatibilityVersion`.
+
+The following operation updates a user who currently have both
+``SCRAM-SHA-256`` and ``SCRAM-SHA-1`` credentials to have only
+``SCRAM-SHA-256`` credentials.
+
+.. note::
+
+   - If the password is not specified along with the ``mechanisms``,
+     you can only update the ``mechanisms`` to a subset of the current
+     SCRAM mechanisms for the user.
+
+   - If the password is specified along with the ``mechanisms``, you
+     can specify any supported SCRAM mechanism or mechanisms.
+
+   - For ``SCRAM-SHA-256``, the ``passwordDigestor`` must be the
+     default value ``"server"``.
+
+.. code-block:: javascript
+
+   use reporting
+   db.updateUser(
+      "reportUser256",
+      {
+        mechanisms: [ "SCRAM-SHA-256" ]
+      }
+   )
+

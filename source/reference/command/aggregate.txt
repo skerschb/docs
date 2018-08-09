@@ -34,9 +34,8 @@ aggregate
         readConcern: <document>,
         collation: <document>,
         hint: <string or document>,
-        comment: <string>,
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        comment: <string>, 
+        writeConcern: <document>
       }
 
    The :dbcommand:`aggregate` command takes the following fields as
@@ -58,6 +57,40 @@ For more information about the aggregation pipeline
 :doc:`/core/aggregation-pipeline`, :doc:`/reference/aggregation`, and
 :doc:`/core/aggregation-pipeline-limits`.
 
+Sessions
+~~~~~~~~
+
+.. versionadded:: 4.0
+
+For cursors created inside a session, you cannot call
+:dbcommand:`getMore` outside the session.
+
+Similarly, for cursors created outside of a session, you cannot call
+:dbcommand:`getMore` inside a session.
+
+Transactions
+------------
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+However, the following stages are not allowed within transactions:
+
+- :pipeline:`$collStats`
+- :pipeline:`$currentOp`
+- :pipeline:`$indexStats`
+- :pipeline:`$listLocalSessions`
+- :pipeline:`$listSessions`
+- :pipeline:`$out`
+
+You also cannot specify the ``explain`` option.
+
+.. include:: /includes/extracts/transactions-operations-getMore.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :dbcommand:`aggregate`
+
+
 Example
 -------
 
@@ -67,7 +100,7 @@ Example
 
    Rather than run the :dbcommand:`aggregate` command directly, most
    users should use the :method:`db.collection.aggregate()` helper
-   provided in the :program:`mongo` shell or the equivalent helper in
+   provided in the :binary:`~bin.mongo` shell or the equivalent helper in
    their driver. In 2.6 and later, the
    :method:`db.collection.aggregate()` helper always returns a cursor.
 
@@ -105,7 +138,7 @@ element in the ``tags`` array that appears in the collection.
       cursor: { }
    } )
 
-In the :program:`mongo` shell, this operation can use the
+In the :binary:`~bin.mongo` shell, this operation can use the
 :method:`db.collection.aggregate()` helper as in the following:
 
 .. code-block:: javascript
@@ -259,7 +292,7 @@ Create the following indexes:
    db.foodColl.createIndex( { qty: 1, type: 1 } );
    db.foodColl.createIndex( { qty: 1, category: 1 } );
 
-The following aggregation operation includes the :ref:`hint` option to
+The following aggregation operation includes the ``hint`` option to
 force the usage of the specified index:
 
 .. code-block:: javascript

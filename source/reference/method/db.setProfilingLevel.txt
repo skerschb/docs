@@ -10,30 +10,34 @@ db.setProfilingLevel()
    :depth: 1
    :class: singlecol
 
+.. |binary| replace:: :binary:`~bin.mongod` or :binary:`~bin.mongos`
+
 Definition
 ----------
 
-.. method:: db.setProfilingLevel(level, slowms)
+.. method:: db.setProfilingLevel(level, options)
 
-   Modifies the current :term:`database profiler` level used by the
-   database profiling system to capture data about performance. The
-   method provides a wrapper around the :term:`database command`
-   :dbcommand:`profile`.
+   .. versionchanged:: 4.0
+
+      The method can be run on :binary:`~bin.mongos` with ``profile``
+      level ``0`` to set the ``slowms`` and ``sampleRate`` for the
+      diagnostic log; i.e. you cannot enable the profiler on a
+      :binary:`~bin.mongos`.
+
+   For a :binary:`~bin.mongod` instance, the method configures the
+   :term:`database profiler`. If the profiler is disabled, the
+   method sets the ``slowms`` and ``sampleRate`` for logging slow
+   operations to the diagnostic log.
+
+   For :binary:`~bin.mongos` instance, the command sets the ``slowms``
+   and ``sampleRate`` for the diagnostic log.
+
+   This method provides a wrapper around the :dbcommand:`profile`
+   command.
 
    .. include:: /includes/apiargs/method-db.setProfilingLevel-param.rst
 
-   The level chosen can affect performance. It also can allow the
-   server to write the contents of queries to the log, which might have
-   information security implications for your deployment.
+   .. include:: /includes/warning-profiler-performance.rst
 
-   Configure the :setting:`~operationProfiling.slowOpThresholdMs` option to set the threshold
-   for the profiler to consider a query "slow." Specify this value in
-   milliseconds to override the default, 100 ms.
 
-   :program:`mongod` writes the output of the database profiler to the
-   ``system.profile`` collection.
-
-   :program:`mongod` prints information about queries that take longer than
-   the :setting:`~operationProfiling.slowOpThresholdMs` to the log even when the database profiler is
-   not active.
-
+   To check the profiling level, see :method:`db.getProfilingStatus()`.

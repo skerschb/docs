@@ -12,8 +12,8 @@ TLS/SSL Configuration for Clients
    :depth: 1
    :class: singlecol
 
-Clients must have support for TLS/SSL to work with a :program:`mongod` or a
-:program:`mongos` instance that has TLS/SSL support enabled.
+Clients must have support for TLS/SSL to work with a :binary:`~bin.mongod` or a
+:binary:`~bin.mongos` instance that has TLS/SSL support enabled.
 
 .. important::
 
@@ -25,41 +25,69 @@ Clients must have support for TLS/SSL to work with a :program:`mongod` or a
 
 .. _mongo-shell-ssl-connect:
 
-``mongo`` Shell SSL Configuration
----------------------------------
+``mongo`` Shell Configuration
+-----------------------------
 
 .. note::
-   The *Linux 64-bit legacy x64* builds of MongoDB do **not** include
-   support for TLS/SSL.
+   
+   - The *Linux 64-bit legacy x64* builds of MongoDB do **not** include
+     support for TLS/SSL.
 
-The :program:`mongo` shell provides various :ref:`mongo-shell-ssl`
+   - .. include:: /includes/fact-tls-1.0.rst
+
+.. |binary| replace:: MongoDB
+
+The :binary:`~bin.mongo` shell provides various :ref:`mongo-shell-ssl`
 settings, including:
 
-- :option:`--ssl`
+- :option:`--ssl <mongo --ssl>`
 
-- :option:`--sslPEMKeyFile` with the name of the
-  :file:`.pem` file that contains the SSL certificate and key.
+- :option:`--sslPEMKeyFile <mongo --sslPEMKeyFile>` with the name of the
+  :file:`.pem` file that contains the TLS/SSL certificate and key.
 
-- :option:`--sslPEMKeyPassword` option if the
+- :option:`--sslPEMKeyPassword <mongo --sslPEMKeyPassword>` option if the
   client certificate-key file is encrypted.
 
-- :option:`--sslCAFile` with the name of the :file:`.pem`
+- :option:`--sslCAFile <mongo --sslCAFile>` with the name of the :file:`.pem`
   file that contains the certificate from the Certificate Authority (CA).
 
-.. include:: /includes/extracts/mongo-ssl-options-configure.rst
+.. include:: /includes/extracts/ssl-facts-mongo-ssl-options-configure.rst
 
-.. include:: /includes/extracts/clients-warning-sslCAFile.rst
+.. versionadded:: 4.0
+
+- :option:`--sslCertificateSelector <mongo --sslCertificateSelector>` option if you
+  wish to use the system store for clients running on macOS or Windows.
+
+.. include:: /includes/extracts/ssl-facts-mongo-ssl-options-configure.rst
 
 
-For a complete list of the :program:`mongo` shell's SSL settings, see
+For a complete list of the :binary:`~bin.mongo` shell's TLS/SSL settings, see
 :ref:`mongo-shell-ssl`.
 
-Connect to MongoDB Instance with SSL Encryption
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using System Stores for Storing Keys and Certificates for macOS and Windows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To connect to a :program:`mongod` or :program:`mongos` instance that
-requires :ref:`only a SSL encryption mode <ssl-mongod-ssl-cert-key>`,
-start :program:`mongo` shell with :option:`--ssl <mongo --ssl>` and
+.. include:: /includes/ssl-trusted-store.rst
+
+.. code-block:: sh
+
+   mongo --ssl --sslCertificateSelector subject=my.dev.server
+
+Alternatively, use the :setting:`~net.ssl.certificateSelector` to
+configure the certificate storage selector with a config file.
+
+.. code-block:: yaml
+   
+   net:
+      ssl:
+         certificateSelector: <parameter>=<value>
+
+Connect to MongoDB Instance Using Encryption
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To connect to a :binary:`~bin.mongod` or :binary:`~bin.mongos` instance that
+requires :ref:`encrypted communication <ssl-mongod-ssl-cert-key>`,
+start :binary:`~bin.mongo` shell with :option:`--ssl <mongo --ssl>` and
 include the :option:`--sslCAFile <mongo --sslCAFile>` to validate the
 server certificates.
 
@@ -67,14 +95,14 @@ server certificates.
 
    mongo --ssl --host hostname.example.com --sslCAFile /etc/ssl/ca.pem
 
-.. include:: /includes/extracts/mongo-ssl-options-configure.rst
+.. include:: /includes/extracts/ssl-facts-invalid-cert-warning-clients.rst
 
 Connect to MongoDB Instance that Requires Client Certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To connect to a :program:`mongod` or :program:`mongos` that requires
+To connect to a :binary:`~bin.mongod` or :binary:`~bin.mongos` that requires
 :ref:`CA-signed client certificates
-<ssl-mongod-ca-signed-ssl-cert-key>`, start the :program:`mongo` shell
+<ssl-mongod-ca-signed-ssl-cert-key>`, start the :binary:`~bin.mongo` shell
 with :option:`--ssl <mongo --ssl>`, the :option:`--host <mongo --host>`
 option to specify the host to which to connect, the :option:`--sslPEMKeyFile <mongo
 --sslPEMKeyFile>` option to specify the signed certificate-key file,
@@ -85,14 +113,14 @@ server certificates.
 
    mongo --ssl --host hostname.example.com --sslPEMKeyFile /etc/ssl/client.pem --sslCAFile /etc/ssl/ca.pem
 
-.. include:: /includes/extracts/mongo-ssl-options-configure.rst
+.. include:: /includes/extracts/ssl-facts-invalid-cert-warning-clients.rst
 
 Connect to MongoDB Instance that Validates when Presented with a Certificate
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To connect to a :program:`mongod` or :program:`mongos` instance that
+To connect to a :binary:`~bin.mongod` or :binary:`~bin.mongos` instance that
 :ref:`only requires valid certificates when the client presents a certificate
-<ssl-mongod-weak-certification>`, start :program:`mongo` shell either:
+<ssl-mongod-weak-certification>`, start :binary:`~bin.mongo` shell either:
 
 - with the :option:`--ssl <mongo --ssl>`, :option:`--sslCAFile <mongo
   --sslCAFile>`, and **no** certificate or
@@ -101,11 +129,11 @@ To connect to a :program:`mongod` or :program:`mongos` instance that
   :option:`--sslCAFile <mongo --sslCAFile>`, and a **valid** signed
   certificate.
 
-.. include:: /includes/extracts/mongo-ssl-options-configure.rst
+.. include:: /includes/extracts/ssl-facts-invalid-cert-warning-clients.rst
 
-For example, if :program:`mongod` is running with weak certificate
-validation, both of the following :program:`mongo` shell clients can
-connect to that :program:`mongod`:
+For example, if :binary:`~bin.mongod` is running with weak certificate
+validation, both of the following :binary:`~bin.mongo` shell clients can
+connect to that :binary:`~bin.mongod`:
 
 .. code-block:: sh
 
@@ -118,12 +146,13 @@ connect to that :program:`mongod`:
 |MMS| and Ops Manager Monitoring Agent
 --------------------------------------
 
-The |MMS| Monitoring agent will also have to connect via SSL in order to
-gather its statistics. Because the agent already utilizes SSL for its
-communications to the |MMS| servers, this is just a matter of enabling
-SSL support in |MMS| itself on a per host basis.
-å
-See the |mms-docs| for more information about SSL
+The |MMS| and Ops Manager Monitoring agents will also have to use
+encrypted communication in order to gather its statistics. Because the
+agents already encrypted communications to the |MMS|/Ops Manager servers,
+this is just a matter of enabling TLS/SSL support in |MMS|/Ops Manager on a per
+host basis.
+
+See the |mms-docs| for more information about TLS/SSL
 configuration.
 
 For Ops Manager, see :opsmgr:`Ops Manager documentation </>`.
@@ -133,7 +162,7 @@ For Ops Manager, see :opsmgr:`Ops Manager documentation </>`.
 MongoDB Drivers
 ---------------
 
-The MongoDB Drivers support for connection to SSL enabled MongoDB. See:
+The MongoDB Drivers support encrypted communication. See:
 
 - `C Driver <http://api.mongodb.org/c/current/advanced-connections.html>`_
 - `C++ Driver <https://mongodb.github.io/mongo-cxx-driver/>`_
@@ -141,7 +170,7 @@ The MongoDB Drivers support for connection to SSL enabled MongoDB. See:
 - `Java Driver <http://mongodb.github.io/mongo-java-driver/3.0/driver/reference/connecting/ssl/>`_
 - `Node.js Driver <http://mongodb.github.io/node-mongodb-native/2.0/tutorials/enterprise_features/>`_
 - `Perl Driver <https://metacpan.org/pod/MongoDB::MongoClient#ssl>`_
-- `PHP Driver <http://php.net/manual/en/mongo.connecting.ssl.php>`_
+- `PHP Driver <https://php.net/manual/en/mongodb-driver-manager.construct.php>`_
 - `Python Driver <http://api.mongodb.org/python/current/examples/tls.html>`_
 - `Ruby Driver <https://docs.mongodb.com/ecosystem/tutorial/ruby-driver-tutorial/#mongodb-x509-mechanism>`_
 - `Scala Driver <http://mongodb.github.io/mongo-scala-driver/1.1/reference/connecting/ssl/>`_
@@ -151,17 +180,16 @@ The MongoDB Drivers support for connection to SSL enabled MongoDB. See:
 MongoDB Tools
 -------------
 
-.. versionchanged:: 2.6
 
-Various MongoDB utility programs supports SSL. These tools include:
+Various MongoDB utility programs support encrypted communication. These tools include:
 
-- :program:`mongodump`
-- :program:`mongoexport`
-- :program:`mongofiles`
-- :program:`mongoimport`
-- :program:`mongorestore`
-- :program:`mongostat`
-- :program:`mongotop`
+- :binary:`~bin.mongodump`
+- :binary:`~bin.mongoexport`
+- :binary:`~bin.mongofiles`
+- :binary:`~bin.mongoimport`
+- :binary:`~bin.mongorestore`
+- :binary:`~bin.mongostat`
+- :binary:`~bin.mongotop`
 
-To use SSL connections with these tools, use the same SSL options as
-the :program:`mongo` shell. See :ref:`mongo-shell-ssl-connect`.
+To use encrypted communication with these tools, use the same TLS/SSL options as
+the :binary:`~bin.mongo` shell. See :ref:`mongo-shell-ssl-connect`.

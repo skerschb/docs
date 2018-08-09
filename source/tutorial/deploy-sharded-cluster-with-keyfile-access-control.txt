@@ -7,7 +7,7 @@ Deploy Sharded Cluster with Keyfile Access Control
 .. contents:: On this page
    :local:
    :backlinks: none
-   :depth: 3
+   :depth: 1
    :class: singlecol
 
 Overview
@@ -23,33 +23,35 @@ Enforcing access control on a :term:`sharded cluster` requires configuring:
 
 For this tutorial, each member of the sharded cluster *must* use the same
 internal authentication mechanism and settings. This means enforcing internal
-authentication on each :program:`mongos` and :program:`mongod` in the cluster.
+authentication on each :binary:`~bin.mongos` and :binary:`~bin.mongod` in the cluster.
 
 The following tutorial uses a :ref:`keyfile <internal-auth-keyfile>` to
 enable internal authentication.
 
 Enforcing internal authentication also enforces user access control. To
-connect to the replica set, clients like the :program:`mongo` shell need to
+connect to the replica set, clients like the :binary:`~bin.mongo` shell need to
 use a :doc:`user account</core/authorization>`. See
 :ref:`security-shardClust-deploy-access-control`.
 
 CloudManager and OpsManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you are currently using or are planning to use Cloud Manager or
-Ops Manager, consider using their built-in features for
-deploying a :term:`sharded cluster` with access control enforced.
+If you are using Cloud Manager or Ops Manager to manage your deployment,
+see the respective :mms-docs:`Cloud Manager manual
+</tutorial/edit-host-authentication-credentials>`
+or the :opsmgr:`Ops Manager manual
+</tutorial/edit-host-authentication-credentials>` to enforce authentication.
 
-See ``Deploy a Sharded Cluster`` in the
-:mms-docs:`Cloud Manager manual</tutorial/deploy-sharded-cluster>` or in the
-:opsmgr:`Ops Manager manual</tutorial/deploy-sharded-cluster>`.
-
-See ``Access Control for MongoDB Deployments`` in the
-:mms-docs:`Cloud Manager manual</nav/security-enable-authentication>` or in the
-:opsmgr:`Ops manager manual</nav/security-enable-authentication>`.
 
 Considerations
 --------------
+
+IP Binding
+~~~~~~~~~~~
+
+.. versionchanged:: 3.6
+
+.. include:: /includes/fact-default-bind-ip-change.rst
 
 Keyfile Security
 ~~~~~~~~~~~~~~~~
@@ -79,9 +81,9 @@ information.
 Operating System
 ~~~~~~~~~~~~~~~~
 
-This tutorial uses the :program:`mongod` and :program:`mongos`
-programs. Windows users should use the :program:`mongod.exe` and
-:program:`mongos.exe` programs instead.
+This tutorial uses the :binary:`~bin.mongod` and :binary:`~bin.mongos`
+programs. Windows users should use the :binary:`~bin.mongod.exe` and
+:binary:`~bin.mongos.exe` programs instead.
 
 .. _security-shard-deploy-sharded-cluster-with-access-control:
 
@@ -89,7 +91,7 @@ Deploy Sharded Cluster with Keyfile Access Control
 --------------------------------------------------
 
 The following procedures involve creating a new sharded cluster that consists
-of a :program:`mongos`, the config servers, and two shards.
+of a :binary:`~bin.mongos`, the config servers, and two shards.
 
 Create the Keyfile
 ~~~~~~~~~~~~~~~~~~
@@ -146,7 +148,7 @@ Connect a ``mongos`` to the Sharded Cluster
 Add Shards to the Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To proceed, you must be connected to the :program:`mongos` and
+To proceed, you must be connected to the :binary:`~bin.mongos` and
 authenticated as the cluster administrator user for the sharded cluster.
 
 .. note::
@@ -165,7 +167,7 @@ The following operation adds a single shard replica set to the cluster:
 
    sh.addShard( "<replSetName>/s1-mongo1.example.net:27017")
 
-The following operation is an example of adding a standalone :program:`mongod`
+The following operation is an example of adding a standalone :binary:`~bin.mongod`
 shard to the cluster:
 
 .. code-block:: javascript
@@ -180,7 +182,7 @@ component.
 Enable Sharding for a Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To proceed, you must be connected to the :program:`mongos` and
+To proceed, you must be connected to the :binary:`~bin.mongos` and
 authenticated as the cluster administrator user for the sharded cluster.
 
 .. note::
@@ -199,7 +201,7 @@ enable sharding on the target database.
 Shard a Collection
 ~~~~~~~~~~~~~~~~~~
 
-To proceed, you must be connected to the :program:`mongos` and
+To proceed, you must be connected to the :binary:`~bin.mongos` and
 authenticated as the cluster administrator user for the sharded cluster.
 
 .. note::

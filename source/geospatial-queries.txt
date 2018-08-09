@@ -86,6 +86,15 @@ Geospatial Indexes and Sharded Collections
 
 .. include:: /includes/extracts/geospatial-index-shard-key-restriction-general.rst
 
+The following geospatial operations are supported on sharded
+collections:
+
+- :pipeline:`$geoNear` aggregation stage
+
+- |geo-operation| query operators (starting in MongoDB 4.0)
+
+- :dbcommand:`geoNear` command (deprecated in MongoDB 4.0)
+
 .. include:: /includes/fact-near-sharded-cluster.rst
 
 .. |geo-operation| replace:: :query:`$near` and :query:`$nearSphere`
@@ -126,14 +135,14 @@ MongoDB provides the following geospatial command:
    * - Command
      - Description
 
-   * - :dbcommand:`geoNear`
+   * - :dbcommand:`geoNear` (*Deprecated in MongoDB 4.0*)
 
      - Performs a geospatial query that returns the documents closest
        to a given point.
 
        .. include:: /includes/extracts/geoNear-command-index-requirement.rst
 
-For more details, including examples, see :dbcommand:`geoNear`
+For more details, including examples, see the :dbcommand:`geoNear`
 reference page.
 
 Geospatial Aggregation Stage
@@ -153,7 +162,7 @@ stage </core/aggregation-pipeline>`:
    * - :pipeline:`$geoNear`
 
      - .. include:: /includes/extracts/geoNear-stage-toc-description.rst
- 
+
        .. include:: /includes/extracts/geoNear-stage-index-requirement.rst
 
 For more details, including examples, see :pipeline:`$geoNear`
@@ -203,7 +212,7 @@ query, used by each geospatial operations:
 
      - Flat
 
-     - 
+     -
 
    * - :query:`$nearSphere` (:ref:`GeoJSON <geospatial-geojson>` point, :ref:`2dsphere <geo-2dsphere>` index)
 
@@ -211,7 +220,7 @@ query, used by each geospatial operations:
 
      - Provides the same functionality as :query:`$near` operation that
        uses :ref:`GeoJSON <geospatial-geojson>` point and a
-       :ref:`2dsphere <geo-2dsphere>` index. 
+       :ref:`2dsphere <geo-2dsphere>` index.
 
        For spherical queries, it may be preferable to use
        :query:`$nearSphere` which explicitly specifies the spherical
@@ -259,21 +268,21 @@ query, used by each geospatial operations:
 
      -
 
-   * - :dbcommand:`geoNear` (:ref:`2dsphere <geo-2dsphere>` index)
+   * - :dbcommand:`geoNear` command (:ref:`2dsphere <geo-2dsphere>` index)
      - Spherical
-     - 
+     - *Deprecated in MongoDB 4.0*
 
-   * - :dbcommand:`geoNear` (:ref:`2d <geo-2d>` index)
+   * - :dbcommand:`geoNear` command (:ref:`2d <geo-2d>` index)
      - Flat
-     - 
+     - *Deprecated in MongoDB 4.0*
 
-   * - :pipeline:`$geoNear` (:ref:`2dsphere <geo-2dsphere>` index)
+   * - :pipeline:`$geoNear` aggregation stage (:ref:`2dsphere <geo-2dsphere>` index)
      - Spherical
-     - 
+     -
 
-   * - :pipeline:`$geoNear` (:ref:`2d <geo-2d>` index)
+   * - :pipeline:`$geoNear` aggregation stage (:ref:`2d <geo-2d>` index)
      - Flat
-     - 
+     -
 
 Example
 -------
@@ -283,7 +292,7 @@ Create a collection ``places`` with the following documents:
 .. code-block:: javascript
 
    db.places.insert( {
-       name: "Central Park", 
+       name: "Central Park",
       location: { type: "Point", coordinates: [ -73.97, 40.77 ] },
       category: "Parks"
    } );
@@ -297,7 +306,7 @@ Create a collection ``places`` with the following documents:
       location: { type: "Point", coordinates: [ -73.9375, 40.8303 ] },
       category: "Stadiums"
    } );
-  
+
 The following operation creates a ``2dsphere`` index on the
 ``location`` field:
 
@@ -325,25 +334,27 @@ farthest:
       }
    )
 
-The following operation uses the :dbcommand:`geoNear` command to return
-documents that match the query filter ``{ category: "Parks" }``, sorted
-in order of nearest to farthest to the specified GeoJSON point:
+The following operation uses the :pipeline:`geoNear` aggregation
+operation to return documents that match the query filter ``{ category:
+"Parks" }``, sorted in order of nearest to farthest to the specified
+GeoJSON point:
 
 .. code-block:: javascript
 
-   db.runCommand(
+   db.places.aggregate( [
       {
-        geoNear: "places",
-        near: { type: "Point", coordinates: [ -73.9667, 40.78 ] },
-        spherical: true,
-        query: { category: "Parks" }
+         $geoNear: {
+            near: { type: "Point", coordinates: [ -73.9667, 40.78 ] },
+            spherical: true,
+            query: { category: "Parks" },
+            distanceField: "calcDistance"
+         }
       }
-   )
+   ] )
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/geospatial-tutorial
-      /reference/geojson
+   /tutorial/geospatial-tutorial
+   /reference/geojson

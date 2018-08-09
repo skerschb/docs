@@ -1,81 +1,33 @@
-title:
-  text: Open an Administrator command prompt.
-  character: "~"
-stepnum: 1
-ref: open-command-prompt
-pre: |
-  Press the ``Win`` key, type ``cmd.exe``, and press ``Ctrl + Shift + Enter``
-  to run the :guilabel:`Command Prompt` as Administrator.
-post: |
-  Execute the remaining steps from the Administrator command prompt.
----
-title: Create directories.
-stepnum: 2
-ref: create-directories
-pre: |
-  Create directories for your database and log files:
-action:
-  language: powershell
-  code: |
-    mkdir c:\data\db
-    mkdir c:\data\log
----
-title: Create a configuration file.
-stepnum: 3
-ref: create-configuration-file
-pre: |
-  Create a configuration file. The file **must** set :setting:`systemLog.path`.
-  Include additional
-  :doc:`configuration options </reference/configuration-options>` as appropriate.
-# don't wrap the text above to avoid breaking something in primer
-action:
-  pre: |
-    For example, create a file at ``C:\Program Files\MongoDB\Server\3.4\mongod.cfg`` that specifies both
-    :setting:`systemLog.path` and :setting:`storage.dbPath`:
-  language: yaml
-  code: |
-    systemLog:
-        destination: file
-        path: c:\data\log\mongod.log
-    storage:
-        dbPath: c:\data\db
----
-title: Create the MongoDB service.
-stepnum: 4
-ref: create-mongodb-service
-action:
-  - pre: "Create the MongoDB service."
-    language: powershell
-    code: |
-      sc.exe create MongoDB binPath= "\"C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe\" --service --config=\"C:\Program Files\MongoDB\Server\3.4\mongod.cfg\"" DisplayName= "MongoDB" start= "auto"
-    post: |
-      ``sc.exe`` requires a space between "=" and the configuration values
-      (eg "binPath= "), and a "\\" to escape double quotes.
-  - pre: "If successfully created, the following log message will display:"
-    language: powershell
-    code: |
-      [SC] CreateService SUCCESS
----
 title: Start the MongoDB service.
-stepnum: 5
 ref: start-mongodb-service
-action:
-  language: powershell
-  code: |
-    net start MongoDB
+content: |
+  Close all other command prompts, then invoke the following command:
+  
+  .. code-block:: bat
+
+     net start MongoDB
 ---
-title: Stop or remove the MongoDB service as needed.
-stepnum: 6
-ref: stop-mongodb-service
-action:
-  - pre: "To stop the MongoDB service, use the following command:"
-    language: powershell
-    code: |
-      net stop MongoDB
-  - pre: |
-      To remove the MongoDB service, first stop the service and then
-      run the following command:
-    language: powershell
-    code: |
-      sc.exe delete MongoDB
+stepnum: 2
+source:
+  file: steps-run-mongodb-on-linux.yaml
+  ref: verify
+pre: |
+  Check your MongoDB log file for the following line:
+post: |
+  You may see non-critical warnings in the process
+  output. As long as you see this message in the MongoDB log, you can 
+  safely ignore these warnings during your initial evaluation of 
+  MongoDB.
+---
+title: Connect to the MongoDB server.
+stepnum: 3
+ref: connect
+content: |
+  To connect to MongoDB through the :binary:`mongo.exe <bin.mongo>`
+  shell, open another :guilabel:`Command Interpreter`.
+  
+  .. code-block:: bat
+
+     "C:\Program Files\MongoDB\Server\{+version+}\bin\mongo.exe"
+
 ...

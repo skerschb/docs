@@ -26,9 +26,10 @@ Definition
    .. code-block:: javascript
 
       { $dateToString: {
-          format: <formatString>,
           date: <dateExpression>,
-          timezone: <tzExpression>
+          format: <formatString>,
+          timezone: <tzExpression>,
+          onNull: <expression>
       } }
 
    The :pipeline:`$dateToString` takes a document with the following fields:
@@ -40,129 +41,60 @@ Definition
       * - Field
         - Description
 
+      * - ``date``
+
+        - .. versionchanged:: 3.6
+
+          The date to convert to string. ``<dateExpression>`` must be a
+          valid :ref:`expression <aggregation-expressions>` that
+          resolves to a :ref:`Date <document-bson-type-date>`, a
+          :ref:`Timestamp <document-bson-type-timestamp>`, or an
+          :ref:`ObjectID <document-bson-type-object-id>`.
+
       * - ``format``
 
-        - The date format specification. ``<formatString>`` can be any
+        - Optional. The date format specification. ``<formatString>`` can be any
           string literal, containing 0 or more format specifiers. For a
           list of specifiers available, see :ref:`format-specifiers`.
 
-      * - ``date``
+          If unspecified, :expression:`$dateToString` uses
+          ``"%Y-%m-%dT%H:%M:%S.%LZ"`` as the default format.
 
-        - The date to convert to string. ``<dateExpression>`` must be a
-          valid :ref:`expression <aggregation-expressions>` that
-          resolves to either a :ref:`Date <document-bson-type-date>` or
-          a :ref:`Timestamp <document-bson-type-timestamp>`.
+          .. versionchanged:: 4.0
+
+             The ``format`` field is optional if
+             ``featureCompatibilityVersion`` (fCV) is set to ``"4.0"`` or
+             greater. For more information on fCV, see
+             :dbcommand:`setFeatureCompatibilityVersion`.
 
       * - ``timezone``
 
         - .. include:: /includes/fact-timezone-description.rst
+
+
+      * - ``onNull``
+
+        - Optional. The value to return if the ``date`` is null or missing.
+          The arguments can be any valid :ref:`expression
+          <aggregation-expressions>`.
+
+          If unspecified, :expression:`$dateToString` returns null if the
+          ``date`` is null or missing.
+
+          .. versionadded:: 4.0
+
+             Requires ``featureCompatibilityVersion`` (fCV) set to
+             ``"4.0"`` or greater. For more information on fCV, see
+             :dbcommand:`setFeatureCompatibilityVersion`.
+
+.. seealso:: :expression:`$toString` and :expression:`$convert`
 
 .. _format-specifiers:
 
 Format Specifiers
 -----------------
 
-The following format specifiers are available for use in the
-``<formatString>``:
-
-.. list-table::
-   :header-rows: 1
-   :widths: 20 60 20
-
-   * - Specifiers
-     - Description
-     - Possible Values
-
-   * - ``%d``
-     - Day of Month (2 digits, zero padded)
-     - ``01``-``31``
-
-   * - ``%G``
-
-     - Year in ISO 8601 format
-
-       .. versionadded:: 3.4
-
-     - ``0000``-``9999``
-
-   * - ``%H``
-     - Hour (2 digits, zero padded, 24-hour clock)
-     - ``00``-``23``
-
-   * - ``%j``
-     - Day of year (3 digits, zero padded)
-     - ``001``-``366``
-
-   * - ``%L``
-     - Millisecond (3 digits, zero padded)
-     - ``000``-``999``
-
-
-   * - ``%m``
-     - Month (2 digits, zero padded)
-     - ``01``-``12``
-
-
-   * - ``%M``
-     - Minute (2 digits, zero padded)
-     - ``00``-``59``
-
-   * - ``%S``
-     - Second (2 digits, zero padded)
-     - ``00``-``60``
-
-   * - ``%u``
-
-     - Day of week number in ISO 8601 format (1-Monday, 7-Sunday)
-
-       .. versionadded:: 3.4
-
-     - ``1``-``7``
-
-   * - ``%U``
-
-     - Week of year (2 digits, zero padded)
-     - ``00``-``53``
-
-   * - ``%V``
-
-     - Week of Year in ISO 8601 format
-
-       .. versionadded:: 3.4
-
-     - ``1``-``53``
-
-
-   * - ``%w``
-     - Day of week (1-Sunday, 7-Saturday)
-     - ``1``-``7``
-
-
-   * - ``%Y``
-     - Year (4 digits, zero padded)
-     - ``0000``-``9999``
-
-   * - ``%z``
-
-     - The timezone offset from UTC.
-
-       .. versionadded:: 3.6
-
-     - ``+/-[hh][mm]``
-
-   * - ``%Z``
-
-     - The minutes offset from UTC as a number. For example, if the
-       timezone offset (``+/-[hhmm]``) was ``+0445``, the minutes
-       offset is ``+285``.
-
-       .. versionadded:: 3.6
-
-     - ``+/-mmm``
-
-   * - ``%%``
-     - Percent Character as a Literal
-     - ``%``
+.. include:: /includes/extracts/date-format-specifiers-dateToString.rst
 
 Example
 -------

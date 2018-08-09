@@ -12,18 +12,12 @@ WiredTiger Storage Engine
    :depth: 1
    :class: singlecol
 
-Starting in MongoDB 3.0, the WiredTiger storage engine is available in
-the 64-bit builds.
-
-.. versionchanged:: 3.2
-
-   The WiredTiger storage engine is the default storage engine starting
-   in MongoDB 3.2. For existing deployments, if you do not specify the
-   ``--storageEngine`` or the :setting:`storage.engine` setting,
-   MongoDB 3.2 can automatically determine the storage engine used to
-   create the data files in the ``--dbpath`` or
-   :setting:`storage.dbPath`. See
-   :ref:`3.2-storage-engine-compatibility`.
+Starting in MongoDB 3.2, the WiredTiger storage engine is the default
+storage engine. For existing deployments, if you do not specify the
+``--storageEngine`` or the :setting:`storage.engine` setting, the
+version 3.2+ :binary:`~bin.mongod` instance can automatically determine
+the storage engine used to create the data files in the ``--dbpath`` or
+:setting:`storage.dbPath`. See :ref:`3.2-storage-engine-compatibility`.
 
 Document Level Concurrency
 --------------------------
@@ -67,6 +61,10 @@ Using WiredTiger, even without :ref:`journaling
 checkpoint; however, to recover changes made after the last checkpoint,
 run with :ref:`journaling <storage-wiredtiger-journal>`.
 
+.. note::
+
+   .. include:: /includes/wiredtiger-node-nojournal.rst
+
 .. _storage-wiredtiger-journal:
 
 Journal
@@ -74,7 +72,7 @@ Journal
 
 WiredTiger uses a write-ahead transaction log in combination with
 :ref:`checkpoints <storage-wiredtiger-checkpoints>` to ensure data
-durability. 
+durability.
 
 The WiredTiger journal persists all data modifications between
 checkpoints. If MongoDB exits between checkpoints, it uses the journal
@@ -91,14 +89,15 @@ compression, use the
 
    .. include:: /includes/fact-wiredtiger-log-compression-limit.rst
 
-You can disable journaling by setting :setting:`storage.journal.enabled`
-to ``false``, which can reduce the overhead of maintaining the
-journal. 
+You can disable journaling for standalone instances by setting
+:setting:`storage.journal.enabled` to ``false``, which can reduce the
+overhead of maintaining the journal. For :term:`standalone` instances,
+not using the journal means that, when MongoDB exits unexpectedly, you
+will lose all data modifications prior to the last checkpoint.
 
-For :term:`standalone` instances, not using the journal means that you
-will lose some data modifications when MongoDB exits unexpectedly
-between checkpoints. For members of :term:`replica sets <replica set>`,
-the replication process may provide sufficient durability guarantees.
+.. note::
+
+   .. include:: /includes/wiredtiger-node-nojournal.rst
 
 .. seealso:: :ref:`Journaling with WiredTiger <journaling-wiredTiger>`
 
@@ -146,11 +145,10 @@ Memory Use
 
 .. seealso:: `<http://wiredtiger.com>`_
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/change-standalone-wiredtiger.txt
-      /tutorial/change-replica-set-wiredtiger.txt
-      /tutorial/change-sharded-cluster-wiredtiger.txt
+   /tutorial/change-standalone-wiredtiger.txt
+   /tutorial/change-replica-set-wiredtiger.txt
+   /tutorial/change-sharded-cluster-wiredtiger.txt

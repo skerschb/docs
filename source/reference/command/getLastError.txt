@@ -22,11 +22,9 @@ Definition
 
    :dbcommand:`getLastError` uses the following prototype form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { getLastError: 1, txnNumber: <long>, lsid: { id: <UUID> } }
+      { getLastError: 1 }
 
    :dbcommand:`getLastError` uses the following fields:
 
@@ -203,4 +201,3 @@ cannot satisfy the requested write concern:
 
    db.runCommand( { getLastError: 1, w: "majority", wtimeout:5000 } )
 
-.. include:: /includes/fact-master-slave-majority.rst

@@ -5,7 +5,7 @@ content: |
 
       Deprecated in the ``mongo`` Shell since {{version}}
          Starting in v3.2, the {{op}} operator is deprecated in the
-         :program:`mongo` shell. In the :program:`mongo` shell, use
+         :binary:`~bin.mongo` shell. In the :binary:`~bin.mongo` shell, use
          {{alternative}} instead.
 
 ---
@@ -60,7 +60,7 @@ source:
    ref: _mongo-shell-deprecated-meta-operator
 replacement:
    op: ":operator:`$maxScan`"
-   alternative: ":method:`cursor.maxScan()`"
+   alternative: ":method:`cursor.maxTimeMS()`"
    version: "v3.2"
 ---
 ref: mongo-shell-deprecated-meta-operator-maxTimeMS
@@ -99,15 +99,6 @@ replacement:
    alternative: ":method:`cursor.returnKey()`"
    version: "v3.2"
 ---
-ref: mongo-shell-deprecated-meta-operator-snapshot
-source:
-   file: extracts-mongo-shell-deprecated-meta-operator.yaml
-   ref: _mongo-shell-deprecated-meta-operator
-replacement:
-   op: ":operator:`$snapshot`"
-   alternative: ":method:`cursor.snapshot()`"
-   version: "v3.2"
----
 ref: mongo-shell-deprecated-meta-operator-cursor-addOption
 source:
    file: extracts-mongo-shell-deprecated-meta-operator.yaml
@@ -133,7 +124,7 @@ content: |
 
       Deprecated in the ``mongo`` Shell since v3.2
          Starting in v3.2, the query "meta" operators are deprecated in
-         the :program:`mongo` shell. In the :program:`mongo` shell, use
+         the :binary:`~bin.mongo` shell. In the :binary:`~bin.mongo` shell, use
          the :doc:`cursor methods </reference/method/js-cursor>`
          instead.
 

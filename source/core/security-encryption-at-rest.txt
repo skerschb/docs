@@ -34,13 +34,18 @@ read the data.
 Encryption Process
 ~~~~~~~~~~~~~~~~~~
 
+.. admonition:: Changed in version 4.0
+   :class: note
+
+   .. include:: /includes/fact-aes.rst
+
 If encryption is enabled, the default encryption mode that MongoDB
 Enterprise uses is the ``AES256-CBC`` (or 256-bit Advanced Encryption
 Standard in Cipher Block Chaining mode) via OpenSSL. AES-256 uses a
 symmetric key; i.e. the same key to encrypt and decrypt text. MongoDB
-Enterprise also supports authenticated encryption ``AES256-GCM`` (or
-256-bit Advanced Encryption Standard in Galois/Counter Mode). FIPS mode
-encryption is also available.
+Enterprise for Linux also supports authenticated encryption
+``AES256-GCM`` (or 256-bit Advanced Encryption Standard in
+Galois/Counter Mode). FIPS mode encryption is also available.
 
 .. warning::
 
@@ -48,9 +53,10 @@ encryption is also available.
    copies of your data files. ``AES256-GCM`` requires that every
    process use a unique counter block value with the key. If you use
    copied ``AES256-GCM`` encrypted data files to start a second
-   :program:`mongod` instance, the :program:`mongod` instances may use
+   :binary:`~bin.mongod` instance, the :binary:`~bin.mongod` instances may use
    the duplicate counter block values, voiding confidentiality and integrity
    guarantees.
+   
 
 The data encryption process includes:
 
@@ -116,14 +122,14 @@ Logging
 .. versionadded:: 3.4 Available in MongoDB Enterprise only
 
 The log file is not encrypted as a part of MongoDB's encrypted storage engine.
-A :program:`mongod` running with :ref:`logging <monitoring-standard-loggging>`
+A :binary:`~bin.mongod` running with :ref:`logging <monitoring-standard-loggging>`
 may output potentially sensitive information to log files as a part of normal
 operations, depending on the configured :ref:`log verbosity
 <log-messages-configure-verbosity>`.
 
 MongoDB 3.4 Enterprise provides the :setting:`security.redactClientLogData`
 setting to prevent potentially sensitive information from entering the
-:program:`mongod` process log. :setting:`~security.redactClientLogData`
+:binary:`~bin.mongod` process log. :setting:`~security.redactClientLogData`
 reduces detail in the log and may complicate log diagnostics.
 
 See the :ref:`log redaction <monitoring-log-redaction>` manual entry for
@@ -141,11 +147,8 @@ use a commercial solution.
 
 .. include:: /includes/partners-security.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/configure-encryption
-      /tutorial/rotate-encryption-key
-
+   /tutorial/configure-encryption
+   /tutorial/rotate-encryption-key

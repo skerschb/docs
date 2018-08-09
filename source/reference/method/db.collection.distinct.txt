@@ -22,8 +22,9 @@ Definition
    .. include:: /includes/apiargs/method-db.collection.distinct-param.rst
 
    The :method:`db.collection.distinct()` method provides a wrapper
-   around the :dbcommand:`distinct` command. Results must not be larger
-   than the maximum :ref:`BSON size <limit-bson-document-size>`.
+   around the :dbcommand:`distinct` command.
+
+   .. include:: /includes/note-distinct-bson-limit-agg-alternative.rst
 
 .. _distinct-method-options:
 
@@ -39,6 +40,9 @@ Options
 Behavior
 --------
 
+In a :term:`sharded cluster`, the :dbcommand:`distinct` command may return
+:term:`orphaned documents <orphaned document>`.
+
 .. _distinct-method-behavior-array:
 
 Array Fields
@@ -52,6 +56,15 @@ Index Use
 ~~~~~~~~~
 
 .. include:: /includes/extracts/fact-distinct-method-index-use.rst
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :method:`db.collection.distinct()`
 
 
 Examples

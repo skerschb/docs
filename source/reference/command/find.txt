@@ -22,7 +22,10 @@ Definition
 
    The :dbcommand:`find` command has the following form:
 
-   .. versionchanged:: 3.6
+   .. versionchanged:: 4.0
+
+      MongoDB deprecates the ``maxScan`` option to the
+      :dbcommand:`find` command. Use the ``maxTimeMS`` option instead.
 
    .. code-block:: javascript
 
@@ -37,27 +40,49 @@ Definition
          "batchSize": <int>,
          "singleBatch": <bool>,
          "comment": <string>,
-         "maxScan": <int>,
+         "maxScan": <int>,   // Deprecated in MongoDB 4.0
          "maxTimeMS": <int>,
          "readConcern": <document>,
          "max": <document>,
          "min": <document>,
          "returnKey": <bool>,
          "showRecordId": <bool>,
-         "snapshot": <bool>,
          "tailable": <bool>,
          "oplogReplay": <bool>,
          "noCursorTimeout": <bool>,
          "awaitData": <bool>,
          "allowPartialResults": <bool>,
-         "collation": <document>,
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
+         "collation": <document>
       }
 
    The command accepts the following fields:
 
    .. include:: /includes/apiargs/dbcommand-find-field.rst
+
+Behavior
+--------
+
+Sessions
+~~~~~~~~
+
+.. versionadded:: 4.0
+
+For cursors created inside a session, you cannot call
+:dbcommand:`getMore` outside the session.
+
+Similarly, for cursors created outside of a session, you cannot call
+:dbcommand:`getMore` inside a session.
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+.. include:: /includes/extracts/transactions-operations-getMore.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :dbcommand:`find`
 
 Examples
 --------
@@ -113,7 +138,7 @@ the data confirmed as having been written to a majority of the nodes.
 The :dbcommand:`getMore` command uses the ``readConcern`` level
 specified in the originating :dbcommand:`find` command.
 
-A ``readConcern`` can be specified for the :program:`mongo` shell method
+A ``readConcern`` can be specified for the :binary:`~bin.mongo` shell method
 :method:`db.collection.find()` using the :method:`cursor.readConcern`
 method:
 
@@ -143,7 +168,7 @@ command with the collation specified:
       }
    )
 
-The :program:`mongo` shell provides the :method:`cursor.collation()` to
+The :binary:`~bin.mongo` shell provides the :method:`cursor.collation()` to
 specify :ref:`collation <collation>` for a
 :method:`db.collection.find()` operation.
 

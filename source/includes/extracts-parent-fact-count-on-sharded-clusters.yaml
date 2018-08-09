@@ -5,29 +5,27 @@ content: |
   :doc:`chunk migration </core/sharding-balancer-administration>` is in progress.
 
   To avoid these situations, on a sharded cluster, use the
-  :pipeline:`$group` stage of the :method:`db.collection.aggregate()`
-  method to :group:`$sum` the documents. For example, the following
-  operation counts the documents in a collection:
+  :method:`db.collection.aggregate()` method:
+
+  You can use the :pipeline:`$count` stage to count the documents. For
+  example, the following operation counts the documents in a collection:
 
   .. code-block:: javascript
 
-     db.collection.aggregate(
-        [
-           { $group: { _id: null, count: { $sum: 1 } } }
-        ]
-     )
+     db.collection.aggregate( [
+        { $count: "myCount" }
+     ])
 
-  To get a count of documents that match a query condition, include the
-  :pipeline:`$match` stage as well:
-
+  The :pipeline:`$count` stage is equivalent to the following
+  :pipeline:`$group` + :pipeline:`$project` sequence:
+     
   .. code-block:: javascript
+  
+     db.collection.aggregate( [
+        { $group: { _id: null, count: { $sum: 1 } } }
+        { $project: { _id: 0 } }
+     ] )
 
-     db.collection.aggregate(
-        [
-           { $match: <query condition> },
-           { $group: { _id: null, count: { $sum: 1 } } }
-        ]
-     )
+  .. seealso:: :pipeline:`$collStats` to return an approximate count based on the collection's metadata.
 
-  See :ref:`match-perform-a-count` for an example.
 ...

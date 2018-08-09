@@ -20,6 +20,12 @@ internal authentication of the members of replica sets and sharded clusters.
 x.509 certificate authentication requires a secure :doc:`TLS/SSL connection
 </tutorial/configure-ssl>`.
 
+.. note::
+
+   .. include:: /includes/fact-tls-1.0.rst
+
+.. |binary| replace:: MongoDB
+
 Certificate Authority
 ---------------------
 
@@ -31,7 +37,7 @@ Client x.509 Certificates
 -------------------------
 
 To authenticate to servers, clients can use x.509 certificates instead
-of usernames and passwords. 
+of usernames and passwords.
 
 Client Certificate Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -51,6 +57,8 @@ than one MongoDB user.
 
 Add the user in the ``$external`` database; i.e. the
 :ref:`authentication-database` is the ``$external`` database
+
+.. include:: /includes/extracts/sessions-external-username-limit.rst
 
 Authenticate
 ~~~~~~~~~~~~
@@ -72,7 +80,7 @@ Member x.509 Certificates
 
 For internal authentication, members of sharded clusters and replica sets
 can use x.509 certificates instead of keyfiles, which use the
-:doc:`/core/security-scram-sha-1` authentication mechanism.
+:doc:`/core/security-scram` authentication mechanism.
 
 Member Certificate Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,9 +100,8 @@ Member Certificate and ``PEMKeyFile``
 For an example of x.509 internal authentication, see
 :doc:`/tutorial/configure-x509-member-authentication`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/configure-x509-client-authentication
+   /tutorial/configure-x509-client-authentication

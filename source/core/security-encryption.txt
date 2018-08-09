@@ -17,6 +17,14 @@ You can use TLS/SSL (Transport Layer Security/Secure Sockets Layer) to
 encrypt all of MongoDB's network traffic. TLS/SSL ensures that MongoDB
 network traffic is only readable by the intended client.
 
+.. include:: /includes/fact-tls-libraries.rst
+
+.. note::
+
+   .. include:: /includes/fact-tls-1.0.rst
+
+.. |binary| replace:: MongoDB
+
 See :doc:`/core/security-transport-encryption` for more information.
 
 Encryption at Rest
@@ -35,10 +43,9 @@ these solutions together or independently.
 
 See :doc:`/core/security-encryption-at-rest` for more information.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /core/security-transport-encryption
-      /core/security-encryption-at-rest
+   /core/security-transport-encryption
+   /core/security-encryption-at-rest

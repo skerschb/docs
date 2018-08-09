@@ -38,7 +38,7 @@ some stages may generate new documents or filter out documents.
 Pipeline stages can appear multiple times in the pipeline.
 
 MongoDB provides the :method:`db.collection.aggregate()` method in the
-:program:`mongo` shell and the :dbcommand:`aggregate` command for
+:binary:`~bin.mongo` shell and the :dbcommand:`aggregate` command for
 aggregation pipeline. See
 :ref:`aggregation-pipeline-operator-reference` for the available stages.
 
@@ -97,11 +97,10 @@ The :pipeline:`$match` and :pipeline:`$sort` pipeline operators can
 take advantage of an index when they occur at the **beginning** of the
 pipeline.
 
-.. versionadded:: 2.4
-   The :pipeline:`$geoNear` pipeline operator takes advantage of a
-   geospatial index. When using :pipeline:`$geoNear`, the
-   :pipeline:`$geoNear` pipeline operation must appear as the first
-   stage in an aggregation pipeline.
+The :pipeline:`$geoNear` pipeline operator takes advantage of a
+geospatial index. When using :pipeline:`$geoNear`, the
+:pipeline:`$geoNear` pipeline operation must appear as the first stage
+in an aggregation pipeline.
 
 .. versionchanged:: 3.2
 
@@ -137,13 +136,12 @@ details, see :doc:`/core/aggregation-pipeline-optimization`.
 The aggregation pipeline supports operations on sharded collections.
 See :ref:`aggregation-pipeline-sharded-collection`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly: 
-
-      /core/aggregation-pipeline-optimization
-      /core/aggregation-pipeline-limits
-      /core/aggregation-pipeline-sharded-collections
-      Example with ZIP Code Data </tutorial/aggregation-zip-code-data-set>
-      Example with User Preference Data </tutorial/aggregation-with-user-preference-data>
+   /core/aggregation-pipeline-optimization
+   /core/aggregation-pipeline-limits
+   /core/aggregation-pipeline-sharded-collections
+   Example with ZIP Code Data </tutorial/aggregation-zip-code-data-set>
+   Example with User Preference Data </tutorial/aggregation-with-user-preference-data>

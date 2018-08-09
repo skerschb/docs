@@ -30,7 +30,9 @@ Definition
       the user's existing roles, use the :dbcommand:`grantRolesToUser` or
       :dbcommand:`revokeRolesFromUser` commands.
 
-   The :dbcommand:`updateUser` command uses the following syntax. 
+   The :dbcommand:`updateUser` command uses the following syntax. To
+   update a user, you must specify the ``updateUser`` field and at least
+   one other field, other than ``writeConcern``:
 
    .. code-block:: javascript
 
@@ -42,14 +44,17 @@ Definition
           { role: "<role>", db: "<database>" } | "<role>",
           ...
         ],
+        authenticationRestrictions: [
+           {
+             clientSource: ["<IP>" | "<CIDR range>", ...],
+             serverAddress: ["<IP>", | "<CIDR range>", ...]
+           },
+           ...
+        ],
+        mechanisms: [ "<scram-mechanism>", ... ],
         digestPassword: <boolean>,
-        writeConcern: { <write concern> },
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        writeConcern: { <write concern> }
       }
-
-   To update a user, you must specify the ``updateUser`` field and at
-   least one of the following fields: ``pwd``, ``customData``, or ``roles``.
 
    The command has the following fields:
 
@@ -65,13 +70,12 @@ Authentication Restrictions
 
 .. include:: /includes/fact-auth-restrictions-array-contents.rst
 
-
 Behavior
 --------
 
-:dbcommand:`updateUser` sends the password to the MongoDB instance in
-cleartext. To encrypt the password in transit, use :doc:`TLS/SSL
-</tutorial/configure-ssl>`.
+.. |command| replace:: :dbcommand:`updateUser`
+
+.. include:: /includes/fact-cleartext-passwords-tls.rst
 
 Required Access
 ---------------

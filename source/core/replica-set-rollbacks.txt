@@ -37,13 +37,17 @@ member of the replica set before the primary steps down *and* if that
 member remains available and accessible to a majority of the replica
 set.
 
+.. _rollback-data-files:
+
 Collect Rollback Data
 ---------------------
 
-When a rollback does occur, MongoDB writes the rollback data to
-:term:`BSON` files in the ``rollback/`` folder under the database's
-:setting:`~storage.dbPath` directory. The names of rollback files have
-the following form:
+.. versionchanged:: 4.0
+
+When a rollback does occur, MongoDB, by default, writes the rollback
+data to :term:`BSON` files in the ``rollback/`` folder under the
+database's :setting:`~storage.dbPath` directory. The names of rollback
+files have the following form:
 
 .. code-block:: none
 
@@ -60,6 +64,10 @@ To read the contents of the rollback files, use :doc:`bsondump
 of their applications, administrators can decide the next course of
 action to take.
 
+Starting in version 4.0, MongoDB adds the parameter
+:parameter:`createRollbackDataFiles` to control whether or not data
+files are written during rollback.
+
 Avoid Replica Set Rollbacks
 ---------------------------
 
@@ -67,7 +75,9 @@ For replica sets, the default :doc:`write concern {w: 1}
 </reference/write-concern>` only provides acknowledgement of write
 operations on the primary. With the default write concern, data may be
 rolled back if the primary steps down before the write operations have
-replicated to any of the secondaries.
+replicated to any of the secondaries. This includes data written in
+:doc:`multi-document transactions </core/transactions>` that commit
+using :writeconcern:`"w: 1" <\<number\>>` write concern.
 
 To prevent rollbacks of data that have been acknowledged to the client,
 run all voting members with journaling enabled and use :ref:`w:
@@ -75,29 +85,52 @@ majority write concern <wc-w>` to guarantee that the write operations
 propagate to a majority of the replica set nodes before returning with
 acknowledgement to the issuing client.
 
+
 .. include:: /includes/extracts/no-journaling-rollback.rst
 
 .. note::
 
    .. include:: /includes/list-visibility-of-data.rst
 
-Rollback Limitations
---------------------
 
-A :program:`mongod` instance will not rollback more than 300
-megabytes of data. If your system must rollback more than 300
-megabytes, you must manually intervene to recover the data. If
-this is the case, the following line will appear in your
-:program:`mongod` log:
+Rollback Considerations
+-----------------------
 
-.. code-block:: none
+Background Index Builds
+~~~~~~~~~~~~~~~~~~~~~~~
 
-   [replica set sync] replSet syncThread: 13410 replSet too much data to roll back
+.. versionchanged:: 4.0
 
-In this situation, save the data directly or force the member to perform
-an initial sync. To force initial sync, sync from a "current" member of
-the set by deleting the content of the :setting:`~storage.dbPath` directory for
-the member that requires a larger rollback.
+Starting in version 4.0, MongoDB waits for any in-progress
+:ref:`background index builds <index-creation-background>` to finish
+before starting a rollback.
+
+Size Limitations
+~~~~~~~~~~~~~~~~
+
+.. versionchanged:: 4.0
+
+Starting in version 4.0, MongoDB has no limit on the amount of data
+that can be rolled back.
+
+In previous versions, a :binary:`~bin.mongod` instance will not
+roll back more than 300 megabytes of data and requires manual
+intervention if more than 300 megabytes of data need to be rolled back.
+
+Time Elapsed Limitations
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. versionchanged:: 4.0
+
+Starting in version 4.0, the rollback time limit defaults to 24 hours
+and is configurable using the parameter
+:parameter:`rollbackTimeLimitSecs`. :parameter:`rollbackTimeLimitSecs`
+allows the setting of the maximum time allowed from the common point to
+the last point in the oplog of the replica set member that is indicated
+for rollback.
+
+In previous versions, the rollback time limit is not configurable and is
+set to 30 minutes.
 
 .. seealso:: :doc:`/core/replica-set-high-availability` and
    :doc:`/core/replica-set-elections`.

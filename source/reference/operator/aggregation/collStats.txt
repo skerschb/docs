@@ -62,6 +62,14 @@ Definition
         - Adds the total number of documents in the collection to the
           return document.
 
+          .. note::
+
+             The count is based on the collection's metadata, which
+             provides a fast but sometimes inaccurate count for sharded
+             clusters.
+
+          See :ref:`collstat-count`
+
           .. versionadded:: 3.6
 
    For a collection in a replica set or a
@@ -120,6 +128,12 @@ Definition
       - The total number of documents in the collection. This data is
         also available in ``storageStats.count``.
 
+        .. note::
+
+           The count is based on the collection's metadata, which
+           provides a fast but sometimes inaccurate count for sharded
+           clusters.
+
         Only present when the ``count: {}`` option is specified. Returns
         an error if applied to a :doc:`view </core/views>`.
 
@@ -128,6 +142,11 @@ Behavior
 
 ``$collStats`` must be the first stage in an aggregation pipeline, or
 else the pipeline returns an error.
+
+Transactions
+~~~~~~~~~~~~
+
+``$collStats`` is not allowed in :doc:`transactions </core/transactions>`.
 
 .. _latency-stats-document:
 
@@ -193,7 +212,7 @@ The contents of this document are dependent on the storage engine in use.
 See :ref:`collStats-output` for a reference on this document.
 
 For example, if you run ``$collStats`` with the ``storageStats: {}``
-option on a ``matrices`` collection using the :ref:`storage-mmapv1`:
+option on a ``matrices`` collection using the :ref:`storage-wiredtiger`:
 
 .. code-block:: javascript
 
@@ -230,6 +249,8 @@ This query returns a result similar to the following:
 Performing ``$collStats`` with the ``storageStats`` option on a
 :doc:`view </core/views>` results in an error.
 
+.. _collstat-count:
+
 ``count`` Field
 ~~~~~~~~~~~~~~~
 
@@ -256,9 +277,15 @@ The query returns a result similar to the following:
      "count" : 1103869
    }
 
+.. note::
+
+   The count is based on the collection's metadata, which provides a
+   fast but sometimes inaccurate count for sharded clusters.
+
 The total number of documents in the collection is also available as
 ``storageStats.count`` when ``storageStats: {}`` is specified. For more
 information, see :ref:`storage-stats-document`.
+
 
 ``$collStats`` on Sharded Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

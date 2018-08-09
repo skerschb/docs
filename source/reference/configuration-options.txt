@@ -19,19 +19,25 @@ MongoDB, see the appropriate version of the MongoDB Manual.
 Configuration File
 ------------------
 
-You can configure :program:`mongod` and :program:`mongos` instances at
+You can configure :binary:`~bin.mongod` and :binary:`~bin.mongos` instances at
 startup using a configuration file. The configuration file contains
-settings that are equivalent to the :program:`mongod` and
-:program:`mongos` command-line options.
+settings that are equivalent to the :binary:`~bin.mongod` and
+:binary:`~bin.mongos` command-line options. See :ref:`conf-file-command-line-mapping`.
 
-Using a configuration file makes managing :program:`mongod` and
-:program:`mongos` options easier, especially for large-scale
+Using a configuration file makes managing :binary:`~bin.mongod` and
+:binary:`~bin.mongos` options easier, especially for large-scale
 deployments. You can also add comments to the configuration file to
 explain the server's settings.
 
-If you installed from a package and have started MongoDB using your
-system's :term:`init script`, you are already using a configuration
-file.
+On Linux, a default :file:`/etc/mongod.conf` configuration file is
+included when using a package manager to install MongoDB.
+
+On Windows, a default :file:`<install directory>/bin/mongod.cfg`
+configuration file is included during the installation.
+
+On macOS, the installation does not include a default configuration
+file; instead, to use a configuration file, create a file.  
+
 
 File Format
 ~~~~~~~~~~~
@@ -46,7 +52,7 @@ File Format
 MongoDB configuration files use the `YAML <http://www.yaml.org>`_ format
 [#yaml-json]_.
 
-The following sample configuration file contains several :program:`mongod`
+The following sample configuration file contains several :binary:`~bin.mongod`
 settings that you may adapt to your local configuration:
 
 .. note::
@@ -72,21 +78,22 @@ settings that you may adapt to your local configuration:
    ...
 
 The Linux package init scripts included in the official MongoDB packages depend
-on specific values for :setting:`systemLog.path`, :setting:`storage.dbpath`, and
+on specific values for :setting:`systemLog.path`, :setting:`storage.dbPath`, and
 :setting:`processManagement.fork`. If you modify these settings in the default
-configuration file, :program:`mongod` may not start.
+configuration file, :binary:`~bin.mongod` may not start.
 
 .. [#yaml-json] YAML is a superset of :term:`JSON`.
 
 Use the Configuration File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To start :program:`mongod` or :program:`mongos` using a config file,
-specify the config file with the :option:`--config` option or the
-:option:`-f` option, as in the following examples:
+To configure :binary:`~bin.mongod` or :binary:`~bin.mongos` using a config file,
+specify the config file with the ``--config`` option or the
+``-f`` option, as in the following examples:
 
-The following examples use the :option:`--config` option for
-:program:`mongod` and :program:`mongos`:
+For example, the following uses :option:`mongod --config
+\<configuration file\> <mongod --config>` :option:`mongos --config
+\<configuration file\> <mongos --config>`:
 
 .. code-block:: sh
 
@@ -94,7 +101,7 @@ The following examples use the :option:`--config` option for
 
    mongos --config /etc/mongos.conf
 
-You can also use the :option:`-f` alias to specify the configuration
+You can also use the ``-f`` alias to specify the configuration
 file, as in the following:
 
 .. code-block:: sh
@@ -165,9 +172,17 @@ Core Options
 
          # COMMENT some component verbosity settings omitted for brevity
 
+         replication:
+            verbosity: <int>
+            heartbeats:
+               verbosity: <int>
+            rollback:
+               verbosity: <int>
          storage:
             verbosity: <int>
             journal:
+               verbosity: <int>
+            recovery:
                verbosity: <int>
          write:
             verbosity: <int>
@@ -190,11 +205,17 @@ Core Options
 
 .. include:: /includes/option/setting-conf-systemLog.component.replication.verbosity.rst
 
+.. include:: /includes/option/setting-conf-systemLog.component.replication.heartbeats.verbosity.rst
+
+.. include:: /includes/option/setting-conf-systemLog.component.replication.rollback.verbosity.rst
+
 .. include:: /includes/option/setting-conf-systemLog.component.sharding.verbosity.rst
 
 .. include:: /includes/option/setting-conf-systemLog.component.storage.verbosity.rst
 
 .. include:: /includes/option/setting-conf-systemLog.component.storage.journal.verbosity.rst
+
+.. include:: /includes/option/setting-conf-systemLog.component.storage.recovery.verbosity.rst
 
 .. include:: /includes/option/setting-conf-systemLog.component.write.verbosity.rst
 
@@ -211,6 +232,26 @@ Core Options
 .. include:: /includes/option/setting-conf-processManagement.fork.rst
 .. include:: /includes/option/setting-conf-processManagement.pidFilePath.rst
 .. include:: /includes/option/setting-conf-processManagement.timeZoneInfo.rst
+
+.. _free-monitoring-configuration-options:
+
+``cloud`` Options
+~~~~~~~~~~~~~~~~~
+
+.. versionadded:: 4.0
+
+.. code-block:: yaml
+
+   cloud:
+      monitoring:
+         free:
+            state: <string>
+            tag: <string>
+
+.. include:: /includes/option/setting-conf-cloud.monitoring.free.state.rst
+
+.. include:: /includes/option/setting-conf-cloud.monitoring.free.tag.rst
+
 
 ``net`` Options
 ~~~~~~~~~~~~~~~
@@ -230,6 +271,8 @@ Core Options
          filePermissions: <int>
       ssl:
          sslOnNormalPorts: <boolean>  # deprecated since 2.6
+         certificateSelector: <string>
+         clusterCertificateSelector: <string>
          mode: <string>
          PEMKeyFile: <string>
          PEMKeyPassword: <string>
@@ -244,6 +287,7 @@ Core Options
          FIPSMode: <boolean>
       compression:
          compressors: <string>
+      serviceExecutor: <string>
 
 .. include:: /includes/option/setting-conf-net.port.rst
 
@@ -293,6 +337,8 @@ Core Options
          mode: <string>
          PEMKeyFile: <string>
          PEMKeyPassword: <string>
+         certificateSelector: <string>
+         clusterCertificateSelector: <string>
          clusterFile: <string>
          clusterPassword: <string>
          CAFile: <string>
@@ -310,6 +356,10 @@ Core Options
 .. include:: /includes/option/setting-conf-net.ssl.PEMKeyFile.rst
 
 .. include:: /includes/option/setting-conf-net.ssl.PEMKeyPassword.rst
+
+.. include:: /includes/option/setting-conf-net.ssl.certificateSelector.rst
+
+.. include:: /includes/option/setting-conf-net.ssl.clusterCertificateSelector.rst
 
 .. include:: /includes/option/setting-conf-net.ssl.clusterFile.rst
 
@@ -341,6 +391,8 @@ Core Options
 
 .. include:: /includes/option/setting-conf-net.compression.compressors.rst
 
+.. include:: /includes/option/setting-conf-net.serviceExecutor.rst
+
 ``security`` Options
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -367,6 +419,7 @@ Core Options
          port: <string>
          clientCertificateFile: <string>
          clientCertificatePassword: <string>
+         clientCertificateSelector: <string>
          serverCAFile: <string>
       ldap:
          servers: <string>
@@ -412,6 +465,7 @@ Key Management Configuration Options
          port: <string>
          clientCertificateFile: <string>
          clientCertificatePassword: <string>
+         clientCertificateSelector: <string>
          serverCAFile: <string>
 
 .. include:: /includes/option/setting-conf-security.enableEncryption.rst
@@ -431,6 +485,8 @@ Key Management Configuration Options
 .. include:: /includes/option/setting-conf-security.kmip.clientCertificateFile.rst
 
 .. include:: /includes/option/setting-conf-security.kmip.clientCertificatePassword.rst
+
+.. include:: /includes/option/setting-conf-security.kmip.clientCertificateSelector.rst
 
 .. include:: /includes/option/setting-conf-security.kmip.serverCAFile.rst
 
@@ -566,6 +622,11 @@ LDAP Parameters
 ``storage.mmapv1`` Options
 ``````````````````````````
 
+.. admonition:: Deprecated
+   :class: warning
+
+   .. include:: /includes/fact-4.0-mmapv1-deprecated.rst
+
 .. code-block:: yaml
 
    storage:
@@ -633,18 +694,26 @@ LDAP Parameters
 
 .. include:: /includes/option/setting-conf-storage.inMemory.engineConfig.inMemorySizeGB.rst
 
+.. _operation-profiling-configuration-options:
+
 ``operationProfiling`` Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: yaml
 
    operationProfiling:
-      slowOpThresholdMs: <int>
       mode: <string>
+      slowOpThresholdMs: <int>
+      slowOpSampleRate: <double>
 
+.. _configuration-profiling-mode:
+.. include:: /includes/option/setting-conf-operationProfiling.mode.rst
+
+.. _configuration-profiling-slowOpThresholdMs:
 .. include:: /includes/option/setting-conf-operationProfiling.slowOpThresholdMs.rst
 
-.. include:: /includes/option/setting-conf-operationProfiling.mode.rst
+.. _configuration-profiling-slowOpSampleRate:
+.. include:: /includes/option/setting-conf-operationProfiling.slowOpSampleRate.rst
 
 ``replication`` Options
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -655,7 +724,7 @@ LDAP Parameters
       oplogSizeMB: <int>
       replSetName: <string>
       secondaryIndexPrefetch: <string>
-      enableMajorityReadConcern: <boolean>
+      enableMajorityReadConcern: <boolean>  ## Deprecated in 3.6
 
 .. include:: /includes/option/setting-conf-replication.oplogSizeMB.rst
 
@@ -765,3 +834,9 @@ Windows Service Options
 .. include:: /includes/option/setting-conf-processManagement.windowsService.serviceUser.rst
 
 .. include:: /includes/option/setting-conf-processManagement.windowsService.servicePassword.rst
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+
+   /reference/configuration-file-settings-command-line-options-mapping

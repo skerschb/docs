@@ -1,12 +1,11 @@
 name: find
 type: string
-optional: false 
+optional: false
 description: |
    The name of the collection or :doc:`view </core/views>` to query.
 arg_name: field
 operation: find
 interface: command
-position: 1
 ---
 name: filter
 type: document
@@ -17,7 +16,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 2
 ---
 name: sort
 type: document
@@ -27,7 +25,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 3
 ---
 name: projection
 type: document
@@ -42,7 +39,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 4
 ---
 name: hint
 type: string or document
@@ -54,7 +50,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 5
 ---
 name: skip
 type: Positive integer
@@ -64,7 +59,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 6
 ---
 name: limit
 type: Non-negative integer
@@ -76,7 +70,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 7
 ---
 name: batchSize
 type: non-negative integer
@@ -91,7 +84,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 8
 ---
 name: singleBatch
 type: boolean
@@ -102,7 +94,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 9
 ---
 name: comment
 type: string
@@ -113,7 +104,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 10
 ---
 name: maxScan
 type:  positive integer
@@ -121,10 +111,15 @@ optional: true
 description: |
    Maximum number of documents or index keys to scan when executing the
    query.
+
+   .. deprecated:: 4.0
+
+      MongoDB deprecates the option ``maxScan``. Use ``maxTimeMS``
+      instead.
+
 arg_name: field
 operation: find
 interface: command
-position: 11
 ---
 name: maxTimeMS
 type:  positive integer
@@ -139,18 +134,14 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 12
 ---
 name: readConcern
 type: document
 optional: true
 description: |
-   Specifies the :term:`read concern`. The option has the following
-   syntax:
+   Specifies the :term:`read concern`.
 
-   .. code-block:: javascript
-
-      readConcern: { level: <value> }
+   .. include:: /includes/fact-readConcern-syntax.rst
 
    .. include:: /includes/fact-readConcern-option-description.rst
 
@@ -160,7 +151,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 13
 ---
 name: max
 type: document
@@ -171,7 +161,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 14
 ---
 name: min
 type: document
@@ -182,7 +171,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 15
 ---
 name: returnKey
 type: boolean
@@ -194,7 +182,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 16
 ---
 name: showRecordId
 type: boolean
@@ -205,18 +192,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 17
----
-name: snapshot
-type: boolean
-optional: true
-description: |
-   Prevents the cursor from returning a document more than once because
-   of an intervening write operation.
-arg_name: field
-operation: find
-interface: command
-position: 18
 ---
 name: tailable
 type: boolean
@@ -226,7 +201,6 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 19
 ---
 name: awaitData
 type: boolean
@@ -239,22 +213,40 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 20
 ---
 name: oplogReplay
 type: boolean
 optional: true
 description: |
-   Internal use for replica sets. To use oplogReplay, you must include
-   the following condition in the filter:
+   An internal command for replaying a :ref:`replica set's oplog
+   <replica-set-oplog>`.
+
+   To use ``oplogReplay``, the ``find`` field must refer to a
+   :doc:`capped collection </core/capped-collections>` and you must
+   provide a ``filter`` option comparing the ``ts`` document field to a
+   :data:`timestamp` using one of the following comparison operators:
+
+   * :expression:`$gte`
+   * :expression:`$gt`
+   * :expression:`$eq`
+
+   For example, the following command replays documents from the ``data``
+   :doc:`capped collection </core/capped-collections>` with a timestamp
+   later than or equal to January 1st, 2018 UTC:
 
    .. code-block:: javascript
 
-      { ts: { $gte: <timestamp> } }
+      { find: "data",
+        oplogReplay: true,
+        filter: { ts: { $gte: new Timestamp(1514764800, 0) } } }
+
+   .. versionchanged:: 3.6
+
+      :expression:`$eq` is now supported.
+
 arg_name: field
 operation: find
 interface: command
-position: 21
 ---
 name: noCursorTimeout
 type: boolean
@@ -265,19 +257,17 @@ description: |
 arg_name: field
 operation: find
 interface: command
-position: 22
 ---
 name: allowPartialResults
 type: boolean
 optional: true
 description: |
    For queries against a sharded collection, returns partial results from
-   the :program:`mongos` if some shards are unavailable instead of
+   the :binary:`~bin.mongos` if some shards are unavailable instead of
    throwing an error.
 arg_name: field
 operation: find
 interface: command
-position: 23
 ---
 arg_name: field
 operation: find
@@ -288,34 +278,3 @@ source:
   ref: collation
 ...
 
----
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: document
-...

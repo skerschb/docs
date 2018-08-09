@@ -37,6 +37,9 @@ description: |
   A document expressing the :doc:`write concern </reference/write-concern>`
   of the :dbcommand:`update` command. Omit to use the default write
   concern.
+
+  .. include:: /includes/extracts/transactions-operations-write-concern.rst
+
 interface: dbcommand
 name: writeConcern
 operation: update
@@ -51,53 +54,4 @@ position: 5
 replacement:
   verb: "update"
 operation: update
----
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: document
----
-name: stmtIds
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-stmtIds.rst
-
-   .. versionadded:: 3.6
-
-   .. |operation| replace:: update
-
-   .. |operations| replace:: update statements
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: update
-arg_name: field
-type: Array of 32-bit integers
 ...

@@ -1,3 +1,5 @@
+.. _replication:
+
 ===========
 Replication
 ===========
@@ -13,7 +15,7 @@ Replication
    :depth: 1
    :class: singlecol
 
-A *replica set* in MongoDB is a group of :program:`mongod` processes
+A *replica set* in MongoDB is a group of :binary:`~bin.mongod` processes
 that maintain the same data set. Replica sets provide redundancy and
 high availability, and are the basis for all production deployments.
 This section introduces replication in MongoDB as well as the
@@ -38,7 +40,7 @@ reporting, or backup.
 Replication in MongoDB
 ----------------------
 
-A replica set is a group of :program:`mongod` instances that maintain
+A replica set is a group of :binary:`~bin.mongod` instances that maintain
 the same data set. A replica set contains several data bearing nodes
 and optionally one arbiter node. Of the data bearing nodes, one and
 only one member is deemed the primary node, while the other nodes are
@@ -65,7 +67,7 @@ members, see :doc:`/core/replica-set-secondary`.
 
 .. include:: /images/replica-set-primary-with-two-secondaries.rst
 
-You may add an extra :program:`mongod` instance to a replica set as an
+You may add an extra :binary:`~bin.mongod` instance to a replica set as an
 :doc:`arbiter </core/replica-set-arbiter>`. Arbiters do not maintain a
 data set. The purpose of an arbiter is to maintain a quorum in a
 replica set by responding to heartbeat and election requests by other
@@ -96,36 +98,50 @@ despite the failure of one or more members. For more information on
 replication mechanics, see :ref:`replica-set-oplog` and
 :ref:`replica-set-sync`.
 
-.. _replicaton-auto-failover:
+.. _replication-auto-failover:
 
 Automatic Failover
 ------------------
 
 When a primary does not communicate with the other members of the set
-for more than 10 seconds, an eligible secondary will hold an election
-to elect itself the new primary. The first secondary to hold an
-election and receive a majority of the members' votes becomes primary.
-
-.. include:: /includes/fact-replica-set-protocolVersion1.rst
+for more than the configured :rsconf:`electionTimeoutMillis` period
+(10 seconds by default), an eligible secondary calls for an election
+to nominate itself as the new primary. The cluster attempts to
+complete the election of a new primary and resume normal operations.
 
 .. include:: /images/replica-set-trigger-election.rst
 
-Although the timing varies, the failover process generally completes
-within a minute. For instance, it may take 10-30 seconds for the
-members of a :term:`replica set` to declare a :term:`primary`
-inaccessible (see :rsconf:`~settings.electionTimeoutMillis`). One of
-the remaining secondaries holds an :term:`election` to elect itself as
-a new primary. The election itself may take another 10-30 seconds.
+The replica set cannot process write operations
+until the election completes successfully.  The replica set can continue
+to serve read queries if such queries are configured to
+:ref:`run on secondaries <replica-set-read-preference>` while the
+primary is offline.
 
-.. versionchanged:: 3.2
+.. include:: /includes/fact-election-latency.rst
 
-   Starting in MongoDB 3.2, with the :ref:`replication election
-   enhancements <3.2-rel-notes-rs-enhancements>`, MongoDB reduces
-   replica set failover time. See :ref:`replication election
-   enhancements <3.2-rel-notes-rs-enhancements>` for details.
-   
-See :ref:`replica-set-elections` and
-:ref:`replica-set-rollbacks` for more information.
+Lowering the :rsconf:`~settings.electionTimeoutMillis`
+replication configuration option from the default ``10000`` (10 seconds)
+can result in faster detection of primary failure. However,
+the cluster may call elections more frequently due to factors such as
+temporary network latency even if the primary is otherwise healthy.
+This can result in increased :ref:`rollbacks <replica-set-rollback>` for
+:ref:`w : 1 <wc-w>` write operations.
+
+.. include:: /includes/fact-retryable-writes-failover-election.rst
+
+See :ref:`replica-set-elections` for complete documentation on
+replica set elections.
+
+To learn more about MongoDB's failover process, see:
+
+- :ref:`replica-set-elections`
+- :ref:`retryable-writes`
+- :ref:`replica-set-rollback`
+
+.. seealso:
+
+   :ref:`write-concern`
+
 
 Read Operations
 ---------------
@@ -138,10 +154,30 @@ secondaries means that reads from secondaries may return data that does
 not reflect the state of the data on the primary. For information on
 reading from replica sets, see :doc:`/core/read-preference`.
 
+.. include:: /includes/extracts/transactions-read-pref.rst
+
 .. include:: /includes/extracts/concurrent-operations-read-uncommitted.rst
 
 For more information on read isolations, consistency and recency for
 MongoDB, see :doc:`/core/read-isolation-consistency-recency`.
+
+Transactions
+------------
+
+Starting in MongoDB 4.0, :doc:`multi-document transactions
+</core/transactions>` are available for replica sets.
+
+.. include:: /includes/extracts/transactions-read-pref.rst
+
+Change Streams
+--------------
+
+Starting in MongoDB 3.6, :doc:`change streams </changeStreams>` are
+available for replica sets and sharded clusters. Change streams allow
+applications to access real-time data changes without the complexity
+and risk of tailing the oplog. Applications can use change streams to
+subscribe to all data changes on a collection or collections.
+
 
 Additional Features
 -------------------
@@ -163,18 +199,17 @@ See :ref:`replica-set-secondary-only-members`,
 
    .. include:: /includes/footnote-two-primaries-edge-cases.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-  .. toctree::
-    :titlesonly:
-    	
-    /core/replica-set-members
-    /core/replica-set-oplog
-    /core/replica-set-sync
-    /core/replica-set-architectures
-    /core/replica-set-high-availability
-    /reference/replica-set-protocol-versions
-    /core/master-slave
-    /applications/replication
-    /administration/replica-sets
-    /reference/replication
+   /core/replica-set-members
+   /core/replica-set-oplog
+   /core/replica-set-sync
+   /core/replica-set-architectures
+   Replica Set High Availability </core/replica-set-high-availability>
+   /applications/replication
+   /administration/replica-set-deployment
+   /administration/replica-set-member-configuration
+   /administration/replica-set-maintenance
+   /reference/replication

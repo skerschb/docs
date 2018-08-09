@@ -20,9 +20,9 @@ Sharded Collection as Input
 ---------------------------
 
 When using sharded collection as the input for a map-reduce operation,
-:program:`mongos` will automatically dispatch the map-reduce job to
+:binary:`~bin.mongos` will automatically dispatch the map-reduce job to
 each shard in parallel. There is no special option
-required. :program:`mongos` will wait for jobs on all shards to
+required. :binary:`~bin.mongos` will wait for jobs on all shards to
 finish.
 
 Sharded Collection as Output
@@ -37,11 +37,14 @@ To output to a sharded collection:
 - If the output collection does not exist, MongoDB creates and shards
   the collection on the ``_id`` field.
 
+- Starting in version 4.0, if the output collection already exists and 
+  is not sharded, map-reduce fails.
+
 - For a new or an empty sharded collection, MongoDB uses the results of
   the first stage of the map-reduce operation to create the initial
   :term:`chunks <chunk>` distributed among the shards.
 
-- :program:`mongos` dispatches, in parallel, a map-reduce
+- :binary:`~bin.mongos` dispatches, in parallel, a map-reduce
   post-processing job to every shard that owns a chunk. During the
   post-processing, each shard will pull the results
   for its own chunks from the other shards, run the final
@@ -53,20 +56,3 @@ To output to a sharded collection:
 
    - Balancing of chunks for the output collection is automatically
      prevented during post-processing to avoid concurrency issues.
-
-In MongoDB 2.0:
-
-- :program:`mongos` retrieves the results from each shard,
-  performs a merge sort to order the results, and proceeds to the reduce/finalize phase as
-  needed. :program:`mongos` then writes the result to the output
-  collection in sharded mode.
-
-- This model requires only a small amount of memory, even for large data sets.
-
-- Shard chunks are not automatically split during insertion. This
-  requires manual intervention until the chunks are granular and
-  balanced.
-
-.. important::
-   For best results, only use the sharded output options for
-   :dbcommand:`mapReduce` in version 2.2 or later.

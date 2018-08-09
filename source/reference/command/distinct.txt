@@ -20,9 +20,7 @@ Definition
    an array of the distinct values. The return document also contains
    an embedded document with query statistics and the query plan.
 
-   The command takes the following form:
-
-   .. versionchanged:: 3.6
+   The command takes the following form
 
    .. code-block:: javascript
 
@@ -31,22 +29,25 @@ Definition
         key: "<field>",
         query: <query>,
         readConcern: <read concern document>,
-        collation: <collation document>,
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        collation: <collation document>
       }
 
    The command contains the following fields:
 
    .. include:: /includes/apiargs/dbcommand-distinct-field.rst
 
+   .. include:: /includes/note-distinct-bson-limit-agg-alternative.rst
+
    MongoDB also provides the shell wrapper method
    :method:`db.collection.distinct()` for the :dbcommand:`distinct`
-   command. Additionally, many MongoDB :term:`drivers <driver>` also
+   command. Additionally, many MongoDB :term:`drivers <driver>`
    provide a wrapper method. Refer to the specific driver documentation.
 
 Behavior
 --------
+
+In a :term:`sharded cluster`, the :dbcommand:`distinct` command may return
+:term:`orphaned documents <orphaned document>`.
 
 .. _distinct-command-array-behavior:
 
@@ -61,6 +62,15 @@ Index Use
 ~~~~~~~~~
 
 .. include:: /includes/extracts/fact-distinct-command-index-use.rst
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :dbcommand:`distinct`
 
 Examples
 --------

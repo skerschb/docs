@@ -20,15 +20,14 @@ an :doc:`overview of replication </replication>`, including details on:
 
 - :doc:`/core/replica-set-elections`
 
-What kinds of replication does MongoDB support?
------------------------------------------------
+What kind of replication does MongoDB support?
+----------------------------------------------
 
 MongoDB supports :doc:`replica sets </replication>`, which can have up
 to :ref:`50 nodes <3.0-replica-sets-max-members>`.
 
-MongoDB also supports master-slave replication; however, replica sets
-are the recommended replication topology. However, if your deployment
-requires more than 50 nodes, you must use master/slave replication.
+MongoDB 4.0 :ref:`removes support for the deprecated master-slave
+replication <4.0-remove-master-slave>`.
 
 Does replication work over the Internet and WAN connections?
 ------------------------------------------------------------
@@ -66,7 +65,7 @@ against power failures, especially if your replica set resides in a single data
 center or power circuit.
 
 When a :term:`replica set` runs with journaling, you can safely restart
-:program:`mongod` instances without additional intervention.
+:binary:`~bin.mongod` instances without additional intervention.
 
 .. note::
 

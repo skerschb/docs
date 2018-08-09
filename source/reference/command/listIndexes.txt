@@ -21,14 +21,14 @@ Definition
    Specifically, the command returns a document that contains
    information with which to create a cursor to the index information.
    Index information includes the keys and options used to create the
-   index. The :program:`mongo` shell provides the
+   index. The :binary:`~bin.mongo` shell provides the
    :method:`db.collection.getIndexes()` helper.
 
    The command has the following form:
 
    .. code-block:: javascript
 
-      { "listIndexes": "<collection-name>", txnNumber: <long>, lsid: { id: <UUID> } }
+      { "listIndexes": "<collection-name>" }
 
    .. include:: /includes/apiargs/dbcommand-listIndexes-field.rst
 

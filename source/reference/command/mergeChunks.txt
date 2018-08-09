@@ -18,35 +18,25 @@ Definition
    For a sharded collection, :dbcommand:`mergeChunks` combines
    contiguous :term:`chunk` ranges on a shard into a single
    chunk. Issue the :dbcommand:`mergeChunks` command from a
-   :program:`mongos` instance.
+   :binary:`~bin.mongos` instance.
 
    :dbcommand:`mergeChunks` has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      db.runCommand( { 
-         mergeChunks : <namespace> ,
-         bounds : [ { <shardKeyField>: <minFieldValue> }, { <shardKeyField>: <maxFieldValue> } ],
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
-      } )
+      db.runCommand( { mergeChunks : <namespace> ,
+                       bounds : [ { <shardKeyField>: <minFieldValue> },
+                                  { <shardKeyField>: <maxFieldValue> } ] } )
 
    For compound shard keys, you must include the full shard key in the
    ``bounds`` specification. If the shard key is ``{ x: 1, y: 1 }``,
    :dbcommand:`mergeChunks` has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      db.runCommand( { 
-         mergeChunks : <namespace> ,
-         bounds : [ { x: <minValue>, y: <minValue> }, { x: <maxValue>, y: <maxValue> } ],
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
-      } )
+      db.runCommand( { mergeChunks : <namespace> ,
+                       bounds : [ { x: <minValue>, y: <minValue> },
+                                  { x: <maxValue>, y: <maxValue> } ] } )
 
    The :dbcommand:`mergeChunks` command has the following fields:
 
@@ -80,7 +70,17 @@ On success, :dbcommand:`mergeChunks` returns to following document:
 
 .. code-block:: javascript
 
-   { "ok" : 1 }
+   {
+     "ok" : 1,
+     "$clusterTime" : {
+        "clusterTime" : Timestamp(1510767081, 1),
+        "signature" : {
+            "hash" : BinData(0,"okKHD0QuzcpbVQg7mP2YFw6lM04="),
+            "keyId" : NumberLong("6488693018630029321")
+         }
+     },
+     "operationTime" : Timestamp(1510767081, 1)
+   }
 
 Another Operation in Progress
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -105,8 +105,16 @@ If the input :term:`chunks <chunk>` are not on the same :term:`shard`,
 .. code-block:: javascript
 
    {
-      "ok" : 0,
-      "errmsg" : "could not merge chunks, collection test.users does not contain a chunk ending at { username: \"user63169\" }"
+     "ok" : 0,
+     "errmsg" : "could not merge chunks, collection test.users does not contain a chunk ending at { username: \"user63169\" }",
+     "$clusterTime" : {
+        "clusterTime" : Timestamp(1510767081, 1),
+        "signature" : {
+            "hash" : BinData(0,"okKHD0QuzcpbVQg7mP2YFw6lM04="),
+            "keyId" : NumberLong("6488693018630029321")
+         }
+     },
+     "operationTime" : Timestamp(1510767081, 1)
    }
 
 Noncontiguous Chunks
@@ -118,8 +126,17 @@ If the input :term:`chunks <chunk>` are not contiguous,
 .. code-block:: javascript
 
    {
-      "ok" : 0,
-      "errmsg" : "could not merge chunks, collection test.users has more than 2 chunks between [{ username: \"user29937\" }, { username: \"user49877\" })"
+     "ok" : 0,
+     "errmsg" : "could not merge chunks, collection test.users has more than 2 chunks between [{ username: \"user29937\" }, { username: \"user49877\" })"
+     "$clusterTime" : {
+        "clusterTime" : Timestamp(1510767081, 1),
+        "signature" : {
+            "hash" : BinData(0,"okKHD0QuzcpbVQg7mP2YFw6lM04="),
+            "keyId" : NumberLong("6488693018630029321")
+         }
+     },
+     "operationTime" : Timestamp(1510767081, 1)
+
    }
 
 .. admin-only

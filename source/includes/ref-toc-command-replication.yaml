@@ -6,6 +6,11 @@ name: ":dbcommand:`isMaster`"
 file: /reference/command/isMaster
 description: "Displays information about this member's role in the replica set, including whether it is the master."
 ---
+name: ":dbcommand:`replSetAbortPrimaryCatchUp`"
+file: /reference/command/replSetAbortPrimaryCatchUp
+description: "Forces the elected :term:`primary` to abort sync (catch
+up) then complete the transition to primary."
+---
 name: ":dbcommand:`replSetFreeze`"
 file: /reference/command/replSetFreeze
 description: "Prevents the current member from seeking election as :term:`primary` for a period of time."
@@ -30,6 +35,10 @@ name: ":dbcommand:`replSetReconfig`"
 file: /reference/command/replSetReconfig
 description: "Applies a new configuration to an existing replica set."
 ---
+name: ":dbcommand:`replSetResizeOplog`"
+file: /reference/command/replSetResizeOplog
+description: "Dynamically resizes the oplog for a replica set member.  Available for WiredTiger storage engine only."
+---
 name: ":dbcommand:`replSetStepDown`"
 file: /reference/command/replSetStepDown
 description: "Forces the current :term:`primary` to *step down* and become a :term:`secondary`, forcing an election."
@@ -37,8 +46,4 @@ description: "Forces the current :term:`primary` to *step down* and become a :te
 name: ":dbcommand:`replSetSyncFrom`"
 file: /reference/command/replSetSyncFrom
 description: "Explicitly override the default logic for selecting a member to replicate from."
----
-name: ":dbcommand:`resync`"
-file: /reference/command/resync
-description: "Forces a :program:`mongod` to re-synchronize from the :term:`master`. For master-slave replication only. "
 ...

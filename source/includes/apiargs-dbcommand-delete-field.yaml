@@ -37,59 +37,13 @@ description: |
   A document expressing the :doc:`write concern </reference/write-concern>`
   of the :dbcommand:`delete` command. Omit to use the default write
   concern.
+
+  .. include:: /includes/extracts/transactions-operations-write-concern.rst
+
 interface: dbcommand
 name: writeConcern
 operation: delete
 optional: true
 position: 4
 type: document
----
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: delete
-arg_name: field
-type: document
----
-name: stmtIds
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-stmtIds.rst
-
-   .. versionadded:: 3.6
-
-   .. |operation| replace:: delete
-
-   .. |operations| replace:: delete statements
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: delete
-arg_name: field
-type: Array of 32-bit integers
 ...

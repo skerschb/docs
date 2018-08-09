@@ -1,7 +1,7 @@
 define: base https://docs.mongodb.com
-define: versions v2.2 v2.4 v2.6 v3.0 v3.2 v3.4 v3.6 master
-symlink: v3.6 -> master
-symlink: manual -> v3.4
+define: versions v2.2 v2.4 v2.6 v3.0 v3.2 v3.4 v3.6 v4.0 master
+symlink: manual -> v4.0
+symlink: v4.0 -> master
 
 [v2.2]: /${version}/core/read-operations-introduction -> ${base}/${version}/core/read-operations
 [v2.2]: /${version}/core/write-operations-introduction -> ${base}/${version}/core/write-operations
@@ -963,6 +963,9 @@ raw: /manual/release-notes/3.3-dev-series-compatibility -> ${base}/manual/releas
 raw: /master/release-notes/3.3-dev-series-compatibility -> ${base}/master/release-notes/3.4-compatibility
 raw: /manual/release-notes/3.3-dev-series-reference -> ${base}/manual/release-notes/3.4-reference
 raw: /master/release-notes/3.3-dev-series-reference -> ${base}/master/release-notes/3.4-reference
+
+[*-v3.0]: /${version}/tutorial/deploy-sharded-cluster-with-keyfile-access-control -> ${base}/${version}/administration/security
+[*-v3.0]: /${version}/tutorial/enforce-keyfile-access-control-in-existing-sharded-cluster -> ${base}/${version}/tutorial/enable-internal-authentication
 [*-v3.2]: /${version}/release-notes/3.4-compatibility -> ${base}/${version}/release-notes/
 [*-v3.0]: /${version}/release-notes/3.4 -> ${base}/${version}/release-notes/
 [*-v3.2]: /${version}/release-notes/3.4-compatibility -> ${base}/${version}/release-notes/
@@ -1305,7 +1308,6 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [*-v3.0]: /${version}/reference/method/db.collection.replaceOne -> ${base}/${version}/reference/method/db.collection.update
 [*-v3.0]: /${version}/reference/method/db.collection.updateMany -> ${base}/${version}/reference/method/db.collection.update
 [*-v3.0]: /${version}/reference/method/db.collection.updateOne -> ${base}/${version}/reference/method/db.collection.update
-[v3.0]: /${version}/reference/write-concern -> ${base}/${version}/reference/write-concern
 [*-v3.0]: /${version}/tutorial/upgrade-config-servers-to-replica-set -> ${base}/${version}/tutorial/deploy-config-servers
 [*-v3.0]: /${version}/tutorial/upgrade-config-servers-to-replica-set-downtime -> ${base}/${version}/tutorial/deploy-config-servers
 [*-v3.0]: /${version}/core/read-isolation-consistency-recency -> ${base}/${version}/core/read-operations-introduction
@@ -1332,8 +1334,8 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [*-v3.4]: /${version}/reference/operator/query/expr -> ${base}/${version}/reference/operator/query
 [*-v3.4]: /${version}/release-notes/3.6-compatibility -> ${base}/${version}/release-notes
 [*-v3.4]: /${version}/release-notes/3.6 -> ${base}/${version}/release-notes
-[*-v3.4]: /${version}/reference/operator/aggregation/arrayToObject -> ${base}/${version}/reference/operator/aggregation
-[*-v3.4]: /${version}/reference/operator/aggregation/objectToArray -> ${base}/${version}/reference/operator/aggregation
+[*-v3.2]: /${version}/reference/operator/aggregation/arrayToObject -> ${base}/${version}/reference/operator/aggregation
+[*-v3.2]: /${version}/reference/operator/aggregation/objectToArray -> ${base}/${version}/reference/operator/aggregation
 [*-v3.4]: /${version}/reference/operator/aggregation/mergeObjects -> ${base}/${version}/reference/operator/aggregation
 [*-v3.4]: /${version}/reference/operator/aggregation/dateFromString -> ${base}/${version}/reference/operator/aggregation
 [*-v3.4]: /${version}/reference/operator/aggregation/dateFromParts -> ${base}/${version}/reference/operator/aggregation
@@ -1341,18 +1343,119 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [*-v3.4]: /${version}/reference/operator/update/positional-filtered -> ${base}/${version}/reference/operator/update
 [*-v3.4]: /${version}/reference/operator/update/positional-all -> ${base}/${version}/reference/operator/update
 [*-v3.4]: /${version}/reference/method/db.aggregate -> ${base}/${version}/reference/method/db.collection.aggregate
+[*-v3.4]: /${version}/reference/operator/query/jsonSchema -> ${base}/${version}/core/document-validation
+[*-v3.4]: /${version}/reference/command/replSetResizeOplog -> ${base}/${version}/reference/command
+[*-v3.0]: /${version}/reference/method/db.collection.createIndexes -> ${base}/${version}/reference/method/db.collection.createIndex
+[v3.6-*]: /${version}/reference/program/mongooplog -> ${base}/${version}/reference/program
+[v3.6-*]: /${version}/core/document-validation -> ${base}/${version}/core/schema-validation
+[*-v3.4]: /${version}/core/schema-validation -> ${base}/${version}/core/document-validation
+[v3.6-*]: /${version}/reference/method/sh.getBalancerLockDetails -> ${base}/${version}/reference/method/js-sharding
+[*-v3.2]: /${version}/reference/method/sh.disableAutoSplit -> ${base}/${version}/reference/program/mongos
+[*-v3.2]: /${version}/reference/method/sh.enableAutoSplit -> ${base}/${version}/reference/program/mongos
+[v3.0-*]: /${version}/core/security-scram-sha-1 -> ${base}/${version}/core/security-scram
+[*-v2.6]: /${version}/core/security-scram -> ${base}/${version}/core/security-scram-sha-1
+
+[*-v3.2]: /${version}/reference/command/fsyncUnlock -> ${base}/${version}/reference/method/db.fsyncUnlock
+
+[*-v3.4]: /${version}/changeStreams -> ${base}/${version}/replication
+[*-v3.4]: /${version}/administration/change-streams-production-recommendations -> ${base}/${version}/replication
+[*-v3.4]: /${version}/reference/change-events -> ${base}/${version}/replication
+
+[v3.6-*]: /${version}/reference/operator/aggregation-arithmetic -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-array -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-boolean -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-comparison -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-conditional -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-data-type -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-date -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-group -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-literal -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-projection -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-set -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-string -> ${base}/${version}/reference/operator/aggregation
+[v3.6-*]: /${version}/reference/operator/aggregation-text-search -> ${base}/${version}/reference/operator/aggregation
+
+
+[v3.6-*]: /${version}/tutorial/upgrade-config-servers-to-replica-set -> ${base}/v3.2/tutorial/upgrade-config-servers-to-replica-set
+[v3.6-*]: /${version}/tutorial/upgrade-config-servers-to-replica-set-downtime -> ${base}/v3.2/tutorial/upgrade-config-servers-to-replica-set-downtime
+[v3.4-*]: /${version}/tutorial/change-config-server-wiredtiger -> ${base}/v3.2/tutorial/change-config-server-wiredtiger
+
+[v3.6-v3.6]: /${version}/tutorial/change-streams-example -> ${base}/${version}/changeStreams
+
+[v3.6-*]: /${version}/core/data-modeling-json-schema -> ${base}/${version}/core/schema-validation
+[v3.6-*]: /${version}/core/distributed-write-operations -> ${base}/${version}/core/distributed-queries
+[v3.6-*]: /${version}/reference/operator/meta/snapshot -> ${base}/${version}/reference/operator/meta
+[v3.6-*]: /${version}/reference/operator/update-isolation -> ${base}/${version}/reference/operator/update
+[v3.6-*]: /${version}/reference/operator/update/isolated  -> ${base}/${version}/reference/operator/update
+[v3.6-*]: /${version}/reference/method/cursor.snapshot -> ${base}/${version}/reference/method/
+[v3.6-*]: /${version}/administration/replica-sets -> ${base}/${version}/replication
+
+# Redirects for 4.0
+
+[v4.0-*]: /${version}/upcoming -> ${base}/${version}/core/transactions
+
+# Redirects for 4.0 and greater
+
+[v4.0-*]: /${version}/core/security-mongodb-cr -> ${base}/${version}/core/security-scram
+[v4.0-*]: /${version}/reference/command/authSchemaUpgrade  -> ${base}/${version}/core/security-scram
+[v4.0-*]: /${version}/reference/command/copydbgetnonce  -> ${base}/${version}/reference/command/copydb
+[v4.0-*]: /${version}/reference/command/resync -> ${base}/${version}/core/master-slave
+[v4.0-*]: /${version}/reference/program/mongoperf -> ${base}/${version}/reference/program
+[v4.0-*]: /${version}/tutorial/perform-two-phase-commits  -> ${base}/${version}/core/transactions
+[v4.0-*]: /${version}/tutorial/install-mongodb-on-linux -> ${base}/${version}/administration/install-on-linux
+
+# Redirects for 3.6 or earlier (i.e. before 4.0)
+
+[*-v3.6]: /${version}/release-notes/4.0 -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-compatibility -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-upgrade-standalone -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-upgrade-replica-set -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-upgrade-sharded-cluster -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-downgrade-standalone -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-downgrade-replica-set -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/release-notes/4.0-downgrade-sharded-cluster -> ${base}/${version}/release-notes
+[*-v3.6]: /${version}/reference/configuration-file-settings-command-line-options-mapping -> ${base}/${version}/reference/configuration-options
+[v3.0-v3.6]: /${version}/administration/upgrade-community-to-enterprise -> ${base}/${version}/installation
+[v3.0-v3.6]: /${version}/tutorial/upgrade-to-enterprise-standalone -> ${base}/${version}/installation
+[v3.0-v3.6]: /${version}/tutorial/upgrade-to-enterprise-replica-set -> ${base}/${version}/installation
+[v3.0-v3.6]: /${version}/tutorial/upgrade-to-enterprise-sharded-cluster -> ${base}/${version}/installation
+
+
+[*-v3.6]: /${version}/reference/method/db.watch -> ${base}/${version}/changeStreams
+[*-v3.6]: /${version}/reference/method/Mongo.watch -> ${base}/${version}/changeStreams
+
+[*-v3.6]: /${version}/reference/read-concern-snapshot -> ${base}/${version}/reference/read-concern
+[*-v3.6]: /${version}/core/transactions -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/reference/method/Session.abortTransaction -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/reference/method/Session.commitTransaction -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/reference/method/Session.startTransaction -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/reference/operator/aggregation/ltrim -> ${base}/${version}/meta/aggregation-quick-reference/#string-expression-operators
+[*-v3.6]: /${version}/reference/operator/aggregation/rtrim -> ${base}/${version}/meta/aggregation-quick-reference/#string-expression-operators
+[*-v3.6]: /${version}/reference/operator/aggregation/trim -> ${base}/${version}/meta/aggregation-quick-reference/#string-expression-operators
+[*-v3.6]: /${version}/reference/command/getFreeMonitoringStatus -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/command/nav-free-monitoring -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/command/setFreeMonitoring -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/method/db.disableFreeMonitoring -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/method/db.enableFreeMonitoring -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/method/db.getFreeMonitoringStatus -> ${base}/${version}/administration/monitoring
+[*-v3.6]: /${version}/reference/method/js-free-monitoring. -> ${base}/${version}/administration/monitoring
+
 
 # 2.8 compatibility
-[*]: /${version}/release-notes/2.8-downgrade -> ${base}/${version}/release-notes
-[*]: /${version}/release-notes/2.8-compatibility -> ${base}/${version}/release-notes
-[*]: /${version}/release-notes/2.8-changes -> ${base}/${version}/release-notes
-[*]: /${version}/release-notes/2.8-general-improvements -> ${base}/${version}/release-notes
-[*]: /${version}/release-notes/2.8 -> ${base}/${version}/release-notes/3.0
-[*]: /${version}/release-notes/2.8-upgrade -> ${base}/${version}/release-notes/3.0-upgrade
-[*]: /${version}/release-notes/2.8-downgrade -> ${base}/${version}/release-notes/3.0-downgrade
-[*]: /${version}/release-notes/2.8-compatibility -> ${base}/v${version}/release-notes/3.0-compatibility
-[*]: /${version}/release-notes/2.8-general-improvements -> ${base}/${version}/release-notes/3.0
-[*]: /${version}/release-notes/2.8-changes -> ${base}/${version}/release-notes/3.0
+# 
+# [*]: /${version}/release-notes/2.8-downgrade -> ${base}/${version}/release-notes
+# [*]: /${version}/release-notes/2.8-compatibility -> ${base}/${version}/release-notes
+# [*]: /${version}/release-notes/2.8-changes -> ${base}/${version}/release-notes
+# [*]: /${version}/release-notes/2.8-general-improvements -> ${base}/${version}/release-notes
+# [*]: /${version}/release-notes/2.8 -> ${base}/${version}/release-notes/3.0
+# [*]: /${version}/release-notes/2.8-upgrade -> ${base}/${version}/release-notes/3.0-upgrade
+# [*]: /${version}/release-notes/2.8-downgrade -> ${base}/${version}/release-notes/3.0-downgrade
+# [*]: /${version}/release-notes/2.8-compatibility -> ${base}/v${version}/release-notes/3.0-compatibility
+# [*]: /${version}/release-notes/2.8-general-improvements -> ${base}/${version}/release-notes/3.0
+# [*]: /${version}/release-notes/2.8-changes -> ${base}/${version}/release-notes/3.0
+#
+
+[v3.6-v3.6]:  /${version}/upcoming -> ${base}/master/release-notes/4.0/
 
 raw: /v2.8 -> ${base}/v3.0
 raw: /v2.8/release-notes/2.8-downgrade -> ${base}/v3.0/release-notes
@@ -1373,3 +1476,21 @@ raw: /v2.8/release-notes/2.8-changes -> ${base}/v3.0/release-notes/3.0
 # Documentation tarballs
 [*]: /${version}/MongoDB-manual.tar.gz -> ${base}/${version}/mongodb-manual.tar.gz
 [*]: /${version}/MongoDB-manual-${version}.tar.gz -> ${base}/${version}/mongodb-manual-${version}.tar.gz
+
+# Internal methods
+[*]: /${version}/reference/method/clearRawMongoProgramOutput -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/js-subprocess -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/rawMongoProgramOutput -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/run -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/runMongoProgram -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/sh.waitForDLock -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/startMongoProgram -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/stopMongoProgram -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/stopMongoProgramByPid -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/stopMongod -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/waitMongoProgramOnPort -> ${base}/${version}/reference/method
+[*]: /${version}/reference/method/waitProgram -> ${base}/${version}/reference/method
+
+
+[*]: /${version}/core/operational-segregation -> ${base}/${version}/core/workload-isolation
+

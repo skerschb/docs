@@ -24,7 +24,8 @@ additional system configuration outside of MongoDB.
    MongoDB 3.2 added support for volume-level back up of MongoDB instances
    using the :doc:`WiredTiger </core/wiredtiger>` storage engine when
    the MongoDB instance's data files and journal files reside on separate
-   volumes.
+   volumes. However, to create a coherent backup, the database must be locked
+   and all writes to the database must be suspended during the backup process.
    
    Prior to MongoDB 3.2, creating volume-level backups
    of MongoDB instances using WiredTiger required that the data files and journal
@@ -105,7 +106,7 @@ incremental backups.
 Snapshots With Journaling
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If your :program:`mongod` instance has journaling enabled, then you can
+If your :binary:`~bin.mongod` instance has journaling enabled, then you can
 use any kind of file system or volume/block level snapshot tool to
 create backups.
 
@@ -325,23 +326,15 @@ Back up Instances with Journal Files on Separate Volume or without Journaling
 
    Starting in MongoDB 3.2, for the purpose of volume-level backup of
    MongoDB instances using WiredTiger, the data files and the journal
-   are no longer required to reside on a single volume.
+   are no longer required to reside on a single volume. However, the database
+   must be locked and all writes to the database must be suspended during the
+   backup process to ensure the consistency of the backup.
 
-If your :program:`mongod` instance is either running without journaling
+If your :binary:`~bin.mongod` instance is either running without journaling
 or has the journal files on a separate volume, you must flush all
 writes to disk and lock the database to prevent writes during the
 backup process. If you have a :term:`replica set` configuration, then
 for your backup use a :term:`secondary` which is not receiving reads
 (i.e. :term:`hidden member`).
-
-.. important::
-
-   In the following procedure to create backups, you **must** issue the
-   :method:`db.fsyncLock()` and :method:`db.fsyncUnlock()` operations
-   on the same connection. The client that issues
-   :method:`db.fsyncLock()` is solely responsible for issuing a
-   :method:`db.fsyncUnlock()` operation and must be able to handle
-   potential error conditions so that it can perform the
-   :method:`db.fsyncUnlock()` before terminating the connection.
 
 .. include:: /includes/steps/backup-without-journaling.rst

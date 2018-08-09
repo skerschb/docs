@@ -41,14 +41,11 @@ top
 
       { top: 1 }
 
-   The command can also take the following options:
-
-   .. include:: /includes/extracts/sessions-option-table-options.rst
 
 Example
 -------
 
-At the :program:`mongo` shell prompt, use :dbcommand:`top` with the
+At the :binary:`~bin.mongo` shell prompt, use :dbcommand:`top` with the
 following invocation:
 
 .. code-block:: javascript
@@ -59,8 +56,7 @@ Alternately you can use :dbcommand:`top` as follows:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( { top: 1 } )
+   db.adminCommand( { top: 1 } )
 
 The output of the top command would resemble the following
 output:

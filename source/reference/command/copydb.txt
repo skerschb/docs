@@ -15,43 +15,40 @@ Definition
 
 .. dbcommand:: copydb
 
-   Copies a database either from one :program:`mongod` instance to the
-   current :program:`mongod` instance or within the current
-   :program:`mongod`. 
+   .. deprecated:: 4.0
+      MongoDB deprecates :dbcommand:`copydb`
+      and its helper :method:`db.copyDatabase()`. For information on
+      alternatives, see :ref:`4.0-deprecate-copydb-clone-cmds`.
 
-   Run :dbcommand:`copydb` in the ``admin`` database of the destination
-   server with the following syntax:
-
-   .. versionchanged:: 3.6
+   Copies a database either from one :binary:`~bin.mongod` instance to the
+   current :binary:`~bin.mongod` instance or within the current
+   :binary:`~bin.mongod`. Run :dbcommand:`copydb` in the ``admin`` database
+   of the destination server with the following syntax:
 
    .. code-block:: javascript
 
-      {
-        copydb: 1,
+      { copydb: 1,
         fromhost: <hostname>,
         fromdb: <database>,
         todb: <database>,
         slaveOk: <bool>,
-        username: <username>,
-        nonce: <nonce>,
-        key: <key>,
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
-      }
+        writeConcern: <document> }
 
    :dbcommand:`copydb` accepts the following options:
 
    .. include:: /includes/apiargs/dbcommand-copydb-field.rst
 
-   The :program:`mongo` shell provides the :method:`db.copyDatabase()`
+   The :binary:`~bin.mongo` shell provides the :method:`db.copyDatabase()`
    wrapper for the :dbcommand:`copydb` command.
-
-   .. include:: /includes/extracts/fact-copydb-cmd-authentication-mechanism.rst
-
-   .. |command| replace:: ``copydb``
 
 Behavior
 --------
+
+Feature Compatibility Version
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/3.6-featureCompatibility-copy-data.rst
+
 
 Destination
 ~~~~~~~~~~~
@@ -63,7 +60,10 @@ Destination
 Authentication to Source ``mongod`` Instance
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: /includes/extracts/fact-copydb-cmd-behavior-fromhost-authentication.rst
+To copy from another :binary:`~bin.mongod` instance (``fromhost``) that
+enforces :setting:`access control <security.authorization>`, then you
+must use the :binary:`~bin.mongo` shell method
+:method:`db.copyDatabase()`.
 
 Concurrency
 ~~~~~~~~~~~
@@ -75,6 +75,8 @@ Indexes
 
 .. include:: /includes/fact-copydb-cmd-behavior-indexes.rst
 
+.. |command| replace:: ``copydb``
+
 Replica Sets
 ~~~~~~~~~~~~
 
@@ -85,7 +87,7 @@ member of a :term:`replica set`.
 Sharded Clusters
 ~~~~~~~~~~~~~~~~
 
-- Do not use :dbcommand:`copydb` from a :program:`mongos` instance.
+- Do not use :dbcommand:`copydb` from a :binary:`~bin.mongos` instance.
 
 - Do not use :dbcommand:`copydb` to copy databases that contain sharded
   collections.
@@ -95,19 +97,16 @@ Sharded Clusters
 Required Access
 ---------------
 
-.. versionchanged:: 2.6
-
-If the :program:`mongod` instance of the *source* database (``fromdb``)
-enforces :setting:`access control <security.authorization>`, you must
-have proper authorization for the *source* database.
-
-.. include:: /includes/extracts/fact-copydb-cmd-fromhost-authentication.rst
-.. include:: /includes/extracts/fact-copydb-cmd-authentication-mechanism.rst
-
 .. _copydb-fromdb-access:
 
 Source Database (``fromdb``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are copying within the same :program:`mongod` instance that
+enforces access control, you must have the appropriate authorization.
+
+If you are copying from a different :program:`mongod` instance that
+enforces access control, see :method:`db.copyDatabase()`.
 
 Source is non-``admin`` Database
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -122,7 +121,7 @@ Source is ``admin`` Database
 Target Database (``todb``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the :program:`mongod` instance of the *target* database (``todb``)
+If the :binary:`~bin.mongod` instance of the *target* database (``todb``)
 enforces :setting:`access control <security.authorization>`, you must
 have proper authorization for the *target* database.
 
@@ -136,44 +135,6 @@ Copy from ``admin`` Database
 
 .. include:: /includes/extracts/access-copydb-target-admin-source.rst
 
-.. _copydb-nonce-key:
-
-Generate ``nonce`` and ``key``
-------------------------------
-
-If copying from another :program:`mongod` instance that enforces access
-control, then you must include a ``username``, ``nonce``, and ``key``
-to authenticate to that instance as a user with proper access.
-
-.. tip::
-
-   The :method:`db.copyDatabase()` handles the generation of the
-   ``nonce`` and ``key``.
-
-``nonce``
-~~~~~~~~~
-
-The ``nonce`` is a one-time password that you request from the remote
-server using the :dbcommand:`copydbgetnonce` command, as in the following:
-
-.. code-block:: javascript
-
-   use admin
-   mynonce = db.runCommand( { copydbgetnonce : 1, fromhost: <hostname> } ).nonce
-
-If running the :dbcommand:`copydbgetnonce` command directly on the
-remote host, you can omit the ``fromhost`` field in the
-:dbcommand:`copydbgetnonce` command.
-
-``key``
-~~~~~~~
-
-The ``key`` is a hash generated as follows:
-
-.. code-block:: javascript
-
-   hex_md5(mynonce + username + hex_md5(username + ":mongo:" + password))
-
 Examples
 --------
 
@@ -183,12 +144,11 @@ Copy from the Same ``mongod`` Instance
 To copy from the same host, omit the ``fromhost`` field.
 
 The following command copies the ``test`` database to a new ``records``
-database on the current :program:`mongod` instance:
+database on the current :binary:`~bin.mongod` instance:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand({
+   db.adminCommand({
       copydb: 1,
       fromdb: "test",
       todb: "records"
@@ -201,43 +161,21 @@ To copy from a remote host, include the ``fromhost`` field.
 
 The following command copies the ``test`` database from the remote host
 ``example.net`` to a new ``records`` database on the current
-:program:`mongod` instance:
+:binary:`~bin.mongod` instance:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand({
+   db.adminCommand({
       copydb: 1,
       fromdb: "test",
       todb: "records",
       fromhost: "example.net"
    })
 
-Copy Databases from a ``mongod`` Instances that Enforce Authentication
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. include:: /includes/extracts/fact-copydb-cmd-fromhost-authentication.rst
-
-.. note::
-
-   .. include:: /includes/extracts/fact-copydb-cmd-authentication-mechanism.rst
-
-The following command copies the ``test`` database from a
-:program:`mongod` instance that runs on the remote host ``example.net``
-and enforces access control:
-
-.. code-block:: javascript
-
-   use admin
-   db.runCommand({
-      copydb: 1,
-      fromdb: "test",
-      todb: "records",
-      fromhost: "example.net",
-      username: "reportingAdmin",
-      nonce: "<nonce>",
-      key: "<passwordhash>"
-   })
+To copy from another :binary:`~bin.mongod` instance (``fromhost``) that
+enforces :setting:`access control <security.authorization>`, then you
+must use the :binary:`~bin.mongo` shell method
+:method:`db.copyDatabase()`.
 
 .. seealso::
 

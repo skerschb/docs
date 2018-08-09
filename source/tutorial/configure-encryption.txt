@@ -21,6 +21,11 @@ Overview
 
    Available for the WiredTiger Storage Engine Only.
 
+.. admonition:: Changed in version 4.0
+   :class: note
+
+   .. include:: /includes/fact-aes.rst
+
 MongoDB Enterprise 3.2 introduces a native encryption option for the
 WiredTiger storage engine. With storage encryption, the secure
 management of the encryption keys is critical.
@@ -70,17 +75,16 @@ Prerequisites
 Encrypt Using a New Key
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-To create a new key, connect :program:`mongod` to the key manager by starting
-:program:`mongod` with the following options:
+To create a new key, connect :binary:`~bin.mongod` to the key manager by starting
+:binary:`~bin.mongod` with the following options:
 
-- :option:`--enableEncryption`
-- :option:`--kmipServerName`
-- :option:`--kmipPort`
-- :option:`--kmipServerCAFile`
-- :option:`--kmipClientCertificateFile`
+- :option:`--enableEncryption <mongod --enableEncryption>`
+- :option:`--kmipServerName <mongod --kmipServerName>`
+- :option:`--kmipPort <mongod --kmipPort>`
+- :option:`--kmipServerCAFile <mongod --kmipServerCAFile>`
+- :option:`--kmipClientCertificateFile <mongod --kmipClientCertificateFile>`
 
-Include any other options specific to your
-:program:`mongod` configuration.
+.. include:: /includes/extracts/default-bind-ip-security-additional-command-line.rst
 
 .. code-block:: sh
 
@@ -89,7 +93,7 @@ Include any other options specific to your
      --kmipClientCertificateFile client.pem
 
 This operation creates a new master key in your key manager which
-:program:`mongod` uses to encrypt the keys :program:`mongod` generates
+:binary:`~bin.mongod` uses to encrypt the keys :binary:`~bin.mongod` generates
 for each database.
 
 To verify that the key creation and usage was successful, check the log
@@ -108,18 +112,18 @@ Encrypt Using an Existing Key
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can use an existing master key your KMIP server created and
-manages. To use an existing key, connect :program:`mongod` to the
-key manager by starting :program:`mongod` with the following options:
+manages. To use an existing key, connect :binary:`~bin.mongod` to the
+key manager by starting :binary:`~bin.mongod` with the following options:
 
-- :option:`--enableEncryption`
-- :option:`--kmipServerName`
-- :option:`--kmipPort`
-- :option:`--kmipServerCAFile`
-- :option:`--kmipClientCertificateFile`
-- :option:`--kmipKeyIdentifier`
+- :option:`--enableEncryption <mongod --enableEncryption>`
+- :option:`--kmipServerName <mongod --kmipServerName>`
+- :option:`--kmipPort <mongod --kmipPort>`
+- :option:`--kmipServerCAFile <mongod --kmipServerCAFile>`
+- :option:`--kmipClientCertificateFile <mongod --kmipClientCertificateFile>`
+- :option:`--kmipKeyIdentifier <mongod --kmipKeyIdentifier>`
 
-Include any other options specific to your
-:program:`mongod` configuration.
+.. include:: /includes/extracts/default-bind-ip-security-additional-command-line.rst
+
 
 .. code-block:: sh
 
@@ -142,7 +146,7 @@ Local Key Management
 
 To encrypt using a keyfile, you must have a base64 encoded keyfile that
 contains a 16 or 32 character string. The keyfile must only be
-accessible by the owner of the :program:`mongod` process.
+accessible by the owner of the :binary:`~bin.mongod` process.
 
 #. Create the base64 encoded keyfile with the 16 or 32 character
    string. You can generate the encoded keyfile using any method you
@@ -158,7 +162,7 @@ accessible by the owner of the :program:`mongod` process.
 
       chmod 600 mongodb-keyfile
 
-#. To use the key file, start :program:`mongod` with the following
+#. To use the key file, start :binary:`~bin.mongod` with the following
    options:
 
    - ``--enableEncryption``,
@@ -168,6 +172,8 @@ accessible by the owner of the :program:`mongod` process.
    .. code-block:: sh
 
       mongod --enableEncryption --encryptionKeyFile  mongodb-keyfile
+
+   .. include:: /includes/extracts/default-bind-ip-security-additional-command-line.rst
 
 #. Verify if the encryption key manager successfully initialized with
    the keyfile. If the operation was successful, the process will log the

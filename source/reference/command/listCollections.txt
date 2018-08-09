@@ -20,17 +20,15 @@ Definition
    Retrieve information, i.e. the name and options, about the
    collections and :doc:`views </core/views>` in a database. Specifically, the command returns a
    document that contains information with which to create a
-   cursor to the collection information. The :program:`mongo` shell
+   cursor to the collection information. The :binary:`~bin.mongo` shell
    provides the :method:`db.getCollectionInfos()` and the
-   :method:`db.getCollectionNames()`.
+   :method:`db.getCollectionNames()` helper methods.
 
    The command has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { listCollections: 1, filter: <document>, txnNumber: <long>, lsid: { id: <UUID> }  }
+      { listCollections: 1, filter: <document>, nameOnly: <boolean> }
 
    The :dbcommand:`listCollections` command can take the following
    optional field:
@@ -42,20 +40,44 @@ Definition
 Behavior
 --------
 
+Filter
+~~~~~~
+
 Use a filter to limit the results of :dbcommand:`listCollections`. You
-can specify a ``filter`` on any of the fields returned in the
-:dbcommand:`listCollections` result set.
+can specify a ``filter`` on any of the :ref:`fields returned
+<list-collection-output>` in the :dbcommand:`listCollections` result
+set.
 
-The options correspond directly to the options available in
-:method:`db.createCollection()`, with the exception of the
-``"options.flags"``. The ``"options.flags"`` corresponds to the
-``usePowerOf2Sizes`` and the ``noPadding`` options in the
-:method:`db.createCollection()` method:
+Locks
+~~~~~
 
-.. include:: /includes/list-collection-user-flags.rst
+.. versionchanged:: 4.0
 
-For the descriptions on the options, see
-:method:`db.createCollection()`.
+The :dbcommand:`listCollection` command takes Intent Shared lock on the
+database. In previous versions, the command takes Shared lock on the
+database.
+
+Unless the ``nameOnly`` option is specified, the command also takes an
+Intent Shared lock on each of the collections in turn while holding the
+Intent Shared lock on the database.
+
+
+Required Access
+---------------
+
+.. include:: /includes/extracts/listCollections-auth-required-access.rst
+
+``show collections``
+~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/listCollections-auth-show-collections.rst
+
+Earlier MongoDB Versions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/listCollections-auth-show-collections-earlier-versions.rst
+
+.. _list-collection-output:
 
 Output
 ------
@@ -76,7 +98,7 @@ Output
         - Type
         - Description
 
-      * - name      
+      * - name
         - String
         - Name of the collection.
 
@@ -88,22 +110,33 @@ Output
 
       * - options
         - Document
-        - Collection options. See the
-          :ref:`Behavior <listCollections-behavior>` section for
-          available options.
+        - Collection options.
+
+          These options correspond directly to the options available in
+          :method:`db.createCollection()`, with the exception of the
+          ``"options.flags"``. The ``"options.flags"`` corresponds to the
+          ``usePowerOf2Sizes`` and the ``noPadding`` options in the
+          :method:`db.createCollection()` method:
+
+          .. include:: /includes/list-collection-user-flags.rst
+
+          For the descriptions on the options, see
+          :method:`db.createCollection()`.
 
       * - info
         - Document
         - Lists the following fields related to the collection:
 
           readOnly
-             ``boolean``. If ``true`` the collection is read only.
+             ``boolean``. If ``true`` the data store is read only.
 
           uuid
              :abbr:`UUID (Universally unique identifier)`. Once
              established, the collection UUID does not change. The
              collection UUID remains the same across replica set
              members and shards in a sharded cluster.
+
+             .. versionadded:: 3.6
 
       * - idIndex
         - Document
@@ -115,10 +148,6 @@ Output
    The return value for the command. A value of ``1`` indicates
    success.
 
-Required Access
----------------
-
-.. include:: /includes/extracts/actions-listCollections.rst
 
 
 Example

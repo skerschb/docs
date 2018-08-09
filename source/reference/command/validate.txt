@@ -25,10 +25,6 @@ Definition
       :dbcommand:`validate` command does not support :doc:`views
       </core/views>` and raises an error when run against a view.
 
-   The ``validate`` command can be slow, particularly on larger data
-   sets. While the ``validate`` command is running, it holds an
-   exclusive lock on the collection.  This will block all reads and
-   writes until the validate command finishes.
 
    :dbcommand:`validate` has the following prototype form:
 
@@ -38,54 +34,33 @@ Definition
 
    You may also specify one of the following options:
 
-   .. list-table::
-      :header-rows: 1
+   - ``full: true`` provides a more thorough scan of the data.
 
-      * - Field
-        - Type
-        - Description
+     .. versionchanged:: 3.6
 
-      * - ``full``
+        .. include:: /includes/fact-validate-wiredtiger-full-option.rst
 
-        - boolean
+   - ``scandata: false`` skips the scan of the collection data
+     without skipping scans of any indexes.
 
-        - If ``true``, the operation provides a more thorough scan of the data.
-
-          .. versionchanged:: 3.6
-
-             .. include:: /includes/fact-validate-wiredtiger-full-option.rst
-
-      * - ``scandata``
-
-        - boolean
-
-        - If ``false``, the operation only scans the indexes and skips
-          the scan of the collection data.
-
-      * - ``txnNumber``
-
-        - 64-bit integer/long
-
-        - Optional.
-
-          .. include:: /includes/extracts/sessions-option-txnId.rst
-
-          .. versionadded:: 3.6
-
-      * - ``lsid``
-        - Document
-        - Optional.
-
-          .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-          .. versionadded:: 3.6
-
-   The :program:`mongo` shell also provides a wrapper
+   The :binary:`~bin.mongo` shell also provides a wrapper
    :method:`db.collection.validate()`:
 
    .. code-block:: javascript
 
       db.collection.validate();
+
+Behavior
+--------
+
+The :dbcommand:`validate` command can be slow, particularly on
+larger data sets. 
+
+The :dbcommand:`validate` command obtains an exclusive lock ``W`` on
+the collection. This will block all reads and writes on the collection
+until the operation finishes. When run on a secondary, the
+:dbcommand:`validate` operation can block all other operations on that
+secondary until it finishes.
 
 Examples
 --------

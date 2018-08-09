@@ -24,7 +24,6 @@ Definition
 
    The :dbcommand:`update` command has the following syntax:
 
-   .. versionchanged:: 3.6
 
    .. code-block:: javascript
 
@@ -41,14 +40,13 @@ Definition
          ],
          ordered: <boolean>,
          writeConcern: { <write concern> },
-         bypassDocumentValidation: <boolean>,
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
+         bypassDocumentValidation: <boolean>
       }
 
    The command takes the following fields:
 
    .. include:: /includes/apiargs/dbcommand-update-field.rst
+
 
    Each element of the ``updates`` array contains the following fields:
 
@@ -117,6 +115,19 @@ Document Validation
 ~~~~~~~~~~~~~~~~~~~
 
 .. include:: /includes/extracts/bypassDocumentValidation-update.rst
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+If the operation results in an upsert, the collection must already exist.
+
+.. include:: /includes/extracts/transactions-operations-write-concern.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
+
+.. |operation| replace:: :dbcommand:`update`
 
 Examples
 --------
@@ -259,8 +270,8 @@ option:
 
 .. _update-command-arrayFilters:
 
-Specify ``arrayFilters`` for an Array Update Operations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Specify ``arrayFilters`` for Array Update Operations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: /includes/extracts/arrayFilters-blurb.rst
 

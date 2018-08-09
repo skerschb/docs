@@ -41,7 +41,9 @@ Definition
              serverAddress: ["<IP>" | "<CIDR range>", ...]
            },
            ...
-        ]
+        ],
+        mechanisms: [ "<SCRAM-SHA-1|SCRAM-SHA-256>", ... ],
+        passwordDigestor: "<server|client>"
       }
 
    The ``user`` document has the following fields:
@@ -65,12 +67,18 @@ command.
 Behavior
 --------
 
+Replica set
+~~~~~~~~~~~
+
+.. |command| replace:: :method:`db.createUser()`
+
+.. include:: /includes/fact-management-methods-write-concern.rst
+
 Encryption
 ~~~~~~~~~~
 
-:method:`db.createUser()` sends password to the MongoDB instance
-*without* encryption. To encrypt the password during transmission,
-use :doc:`TLS/SSL </tutorial/configure-ssl>`.
+
+.. include:: /includes/fact-cleartext-passwords-tls.rst
 
 External Credentials
 ~~~~~~~~~~~~~~~~~~~~
@@ -79,6 +87,8 @@ Users created on the ``$external`` database should have credentials
 stored externally to MongoDB, as, for example, with :doc:`MongoDB
 Enterprise installations that use Kerberos
 </tutorial/control-access-to-mongodb-with-kerberos-authentication>`.
+
+.. include:: /includes/extracts/sessions-external-username-limit.rst
 
 ``local`` Database
 ~~~~~~~~~~~~~~~~~~
@@ -190,10 +200,43 @@ IP address ``192.0.2.0`` to IP address ``198.51.100.0``.
       {
         user: "restricted",
         pwd: "password",
-        roles: [ ],
+        roles: [ { role: "readWrite", db: "reporting } ],
         authenticationRestrictions: [ {
            clientSource: ["192.0.2.0"],
            serverAddress: ["198.51.100.0"]
         } ]
       }
    )
+
+Create User with ``SCRAM-SHA-256`` Credentials Only
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. note::
+
+   To use :ref:`SCRAM-SHA-256 <authentication-scram-sha-256>`, the
+   ``featureCompatibilityVersion`` must be set to ``4.0``. For more
+   information on featureCompatibilityVersion, see :ref:`view-fcv` and
+   :dbcommand:`setFeatureCompatibilityVersion`.
+
+
+The following operation creates a user with only ``SCRAM-SHA-256``
+credentials.
+
+.. code-block:: javascript
+
+   use reporting
+   db.createUser(
+      {
+        user: "reportUser256",
+        pwd: "Passw0rd",
+        roles: [ { role: "readWrite", db: "reporting } ],
+        mechanisms: [ "SCRAM-SHA-256" ]
+      }
+   )
+
+
+If the :parameter:`authenticationMechanisms` parameter is set, the
+``mechanisms`` field can only include values specified in the
+:parameter:`authenticationMechanisms` parameter.
+
+

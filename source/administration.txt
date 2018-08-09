@@ -4,12 +4,6 @@ Administration
 
 .. default-domain:: mongodb
 
-.. contents:: On this page
-   :local:
-   :backlinks: none
-   :depth: 1
-   :class: singlecol
-
 .. admin-introduction-start
 
 The administration documentation addresses the ongoing operation and
@@ -18,25 +12,23 @@ includes both high level overviews of these concerns as well as
 tutorials that cover specific procedures and processes for operating
 MongoDB.
 
+.. admonition:: MongoDB Atlas
+
+   For a simple way to run, monitor, and maintain cloud-hosted MongoDB
+   deployments, try `MongoDB Atlas
+   <https://www.mongodb.com/cloud/atlas?jmp=docs>`_.
+
 .. admin-introduction-end
 
-.. seealso:: The MongoDB Manual contains administrative documentation
-   and tutorials thoughout several sections. See
-   :doc:`/administration/replica-sets` and
-   :doc:`/sharding` for additional tutorials and
-   information.
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-.. class:: hidden
-
-   .. toctree::
-      :titlesonly:
-
-      /administration/production-notes
-      /administration/production-checklist-operations
-      /administration/production-checklist-development
-      Performance </administration/analyzing-mongodb-performance>
-      /administration/configuration-and-maintenance
-      /data-center-awareness
-      /core/backups
-      /administration/monitoring
-
+   /administration/production-notes
+   /administration/production-checklist-operations
+   /administration/production-checklist-development
+   Performance </administration/analyzing-mongodb-performance>
+   /administration/configuration-and-maintenance
+   /data-center-awareness
+   /core/backups
+   /administration/monitoring

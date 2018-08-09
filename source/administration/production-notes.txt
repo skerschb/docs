@@ -13,6 +13,11 @@ Production Notes
 This page details system configurations that affect MongoDB,
 especially when running in production.
 
+.. admonition:: Deprecated
+   :class: warning
+
+   .. include:: /includes/fact-4.0-mmapv1-deprecated.rst
+
 .. include:: /includes/fact-mms-summary.rst
 
 MongoDB Binaries
@@ -27,9 +32,11 @@ For running **in production**, refer to the
 :ref:`prod-notes-recommended-platforms` for operating system
 recommendations.
 
-.. versionchanged:: 3.2
-   MongoDB can now use the :ref:`WiredTiger storage engine <storage-wiredtiger>`
-   on all supported platforms.
+.. note::
+
+   .. include:: /includes/extracts/4.0-errata-wt-4018.rst
+
+   For details, see :issue:`WT-4018`.
 
 x86_64
 ``````
@@ -46,8 +53,8 @@ PPC64LE (MongoDB Enterprise Edition)
 
 .. include:: /includes/fact-platform-ppc64le.rst
 
-s390x (MongoDB Enterprise Edition)
-``````````````````````````````````
+s390x
+`````
 
 .. include:: /includes/fact-platform-s390x.rst
 
@@ -62,12 +69,11 @@ While MongoDB supports a variety of platforms, the following operating
 systems are recommended for production use:
 
 - Amazon Linux
-- Debian 7.1
+- Debian 8
 - RHEL / CentOS 6.2+
-- SLES 11+
-- Ubuntu LTS 12.04
-- Ubuntu LTS 14.04
-- Windows Server 2012 & 2012 R2
+- SLES 12
+- Ubuntu LTS 16.04
+- Windows Server 2012 R2
 
 .. seealso:: :ref:`prod-notes-platform-considerations`
 
@@ -88,46 +94,17 @@ MongoDB ``dbPath``
 ------------------
 
 The files in the :setting:`~storage.dbPath` directory must correspond
-to the configured :term:`storage engine`. :program:`mongod` will not start if
+to the configured :term:`storage engine`. :binary:`~bin.mongod` will not start if
 :setting:`~storage.dbPath` contains data files created by a storage
-engine other than the one specified by :option:`--storageEngine`.
+engine other than the one specified by :option:`--storageEngine <mongod --storageEngine>`.
 
-.. versionchanged:: 3.2
-
-   As of MongoDB 3.2, MongoDB uses the :ref:`WiredTiger
-   <storage-wiredtiger>` storage engine by default.
-
-.. versionchanged:: 3.0
-
-   MongoDB includes support for two storage engines: :ref:`MMAPv1
-   <storage-mmapv1>`, the storage engine available in previous versions
-   of MongoDB, and :ref:`WiredTiger <storage-wiredtiger>`.
-
-:program:`mongod` must possess read and write permissions for the specified
+:binary:`~bin.mongod` must possess read and write permissions for the specified
 :setting:`~storage.dbPath`.
 
 .. _prod-notes-concurrency:
 
 Concurrency
 -----------
-
-MMAPv1
-~~~~~~
-
-.. versionchanged:: 3.0
-
-   Beginning with MongoDB 3.0, :ref:`MMAPv1 <storage-mmapv1>` provides
-   *collection-level locking*: All collections have a unique
-   readers-writer lock that allows multiple clients to modify documents
-   in different collections at the same time.
-
-   For MongoDB versions 2.2 through 2.6 series, each database has a
-   readers-writer lock that allows concurrent read access to a
-   database, but gives exclusive access to a single write operation per
-   database. See the :doc:`Concurrency </faq/concurrency>` page for
-   more information. In earlier versions of MongoDB, all write
-   operations contended for a single readers-writer lock for the entire
-   :program:`mongod` instance.
 
 .. _prod-notes-wired-tiger-concurrency:
 
@@ -143,6 +120,22 @@ can modify different documents in a collection at the same time.
    takes advantage of multiple CPU cores and how to improve operation
    throughput.
 
+MMAPv1 (*Deprecated in MongoDB 4.0*)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Beginning with MongoDB 3.0, :ref:`MMAPv1 <storage-mmapv1>` provides
+*collection-level locking*: All collections have a unique
+readers-writer lock that allows multiple clients to modify documents in
+different collections at the same time.
+
+For MongoDB versions 2.2 through 2.6 series, each database has a
+readers-writer lock that allows concurrent read access to a database,
+but gives exclusive access to a single write operation per database.
+See the :doc:`Concurrency </faq/concurrency>` page for more
+information. In earlier versions of MongoDB, all write operations
+contended for a single readers-writer lock for the entire
+:binary:`~bin.mongod` instance.
+
 Data Consistency
 ----------------
 
@@ -152,13 +145,15 @@ Journaling
 MongoDB uses *write ahead logging* to an on-disk :term:`journal`.
 Journaling guarantees that MongoDB can quickly recover :doc:`write
 operations </crud>` that were written to the journal
-but not written to data files in cases where :program:`mongod`
+but not written to data files in cases where :binary:`~bin.mongod`
 terminated due to a crash or other serious failure.
 
-Leave journaling enabled in order to ensure that :program:`mongod` will
+Leave journaling enabled in order to ensure that :binary:`~bin.mongod` will
 be able to recover its data files and keep the data files in a valid
 state following a crash. See :doc:`Journaling </core/journaling/>` for
 more information.
+
+.. include:: /includes/wiredtiger-node-nojournal.rst
 
 Read Concern
 ~~~~~~~~~~~~
@@ -193,7 +188,7 @@ other MongoDB components.
 
 .. important::
    By default, :doc:`authorization </core/authorization>` is not
-   enabled, and :program:`mongod` assumes a trusted environment. Enable
+   enabled, and :binary:`~bin.mongod` assumes a trusted environment. Enable
    :setting:`~security.authorization` mode as needed. For more
    information on authentication mechanisms supported in MongoDB as
    well as authorization in MongoDB, see :doc:`/core/authentication`
@@ -224,15 +219,15 @@ not enable the HTTP interface in production environments.
 Manage Connection Pool Sizes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Avoid overloading the connection resources of a :program:`mongod` or
-:program:`mongos` instance by adjusting the connection pool size to suit
+Avoid overloading the connection resources of a :binary:`~bin.mongod` or
+:binary:`~bin.mongos` instance by adjusting the connection pool size to suit
 your use case. Start at 110-115% of the typical number of current database
 requests, and modify the connection pool size as needed. Refer to the
 :ref:`connection-pool-options` for adjusting the connection pool size.
 
 The :dbcommand:`connPoolStats` command returns information regarding
 the number of open connections to the current database for
-:program:`mongos` and :program:`mongod` instances in sharded clusters.
+:binary:`~bin.mongos` and :binary:`~bin.mongod` instances in sharded clusters.
 
 See also :ref:`prod-notes-ram`.
 
@@ -249,14 +244,14 @@ libraries (i.e. drivers) can run on big or little endian systems.
 Allocate Sufficient RAM and CPU
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MMAPv1
-``````
+MMAPv1 (*Deprecated in MongoDB 4.0*)
+````````````````````````````````````
 
 Due to its concurrency model, the :ref:`MMAPv1 <storage-mmapv1>` storage engine does not
 require many CPU cores. As such, increasing the number of cores can
 improve performance but does not provide significant return.
 
-At a minimum, ensure that your :program:`mongod` or :program:`mongos`
+At a minimum, ensure that your :binary:`~bin.mongod` or :binary:`~bin.mongos`
 has access to two real cores or one physical CPU.
 
 Increasing the amount of RAM accessible to MongoDB may help reduce the
@@ -279,7 +274,7 @@ performance:
 The threshold depends on your application. You can determine the
 optimum number of concurrent active operations for your application by
 experimenting and measuring throughput. The output from
-:program:`mongostat` provides statistics on the number of active
+:binary:`~bin.mongostat` provides statistics on the number of active
 reads/writes in the (``ar|aw``) column.
 
 .. include:: /includes/extracts/wt-configure-cache.rst
@@ -358,8 +353,8 @@ When running MongoDB on Linux, you should disable *zone reclaim* in the
    sudo sysctl -w vm.zone_reclaim_mode=0
 
 Then, you should use ``numactl`` to start your
-:program:`mongod` instances, including the :doc:`config servers
-</core/sharded-cluster-config-servers>`, :program:`mongos` instances, and any clients.
+:binary:`~bin.mongod` instances, including the :doc:`config servers
+</core/sharded-cluster-config-servers>`, :binary:`~bin.mongos` instances, and any clients.
 If you do not have the ``numactl`` command, refer to the documentation for
 your operating system to install the ``numactl`` package.
 
@@ -385,9 +380,9 @@ Swap
 
 Assign swap space for your systems. Allocating swap space can avoid issues
 with memory contention and can prevent the OOM Killer on Linux systems
-from killing :program:`mongod`.
+from killing :binary:`~bin.mongod`.
 
-For the MMAPv1 storage engine, the method :program:`mongod` uses
+For the MMAPv1 storage engine, the method :binary:`~bin.mongod` uses
 to map files to memory ensures that the operating system will never
 store MongoDB data in swap space.  On Windows systems, using MMAPv1
 requires extra swap space due to commitment limits. For details,
@@ -524,6 +519,8 @@ Platform Specific Considerations
 MongoDB on Linux
 ~~~~~~~~~~~~~~~~
 
+.. _prod-notes-linux-file-system:
+
 Kernel and File Systems
 ```````````````````````
 
@@ -531,9 +528,9 @@ When running MongoDB in production on Linux, you should use Linux
 kernel version 2.6.36 or later, with either the XFS or EXT4 filesystem.
 If possible, use XFS as it generally performs better with MongoDB.
 
-With the :ref:`WiredTiger storage engine <storage-wiredtiger>`, use of
-XFS is **strongly recommended** to avoid performance issues that may
-occur when using EXT4 with WiredTiger.
+With the :ref:`WiredTiger storage engine <storage-wiredtiger>`, using
+XFS is **strongly recommended** for data bearing nodes to avoid
+performance issues that may occur when using EXT4 with WiredTiger.
 
 With the :ref:`MMAPv1 storage engine <storage-mmapv1>`, MongoDB
 preallocates its database files before using them and often creates
@@ -558,6 +555,44 @@ possible, use XFS as it generally performs better with MongoDB.
    MongoDB requires a filesystem that supports ``fsync()``
    *on directories*. For example, HGFS and Virtual Box's shared
    folders do *not* support this operation.
+
+Set ``vm.swappiness`` to ``1``
+``````````````````````````````
+
+“Swappiness” is a Linux kernel setting that influences the behavior of
+the Virtual Memory manager when it needs to allocate a swap, ranging
+from ``0`` to ``100``, inclusive.
+
+- A setting of ``0`` tells the kernel to swap only to avoid
+  out-of-memory problems.
+
+- A setting of ``100`` tells it to swap aggressively to disk.
+
+If your host runs kernel versions ``3.5`` or later, or
+:abbr:`RHEL (Red Hat Enterprise Linux)` / CentOS kernel ``2.6.32-303``
+or later, setting this value to ``0`` could disable swapping. Set this
+to ``1``.
+
+To see what the current swappiness level is, run:
+
+.. code-block:: sh
+
+   example@example:$ cat /proc/sys/vm/swappiness
+
+   60
+
+To change swappiness while the system is running, run:
+
+.. code-block:: sh
+
+   example@example:$ sysctl vm.swappiness=1
+
+To change swappiness permanently, edit the ``/etc/sysctl.conf`` file in
+your preferred text editor and change this value:
+
+.. code-block:: ini
+
+   vm.swappiness = 1
 
 .. _linux-recommended-configuration:
 
@@ -618,7 +653,7 @@ For the **WiredTiger** storage engine:
   <https://www.mongodb.com/products/enterprise-grade-support>`_ can provide
   advice and guidance on non-zero readahead configurations.
 
-For the **MMAPv1** storage engine:
+For the **MMAPv1** storage engine (*Deprecated in MongoDB 4.0*):
 
 - Ensure that readahead settings for the block devices that store the
   database files are appropriate. For random access use patterns, set
@@ -637,14 +672,14 @@ the MongoDB log:
 
 .. code-block:: none
 
-   <path to SSL libs>/libssl.so.<version>: no version information available (required by /usr/bin/mongod)
-   <path to SSL libs>/libcrypto.so.<version>: no version information available (required by /usr/bin/mongod)
+   <path to TLS/SSL libs>/libssl.so.<version>: no version information available (required by /usr/bin/mongod)
+   <path to TLS/SSL libs>/libcrypto.so.<version>: no version information available (required by /usr/bin/mongod)
 
 These warnings indicate that the system's TLS/SSL libraries are different
-from the TLS/SSL libraries that the :program:`mongod` was compiled against.
+from the TLS/SSL libraries that the :binary:`~bin.mongod` was compiled against.
 Typically these messages do not require intervention; however, you can
 use the following operations to determine the symbol versions that
-:program:`mongod` expects:
+:binary:`~bin.mongod` expects:
 
 .. code-block:: sh
 
@@ -669,7 +704,7 @@ operations to detect symbol version mismatches:
    objdump -T <path to TLS/SSL libs>/libcrypto.so.1*
 
 This procedure is neither exact nor exhaustive: many symbols used by
-:program:`mongod` from the ``libcrypto`` library do not begin with
+:binary:`~bin.mongod` from the ``libcrypto`` library do not begin with
 ``CRYPTO_``.
 
 .. _production-virtualization:
@@ -677,14 +712,15 @@ This procedure is neither exact nor exhaustive: many symbols used by
 MongoDB on Windows
 ~~~~~~~~~~~~~~~~~~
 
-MongoDB 3.0 Using WiredTiger
-````````````````````````````
+
+MongoDB Using WiredTiger
+````````````````````````
 
 For MongoDB instances using the WiredTiger storage engine, performance
 on Windows is comparable to performance on Linux.
 
-MongoDB Using MMAPv1
-````````````````````
+MongoDB Using MMAPv1 (*Deprecated in MongoDB 4.0*)
+``````````````````````````````````````````````````
 
 Install Hotfix for MongoDB 2.6.6 and Later
 ++++++++++++++++++++++++++++++++++++++++++
@@ -728,26 +764,52 @@ accommodate Windows' commitment rules during peak database use.
 MongoDB on Virtual Environments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section describes considerations when running MongoDB in some of the
-more common virtual environments.
+This section describes considerations when running MongoDB in some of
+the more common virtual environments.
 
 For all platforms, consider :ref:`virtualized-disks-scheduling`.
 
-EC2
-```
+:abbr:`AWS (Amazon Web Services)` :abbr:`EC2 (Elastic Compute Cloud)`
+`````````````````````````````````````````````````````````````````````
 
-MongoDB is compatible with EC2.
-|mms-home| provides
-integration with Amazon Web Services (AWS) and lets you deploy new EC2
-instances directly from |MMS|. See :mms-docs:`Configure AWS Integration
-</tutorial/configure-aws-settings/>` for more details.
+There are two performance configurations to consider:
 
-When available, enable AWS's `Enhanced Networking
-<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking>`_
-for your instance. Not all instance types support Enhanced Networking.
-Refer to the `AWS documentation
-<http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking>`_
-for more information.
+- Reproducible performance for performance testing or benchmarking, and
+- Raw maximum performance
+
+To tune performance on :abbr:`EC2 (Elastic Compute Cloud)` for either
+configuration, you should:
+
+- Enable :abbr:`AWS (Amazon Web Services)`
+  `Enhanced Networking <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking>`_
+  for your instance. Not all instance types support Enhanced Networking.
+
+  To learn more about Enhanced Networking, see to the
+  `AWS documentation <http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking>`_.
+
+If you are concerned more about reproducible performance on
+:abbr:`EC2 (Elastic Compute Cloud)`, you should also:
+
+- Use provisioned :abbr:`IOPS (Input/Output Operations Per Second)`
+  for the storage, with separate devices for journal and data. Do not
+  use the ephemeral (:abbr:`SSD (Solid State Disk)`) storage available
+  on most instance types as their performance changes moment to moment.
+  (The ``i`` series is a notable exception, but very expensive.)
+
+- Disable :abbr:`DVFS (dynamic voltage and frequency scaling)` and
+  :abbr:`CPU (central processing unit)` power saving modes.
+
+  .. seealso::
+
+     `Amazon documentation on Processor State Control <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/processor_state_control.html>`_
+
+- Disable hyperthreading.
+
+  .. seealso::
+
+     `Amazon blog post on disabling Hyper-Threading <https://aws.amazon.com/blogs/compute/disabling-intel-hyper-threading-technology-on-amazon-linux/>`_.
+
+- Use ``numactl`` to bind memory locality to a single socket.
 
 .. _windows-azure-production-notes:
 
@@ -763,7 +825,7 @@ storage.
 
 For all :ref:`MMAPv1 <storage-mmapv1>` MongoDB deployments using Azure,
 you **must** mount the volume
-that hosts the :program:`mongod` instance's :setting:`~storage.dbPath`
+that hosts the :binary:`~bin.mongod` instance's :setting:`~storage.dbPath`
 with the *Host Cache Preference* ``READ/WRITE``.
 This applies to all Azure deployments running MMAPv1, using any guest operating
 system.
@@ -778,29 +840,33 @@ eventually shut down with the following error:
 
 These shut downs do not produce data loss when
 :setting:`storage.journal.enabled` is set to ``true``. You can safely
-restart :program:`mongod` at any time following this event.
+restart :binary:`~bin.mongod` at any time following this event.
 
 The performance characteristics of MongoDB may change with
 ``READ/WRITE`` caching enabled.
 
-The TCP keepalive on the Azure load balancer is 240 seconds by
+The TCP idle timeout on the Azure load balancer is 240 seconds by
 default, which can cause it to silently drop connections if the TCP
 keepalive on your Azure systems is greater than this value.  You
 should set ``tcp_keepalive_time`` to 120 to ameliorate this problem.
+
+.. note::
+   You will need to restart :binary:`~bin.mongod` and :binary:`~bin.mongos`
+   processes for new system-wide keepalive settings to take effect.
 
 .. include:: /includes/fact-tcp-keepalive-linux.rst
 
 .. include:: /includes/fact-tcp-keepalive-windows.rst
 
-VMWare
+VMware
 ``````
 
 .. include:: /includes/extracts/vm-memory-considerations-vmware.rst
 
 Ensure that virtual machines stay on a specific ESX/ESXi host by
-setting VMWare's `affinity rules <https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&docType=kc&externalId=1005508&sliceId=1&docTypeID=DT_KB_1_1&dialogID=549881455&stateId=0%200%20549889513>`_.
+setting VMware's `affinity rules <https://kb.vmware.com/selfservice/microsites/search.do?cmd=displayKC&docType=kc&externalId=1005508&sliceId=1&docTypeID=DT_KB_1_1&dialogID=549881455&stateId=0%200%20549889513>`_.
 If you must manually migrate a virtual machine
-to another host and the :program:`mongod` instance on the virtual machine is the
+to another host and the :binary:`~bin.mongod` instance on the virtual machine is the
 :term:`primary`, you must first :method:`step down <rs.stepDown>` the primary and then
 :method:`shut down the instance <db.shutdownServer>`.
 
@@ -817,8 +883,8 @@ It is possible to clone a virtual machine running MongoDB.
 You might use this function to
 spin up a new virtual host to add as a member of a replica
 set. If you clone a VM with journaling enabled, the clone snapshot will
-be valid. If not using journaling, first stop :program:`mongod`,
-then clone the VM, and finally, restart :program:`mongod`.
+be valid. If not using journaling, first stop :binary:`~bin.mongod`,
+then clone the VM, and finally, restart :binary:`~bin.mongod`.
 
 KVM
 ```
@@ -827,6 +893,13 @@ KVM
 
 Performance Monitoring
 ----------------------
+
+.. note::
+
+   Starting in version 4.0, MongoDB offers :doc:`free Cloud monitoring
+   </administration/free-monitoring>` for standalones and replica sets.
+   For more information, see :doc:`/administration/free-monitoring`.
+
 
 iostat
 ~~~~~~

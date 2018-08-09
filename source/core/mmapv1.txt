@@ -12,18 +12,17 @@ MMAPv1 Storage Engine
    :depth: 1
    :class: singlecol
 
+.. admonition:: Deprecated
+   :class: warning
+
+   .. include:: /includes/fact-4.0-mmapv1-deprecated.rst
+
 MMAPv1 is MongoDB's original storage engine based on memory mapped
 files. It excels at workloads with high volume inserts, reads, and
 in-place updates.
 
 .. include:: /includes/fact-mmapv1-big-endian.rst
 
-.. versionchanged:: 3.2
-
-   Starting in MongoDB 3.2, the MMAPv1 is no longer the default storage
-   engine; instead, the :doc:`WiredTiger </core/wiredtiger>` storage
-   engine is the default storage engine . See
-   :ref:`3.2-storage-engine-compatibility`.
 
 Journal
 -------
@@ -36,7 +35,7 @@ than it writes the data files.
 .. include:: /includes/fact-mmapv1-write-to-disk.rst
 
 The journal allows MongoDB to successfully recover data from data files
-after a :program:`mongod` instance exits without flushing all changes.
+after a :binary:`~bin.mongod` instance exits without flushing all changes.
 See :doc:`/core/journaling` for more information about the journal in
 MongoDB.
 
@@ -64,7 +63,7 @@ Record Allocation Strategies
 ----------------------------
 
 MongoDB supports multiple record allocation strategies that determine
-how :program:`mongod` adds padding to a document when creating a
+how :binary:`~bin.mongod` adds padding to a document when creating a
 record. Because documents in MongoDB may grow after insertion
 and all records are contiguous on disk, the padding can reduce the
 need to relocate documents on disk following updates. Relocations are

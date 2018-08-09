@@ -4,7 +4,7 @@ description: "Internal namespace administration command."
 ---
 name: ":dbcommand:`clone`"
 file: /reference/command/clone
-description: "Copies a database from a remote host to the current host."
+description: "*Deprecated*. Copies a database from a remote host to the current host."
 ---
 name: ":dbcommand:`cloneCollection`"
 file: /reference/command/cloneCollection
@@ -26,17 +26,13 @@ name: ":dbcommand:`connPoolSync`"
 file: /reference/command/connPoolSync
 description: "Internal command to flush connection pool."
 ---
-name: ":dbcommand:`connectionStatus`"
-file: /reference/command/connectionStatus
-description: "Reports the authentication state for the current connection."
----
 name: ":dbcommand:`convertToCapped`"
 file: /reference/command/convertToCapped
 description: "Converts a non-capped collection to a capped collection."
 ---
 name: ":dbcommand:`copydb`"
 file: /reference/command/copydb
-description: "Copies a database from a remote host to the current host."
+description: "*Deprecated*. Copies a database from a remote host to the current host."
 ---
 name: ":dbcommand:`create`"
 file: /reference/command/create
@@ -70,6 +66,10 @@ name: ":dbcommand:`fsync`"
 file: /reference/command/fsync
 description: "Flushes pending writes to the storage layer and locks the database to allow backups."
 ---
+name: ":dbcommand:`fsyncUnlock`"
+file: /reference/command/fsyncUnlock
+description: "Unlocks one fsync lock."
+---
 name: ":dbcommand:`getParameter`"
 file: /reference/command/getParameter
 description: "Retrieves configuration options."
@@ -85,6 +85,10 @@ description: "Terminates an operation as specified by the operation ID."
 name: ":dbcommand:`listCollections`"
 file: /reference/command/listCollections
 description: "Returns a list of collections in the current database."
+---
+name: ":dbcommand:`listDatabases`"
+file: /reference/command/listDatabases
+description: "Returns a document that lists all databases and returns basic database statistics."
 ---
 name: ":dbcommand:`listIndexes`"
 file: /reference/command/listIndexes
@@ -112,7 +116,7 @@ description: "Rebuilds the database and indexes by discarding invalid or corrupt
 ---
 name: ":dbcommand:`setFeatureCompatibilityVersion`"
 file: /reference/command/setFeatureCompatibilityVersion
-description: "Enables or disables MongoDB 3.4 features that persist data that are backwards-incompatible with MongoDB 3.2."
+description: "Enables or disables features that persist data that are backwards-incompatible."
 ---
 name: ":dbcommand:`setParameter`"
 file: /reference/command/setParameter
@@ -120,7 +124,7 @@ description: "Modifies configuration options."
 ---
 name: ":dbcommand:`shutdown`"
 file: /reference/command/shutdown
-description: "Shuts down the :program:`mongod` or :program:`mongos` process."
+description: "Shuts down the :binary:`~bin.mongod` or :binary:`~bin.mongos` process."
 ---
 name: ":dbcommand:`touch`"
 file: /reference/command/touch

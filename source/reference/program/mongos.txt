@@ -15,18 +15,26 @@
 Synopsis
 --------
 
-:program:`mongos` for "MongoDB Shard," is a routing service for
+:binary:`~bin.mongos` for "MongoDB Shard," is a routing service for
 MongoDB shard configurations that processes queries from the
 application layer, and determines the location of this data in the
 :term:`sharded cluster`, in order to complete these operations.
 From the perspective of the application, a
-:program:`mongos` instance behaves identically to any other MongoDB
+:binary:`~bin.mongos` instance behaves identically to any other MongoDB
 instance.
+
+.. seealso:: :ref:`conf-file-command-line-mapping`
+
+.. note::
+
+   .. include:: /includes/fact-tls-1.0.rst
+
+.. |binary| replace:: MongoDB
 
 Considerations
 --------------
 
-Never change the name of the :program:`mongos` binary.
+Never change the name of the :binary:`~bin.mongos` binary.
 
 Options
 -------
@@ -90,6 +98,10 @@ Core Options
 
 .. include:: /includes/option/option-mongos-networkMessageCompressors.rst
 
+.. include:: /includes/option/option-mongos-serviceExecutor.rst
+
+.. include:: /includes/option/option-mongos-timeZoneInfo.rst
+
 Sharded Cluster Options
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -119,6 +131,10 @@ TLS/SSL Options
 
 .. include:: /includes/option/option-mongos-sslCAFile.rst
 
+.. include:: /includes/option/option-mongos-sslCertificateSelector.rst
+
+.. include:: /includes/option/option-mongos-sslClusterCertificateSelector.rst
+
 .. include:: /includes/option/option-mongos-sslCRLFile.rst
 
 .. include:: /includes/option/option-mongos-sslAllowConnectionsWithoutCertificates.rst
@@ -127,7 +143,7 @@ TLS/SSL Options
 
 .. include:: /includes/option/option-mongos-sslAllowInvalidHostnames.rst
 
-.. include:: /includes/option/option-mongod-sslDisabledProtocols.rst
+.. include:: /includes/option/option-mongos-sslDisabledProtocols.rst
 
 .. include:: /includes/option/option-mongos-sslFIPSMode.rst
 
@@ -141,6 +157,15 @@ Audit Options
 .. include:: /includes/option/option-mongos-auditPath.rst
 
 .. include:: /includes/option/option-mongos-auditFilter.rst
+
+Profiler Options
+~~~~~~~~~~~~~~~~
+
+.. versionadded:: 4.0
+
+.. include:: /includes/option/option-mongos-slowms.rst
+
+.. include:: /includes/option/option-mongos-slowOpSampleRate.rst
 
 Text Search Options
 ~~~~~~~~~~~~~~~~~~~
@@ -176,8 +201,6 @@ Additional Options
    SERVER-12889
 
 .. include:: /includes/option/option-mongos-ipv6.rst
-
-.. include:: /includes/option/option-mongos-noscripting.rst
 
 .. pending removal with SERVER-12888
 

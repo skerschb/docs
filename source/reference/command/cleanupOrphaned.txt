@@ -24,9 +24,17 @@ Definition
    :dbcommand:`cleanupOrphaned` examines both ranges for orphaned
    documents.
 
-   :dbcommand:`cleanupOrphaned` has the following syntax:
+   To run, issue :dbcommand:`cleanupOrphaned` in the ``admin`` database
+   directly on the :binary:`~bin.mongod` instance that is the primary
+   replica set member of the shard. You do not need to disable the
+   balancer before running :dbcommand:`cleanupOrphaned`.
 
-   .. versionchanged:: 3.6
+   .. note::
+
+      Do not run :dbcommand:`cleanupOrphaned` on a
+      :binary:`~bin.mongos` instance.
+
+   :dbcommand:`cleanupOrphaned` has the following syntax:
 
    .. code-block:: javascript
 
@@ -34,9 +42,7 @@ Definition
          cleanupOrphaned: "<database>.<collection>",
          startingFromKey: <minimumShardKeyValue>,
          secondaryThrottle: <boolean>,
-         writeConcern: <document>,
-         txnNumber: <long>,
-         lsid: { id: <UUID> }
+         writeConcern: <document>
       } )
 
    :dbcommand:`cleanupOrphaned` has the following fields:
@@ -45,14 +51,6 @@ Definition
 
 Behavior
 --------
-
-Run :dbcommand:`cleanupOrphaned` in the ``admin`` database directly on
-the :program:`mongod` instance that is the primary replica set member
-of the shard. Do not run :dbcommand:`cleanupOrphaned` on a
-:program:`mongos` instance.
-
-You do not need to disable the balancer before running
-:dbcommand:`cleanupOrphaned`.
 
 Performance
 ~~~~~~~~~~~
@@ -173,7 +171,7 @@ Log Files
 ~~~~~~~~~
 
 The :dbcommand:`cleanupOrphaned` command prints the number of deleted
-documents to the :program:`mongod` log. For example:
+documents to the :binary:`~bin.mongod` log. For example:
 
 .. code-block:: none
 
@@ -204,8 +202,7 @@ this range, as in the following example:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( {
+   db.adminCommand( {
       "cleanupOrphaned": "test.info",
       "startingFromKey": { x: 10 },
       "secondaryThrottle": true
@@ -216,8 +213,7 @@ previous range, as in the following:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( {
+   db.adminCommand( {
       "cleanupOrphaned": "test.info",
       "startingFromKey": { x: 2 },
       "secondaryThrottle": true
@@ -241,12 +237,11 @@ the following:
 
 .. code-block:: javascript
 
-   use admin
    var nextKey = { };
    var result;
 
    while ( nextKey != null ) {
-     result = db.runCommand( { cleanupOrphaned: "test.user", startingFromKey: nextKey } );
+     result = db.adminCommand( { cleanupOrphaned: "test.user", startingFromKey: nextKey } );
 
      if (result.ok != 1)
         print("Unable to complete at this time: failure or timeout.")

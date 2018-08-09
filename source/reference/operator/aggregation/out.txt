@@ -25,7 +25,7 @@ Definition
    lets the aggregation framework return result sets of any size.
 
    .. versionchanged:: 3.2.0
-   
+
       MongoDB 3.2 added support for :ref:`document validation
       <3.2-rel-notes-document-validation>`. The ``bypassDocumentValidation``
       field enables you to bypass document validation during the
@@ -67,11 +67,18 @@ Replace Existing Collection
 
 If the collection specified by the :pipeline:`$out` operation already
 exists, then upon completion of the aggregation, the :pipeline:`$out`
-stage atomically replaces the existing collection with the new
-results collection. The :pipeline:`$out` operation does not change any
-indexes that existed on the previous collection. If the aggregation
-fails, the :pipeline:`$out` operation makes no changes to the pre-existing
-collection.
+stage atomically replaces the existing collection with the new results
+collection. Specifically, the :pipeline:`$out` operation:
+
+#. Creates a temp collection.
+#. Copies the indexes from the existing collection to the temp collection.
+#. Inserts the documents into the temp collection.
+#. Calls :method:`db.collection.renameCollection` with ``dropTarget: true``
+   to rename the temp collection to the destination collection.
+
+The :pipeline:`$out` operation does not change any indexes that existed on the
+previous collection. If the aggregation fails, the :pipeline:`$out` operation
+makes no changes to the pre-existing collection.
 
 Index Constraints
 ~~~~~~~~~~~~~~~~~
@@ -79,6 +86,12 @@ Index Constraints
 The pipeline will fail to complete if the documents produced by the
 pipeline would violate any unique indexes, including the index on the
 ``_id`` field of the original output collection.
+
+Transactions
+~~~~~~~~~~~~
+
+``$out`` is not allowed in :doc:`transactions </core/transactions>`.
+
 
 Example
 -------

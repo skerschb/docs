@@ -15,13 +15,19 @@ Database Commands
 All command documentation outlined below describes a command and
 its available parameters and provides a document template or prototype
 for each command. Some command documentation also includes the relevant
-:program:`mongo` shell helpers.
+:binary:`~bin.mongo` shell helpers.
 
-To run a command, use the :method:`db.runCommand()`:
+To run a command against the current database, use :method:`db.runCommand()`:
 
 .. code-block:: javascript
 
    db.runCommand( { <command> } )
+
+To run an administrative command against the ``admin`` database, use :method:`db.adminCommand()`:
+
+.. code-block:: javascript
+
+   db.adminCommand( { <command> } )
 
 .. include:: /includes/extracts/commands-toc-explanation.rst
 
@@ -35,12 +41,11 @@ Aggregation Commands
 
    .. include:: /includes/toc/table-command-aggregation.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-aggregation
+   /reference/command/nav-aggregation
 
 Geospatial Commands
 ~~~~~~~~~~~~~~~~~~~
@@ -49,12 +54,11 @@ Geospatial Commands
 
    .. include:: /includes/toc/table-command-geospatial.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-geospatial
+   /reference/command/nav-geospatial
 
 .. _collection-commands:
 
@@ -65,12 +69,11 @@ Query and Write Operation Commands
 
    .. include:: /includes/toc/table-command-crud.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-crud
+   /reference/command/nav-crud
 
 .. _query-plan-commands:
 
@@ -81,12 +84,11 @@ Query Plan Cache Commands
 
    .. include:: /includes/toc/table-command-plan-cache.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-plan-cache
+   /reference/command/nav-plan-cache
 
 
 Database Operations
@@ -99,12 +101,11 @@ Authentication Commands
 
    .. include:: /includes/toc/table-command-authentication.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-authentication
+   /reference/command/nav-authentication
 
 .. _user-management-commands:
 
@@ -115,12 +116,11 @@ User Management Commands
 
    .. include:: /includes/toc/table-command-user-management.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-user-management
+   /reference/command/nav-user-management
 
 .. _role-management-commands:
 
@@ -131,12 +131,11 @@ Role Management Commands
 
    .. include:: /includes/toc/table-command-role-management.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-role-management
+   /reference/command/nav-role-management
 
 Replication Commands
 ~~~~~~~~~~~~~~~~~~~~
@@ -145,12 +144,11 @@ Replication Commands
 
    .. include:: /includes/toc/table-command-replication.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-replication
+   /reference/command/nav-replication
 
 .. seealso:: :doc:`/replication` for more information regarding
    replication.
@@ -162,31 +160,44 @@ Sharding Commands
 
    .. include:: /includes/toc/table-command-sharding.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-sharding
+   /reference/command/nav-sharding
 
 .. seealso:: :doc:`/sharding` for more information about MongoDB's
    sharding functionality.
 
+.. _session-commands:
+
+Session Commands
+~~~~~~~~~~~~~~~~
+
+.. only:: website
+
+   .. include:: /includes/table-sessions-commands.rst
+
+.. toctree::
+   :titlesonly:
+   :hidden:
+
+   /reference/command/nav-sessions
+
 .. _admin-commands:
 
-Instance Administration Commands
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Administration Commands
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. only:: website
 
    .. include:: /includes/toc/table-command-administration.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-administration
+   /reference/command/nav-administration
 
 Diagnostic Commands
 ~~~~~~~~~~~~~~~~~~~
@@ -195,12 +206,32 @@ Diagnostic Commands
 
    .. include:: /includes/toc/table-command-diagnostic.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
+   /reference/command/nav-diagnostic
 
-      /reference/command/nav-diagnostic
+Free Monitoring Commands
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. only:: website
+
+   .. list-table::
+   
+      * - Name
+
+        - Description
+
+      * - :dbcommand:`setFreeMonitoring`
+
+        - Enables/disables free monitoring during runtime.
+
+.. toctree::
+   :titlesonly:
+   :hidden:
+
+   /reference/command/nav-free-monitoring
 
 Auditing Commands
 -----------------
@@ -209,9 +240,8 @@ Auditing Commands
 
    .. include:: /includes/toc/table-command-audit.rst
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/command/nav-auditing
+   /reference/command/nav-auditing

@@ -10,8 +10,6 @@ createIndexes
    :depth: 1
    :class: singlecol
 
-.. versionadded:: 2.6
-
 Definition
 ----------
 
@@ -19,15 +17,7 @@ Definition
 
    Builds one or more indexes on a collection.
 
-   .. versionchanged:: 3.2
-
-      Starting in MongoDB 3.2, MongoDB disallows the creation of
-      :ref:`version 0 <3.2-version-0-indexes>` indexes. To upgrade
-      existing version 0 indexes, see :ref:`3.2-version-0-indexes`.
-
    The :dbcommand:`createIndexes` command takes the following form:
-
-   .. versionchanged:: 3.6
 
    .. code-block:: javascript
 
@@ -49,8 +39,7 @@ Definition
               { ... },
               { ... }
           ],
-          txnNumber: <long>,
-          lsid: { id: <UUID> }
+          writeConcern: { <write concern> }
         }
       )
 
@@ -64,11 +53,39 @@ Definition
 
    .. include:: /includes/apiargs/dbcommand-createIndexes-indexes-field.rst
 
+   The :binary:`~bin.mongo` shell provides the methods
+   :method:`db.collection.createIndex()` and
+   :method:`db.collection.createIndexes()` as wrappers for the
+   :dbcommand:`createIndexes` command.
+
 Considerations
 --------------
 
+.. versionchanged:: 3.2
+
+   MongoDB disallows the creation of :ref:`version 0
+   <3.2-version-0-indexes>` indexes. To upgrade existing version 0
+   indexes, see :ref:`3.2-version-0-indexes`.
+
+Index Names
+~~~~~~~~~~~
+
 An index name, including the :term:`namespace`, cannot be longer than
 the :ref:`Index Name Length <limit-index-name-length>` limit.
+
+Replica Sets and Sharded Clusters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To minimize the impact of building an index on replica sets and sharded
+clusters, use a rolling index build procedure
+as described on :doc:`/tutorial/build-indexes-on-replica-sets`.
+
+Collation and Index Types
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/collation-index-type-restrictions.rst
+
+.. include:: /includes/extracts/collation-index-type-restrictions-addendum.rst
 
 Behavior
 --------
@@ -76,8 +93,10 @@ Behavior
 Concurrency
 ~~~~~~~~~~~
 
-Non-background indexing operations block all other operations on a
-database.
+Foreground indexing operations on a populated collection block all
+other operations on a database.
+
+.. _createIndexes-multiple-indexes:
 
 Multiple Index Builds
 ~~~~~~~~~~~~~~~~~~~~~
@@ -88,6 +107,14 @@ If you specify multiple indexes to the :dbcommand:`createIndexes`
 command, the operation only scans the collection once, and if at least
 one index is to be built in the foreground, the operation will build
 all the specified indexes in the foreground.
+
+Memory Usage Limit
+~~~~~~~~~~~~~~~~~~
+
+.. versionchanged:: 3.4
+
+   .. include:: /includes/fact-index-build-default-memory-limit.rst
+
 
 Index Options
 ~~~~~~~~~~~~~
@@ -145,7 +172,8 @@ the ``products`` database:
                name: "item_supplier_model",
                unique: true
            }
-       ]
+       ],
+       writeConcern: { w: "majority" }
      }
    )
 

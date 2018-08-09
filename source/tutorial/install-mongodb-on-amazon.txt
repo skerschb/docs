@@ -39,7 +39,38 @@ Install MongoDB Community Edition
 
 .. include:: /includes/fact-installation-64bit.rst
 
-.. include:: /includes/steps/install-mongodb-on-amazon.rst
+Using ``.rpm`` Packages (Recommended)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+   tabs:
+     - id: amz1
+       name: Amazon Linux
+       content: |
+
+         .. include:: /includes/steps/install-mongodb-on-amazon.rst
+
+     - id: amz2
+       name: Amazon Linux 2
+       content: |
+
+         .. include:: /includes/steps/install-mongodb-on-amazon2.rst
+
+Using ``.tgz`` Tarballs
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Prerequisites
+`````````````
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. include:: /includes/extracts/install-mongodb-community-manually-redhat.rst
+
+Procedure
+`````````
+
+.. include:: /includes/steps/install-mongodb-on-linux.rst
 
 Run MongoDB Community Edition
 -----------------------------

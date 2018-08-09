@@ -20,7 +20,7 @@ The ``local`` Database
 Overview
 --------
 
-Every :program:`mongod` instance has its own ``local`` database, which
+Every :binary:`~bin.mongod` instance has its own ``local`` database, which
 stores data used in the replication process, and other
 instance-specific data. The ``local`` database is invisible to
 replication: collections in the ``local`` database are not replicated.
@@ -29,91 +29,99 @@ In replication, the ``local`` database store stores internal replication
 data for each member of a :term:`replica set`. The ``local`` stores the
 following collections:
 
-.. versionchanged:: 2.4
-   When running with authentication (i.e. :setting:`~security.authorization`),
-   authenticating to the ``local`` database is **not** equivalent to
-   authenticating to the ``admin`` database. In previous versions,
-   authenticating to the ``local`` database provided access to all databases.
+When running with authentication (i.e.
+:setting:`~security.authorization`), authenticating to the ``local``
+database is **not** equivalent to authenticating to the ``admin``
+database. In previous versions, authenticating to the ``local``
+database provided access to all databases.
+
+Restrictions
+------------
+
+.. note::
+
+   You cannot perform read/write operations to the collections in the
+   ``local`` database inside a :doc:`multi-document transaction
+   </core/transactions>`.
+
 
 Collection on all ``mongod`` Instances
 --------------------------------------
 
 .. data:: local.startup_log
 
-   On startup, each :program:`mongod` instance inserts a document into
+   On startup, each :binary:`~bin.mongod` instance inserts a document into
    :data:`~local.startup_log` with diagnostic information about the
-   :program:`mongod` instance itself and host
+   :binary:`~bin.mongod` instance itself and host
    information. :data:`~local.startup_log` is a capped
    collection. This information is primarily useful for diagnostic
    purposes.
 
-   .. example::
+   For example, the following is a prototype of a document from the
+   :data:`~local.startup_log` collection:
 
-      Consider the following prototype of a document from the
-      :data:`~local.startup_log` collection:
+   .. code-block:: javascript
 
-      .. code-block:: javascript
+      {
+        "_id" : "<string>",
+        "hostname" : "<string>",
+        "startTime" : ISODate("<date>"),
+        "startTimeLocal" : "<string>",
+        "cmdLine" : {
+              "dbpath" : "<path>",
+              "<option>" : <value>
+        },
+        "pid" : <number>,
+        "buildinfo" : {
+              "version" : "<string>",
+              "gitVersion" : "<string>",
+              "sysInfo" : "<string>",
+              "loaderFlags" : "<string>",
+              "compilerFlags" : "<string>",
+              "allocator" : "<string>",
+              "versionArray" : [ <num>, <num>, <...> ],
+              "javascriptEngine" : "<string>",
+              "bits" : <number>,
+              "debug" : <boolean>,
+              "maxBsonObjectSize" : <number>
+        }
+      }
 
-         {
-           "_id" : "<string>",
-           "hostname" : "<string>",
-           "startTime" : ISODate("<date>"),
-           "startTimeLocal" : "<string>",
-           "cmdLine" : {
-                 "dbpath" : "<path>",
-                 "<option>" : <value>
-           },
-           "pid" : <number>,
-           "buildinfo" : {
-                 "version" : "<string>",
-                 "gitVersion" : "<string>",
-                 "sysInfo" : "<string>",
-                 "loaderFlags" : "<string>",
-                 "compilerFlags" : "<string>",
-                 "allocator" : "<string>",
-                 "versionArray" : [ <num>, <num>, <...> ],
-                 "javascriptEngine" : "<string>",
-                 "bits" : <number>,
-                 "debug" : <boolean>,
-                 "maxBsonObjectSize" : <number>
-           }
-         }
+   Documents in the :data:`~local.startup_log` collection contain the
+   following fields:
 
-    Documents in the :data:`~local.startup_log` collection contain the
-    following fields:
+   .. data:: local.startup_log._id
 
-    .. data:: local.startup_log._id
+      Includes the system hostname and a millisecond epoch value.
 
-       Includes the system hostname and a millisecond epoch value.
+   .. data:: local.startup_log.hostname
 
-    .. data:: local.startup_log.hostname
+      The system's hostname.
 
-       The system's hostname.
+   .. data:: local.startup_log.startTime
 
-    .. data:: local.startup_log.startTime
+      A UTC :term:`ISODate` value that reflects when the server started.
 
-       A UTC :term:`ISODate` value that reflects when the server started.
+   .. data:: local.startup_log.startTimeLocal
 
-    .. data:: local.startup_log.startTimeLocal
+      A string that reports the :data:`~local.startup_log.startTime`
+      in the system's local time zone.
 
-       A string that reports the :data:`~local.startup_log.startTime`
-       in the system's local time zone.
+   .. data:: local.startup_log.cmdLine
 
-    .. data:: local.startup_log.cmdLine
+      An embedded document that reports the :binary:`~bin.mongod` runtime
+      options and their values.
 
-       An embedded document that reports the :program:`mongod` runtime
-       options and their values.
+   .. data:: local.startup_log.pid
 
-    .. data:: local.startup_log.pid
+      The process identifier for this process.
 
-       The process identifier for this process.
+   .. data:: local.startup_log.buildinfo
 
-    .. data:: local.startup_log.buildinfo
-
-       An embedded document that reports information about the build
-       environment and settings used to compile this
-       :program:`mongod`. This is the same output as
-       :dbcommand:`buildInfo`. See :data:`buildInfo`.
+      An embedded document that reports information about the build
+      environment and settings used to compile this
+      :binary:`~bin.mongod`. This is the same output as
+      :dbcommand:`buildInfo`. See :data:`buildInfo`.
 
 Collections on Replica Set Members
 ----------------------------------
@@ -122,7 +130,7 @@ Collections on Replica Set Members
 
    :data:`local.system.replset` holds the replica set's configuration
    object as its single document. To view the object's configuration
-   information, issue :method:`rs.conf()` from the :program:`mongo`
+   information, issue :method:`rs.conf()` from the :binary:`~bin.mongo`
    shell. You can also query this collection directly.
 
 .. data:: local.oplog.rs
@@ -134,37 +142,12 @@ Collections on Replica Set Members
    procedure. For additional information, see the
    :ref:`replica-set-oplog-sizing` section.
 
+   .. note::
+
+      .. include:: /includes/fact-oplog-size.rst
+
 .. data:: local.replset.minvalid
 
    This contains an object used internally by replica sets to track replication
    status.
 
-.. data:: local.slaves
-
-   *Removed in version 3.0:* Replica set members no longer mirror
-   replication status of the set to the :data:`local.slaves`
-   collection. Use :method:`rs.status()` instead.
-
-Collections used in Master/Slave Replication
---------------------------------------------
-
-In :term:`master`\/:term:`slave` replication, the ``local`` database contains
-the following collections:
-
-- On the master:
-
-  .. data:: local.oplog.$main
-
-     This is the oplog for the master-slave configuration.
-
-  .. data:: local.slaves
-
-     *Removed in version 3.0:* MongoDB no longer stores information
-     about each slave in the :data:`local.slaves` collection. Use
-     :method:`db.serverStatus( { repl: 1 } ) <db.serverStatus>` instead.
-
-- On each slave:
-
-  .. data:: local.sources
-
-     This contains information about the slave's master server.

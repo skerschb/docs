@@ -99,6 +99,8 @@ description: |
   A document expressing the :doc:`write concern </reference/write-concern>`.
   Omit to use the default write concern.
 
+  .. include:: /includes/extracts/transactions-operations-write-concern.rst
+
   .. versionadded:: 3.2
 interface: method
 name: writeConcern
@@ -126,6 +128,7 @@ interface: method
 operation: db.collection.findAndModify
 position: 11
 ---
+arg_name: param
 position: 12
 name: arrayFilters
 source:

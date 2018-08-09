@@ -51,7 +51,7 @@ Definition
    The :method:`db.collection.findAndModify()` method takes a document
    parameter with the following embedded document fields:
 
-   .. |operation| replace:: :method:`~db.collection.findAndModify()`
+   .. |operation| replace:: :method:`db.collection.findAndModify()`
 
    .. include:: /includes/apiargs/method-db.collection.findAndModify-param.rst
 
@@ -122,7 +122,7 @@ When using :dbcommand:`findAndModify` in a :term:`sharded <sharding>`
 environment, the ``query`` **must** contain the :term:`shard key` for
 all operations against the sharded cluster for the *sharded* collections.
 
-:dbcommand:`findAndModify` operations issued against :program:`mongos`
+:dbcommand:`findAndModify` operations issued against :binary:`~bin.mongos`
 instances for *non-sharded* collections function normally.
 
 Document Validation
@@ -139,6 +139,17 @@ Comparisons with the ``update`` Method
 .. |return-object| replace:: the pre-modified version of the document
 
 .. include:: /includes/fact-findAndModify-update-comparison.rst
+
+Transactions
+~~~~~~~~~~~~
+
+.. include:: /includes/extracts/transactions-supported-operation.rst
+
+If the operation results in an upsert, the collection must already exist.
+
+.. include:: /includes/extracts/transactions-operations-write-concern.rst
+
+.. include:: /includes/extracts/transactions-usage.rst
 
 Examples
 --------

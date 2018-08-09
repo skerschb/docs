@@ -70,7 +70,7 @@ description: |
   .. note::
 
      Starting in MongoDB 3.6, {{program}} bind to localhost
-     (``127.0.0.1``) by default. See :ref:`3.6-bind-to-localhost`.
+     by default. See :ref:`3.6-bind-to-localhost`.
 
   The IP addresses and/or full Unix domain socket paths on which
   {{program}} should listen for client connections. You may attach
@@ -85,7 +85,7 @@ optional: true
 post: |
   To bind to all IPv4 addresses, enter ``0.0.0.0``.
 
-  To bind to all IPv4 and IPv6 addresses, enter ``0.0.0.0,::``
+  To bind to all IPv4 and IPv6 addresses, enter ``::,0.0.0.0``
   or alternatively, use the :setting:`net.bindIpAll` setting.
 
   .. note::
@@ -96,14 +96,13 @@ post: |
 ---
 program: mongod
 name: bind_ip_all
-default: false
-args: <boolean>
+args: null
 directive: option
 description: |
 
    .. versionadded:: 3.6
 
-   If true, the {{program}} instance binds to all ip addresses. When
+   If {{condition}}, the {{program}} instance binds to all ip addresses. When
    attaching {{program}} to a publicly accessible interface, ensure
    that you have implemented proper authentication and firewall
    restrictions to protect the integrity of your database.
@@ -113,13 +112,15 @@ description: |
 post: |
 
   Alternatively, you can set the ``--bind_ip`` option to
-  ``0.0.0.0,::`` to bind to all IP addresses.
+  ``::,0.0.0.0`` to bind to all IP addresses.
 
   .. note::
 
      ``--bind_ip`` and ``--bind_ip_all`` are mutually exclusive. That
      is, you can specify one or the other, but not both.
 
+replacement:
+  condition: "specified"
 ---
 program: mongod
 name: listenBacklog
@@ -167,7 +168,7 @@ description: |
    setting the ``listenBacklog`` parameter to a higher value may reduce
    operation latency as observed by the client by reducing the number
    of connections which are forced into a backoff state.
-   
+
 optional: true
 ---
 program: mongod
@@ -196,10 +197,9 @@ description: |
   {{role}} option can have a small impact on performance. You can set
   :option:`--noobjcheck` to disable object checking at runtime.
 
-  .. versionchanged:: 2.4
-     MongoDB enables the {{role}} option by default in order to prevent
-     any client from inserting malformed or invalid BSON into a MongoDB
-     database.
+  MongoDB enables the {{role}} option by default in order to prevent
+  any client from inserting malformed or invalid BSON into a MongoDB
+  database.
 optional: true
 ---
 program: mongod
@@ -207,7 +207,6 @@ name: noobjcheck
 args: null
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   Disables the default document validation that MongoDB performs on all
   incoming BSON documents.
@@ -232,7 +231,7 @@ args: null
 directive: option
 description: |
   {{intro}} new entries to the end of the existing log file when the {{program}}
-  instance restarts. Without this option, :program:`mongod` will back up the
+  instance restarts. Without this option, :binary:`~bin.mongod` will back up the
   existing log and create a new file.
 optional: true
 replacement:
@@ -305,6 +304,14 @@ description: |
   than to standard output or to a log file. , as with :option:`--logpath`.
 
   The {{role}} option is not supported on Windows.
+
+  .. warning::
+
+     The ``syslog`` daemon generates timestamps when it logs a message, not
+     when MongoDB issues the message. This can lead to misleading timestamps
+     for log entries, especially when the system is under heavy load. We
+     recommend using the :option:`--logpath` option for production systems to
+     ensure accurate timestamps.
 optional: true
 ---
 program: mongod
@@ -316,10 +323,11 @@ description: |
   {{verb}} facility level used when logging messages to syslog.
   The value you specify must be supported by your
   operating system's implementation of syslog. To use this option, you
-  must enable the :option:`--syslog` option.
+  must  {{option}}
 optional: true
 replacement:
   verb: "Specifies the"
+  option: enable the :option:`--syslog` option.
 ---
 program: mongod
 name: pidfilepath
@@ -328,12 +336,13 @@ directive: option
 description: |
   {{intro}} file location to hold the process ID of the {{program}}
   process where {{program}} will write its PID. This is useful for
-  tracking the {{program}} process in combination with the
-  :option:`--fork` option. Without a specified {{role}} option, the
+  tracking the {{program}} process in combination with
+  {{option}}. Without a specified {{role}} option, the
   process creates no PID file.
 optional: true
 replacement:
   intro: "Specifies a"
+  option: the :option:`--fork` option
 ---
 program: mongod
 name: keyFile
@@ -365,7 +374,7 @@ post: |
 
   - :setting:`net.bindIp` is not set
 
-  - :setting:`net.bindIp` does not specify ``127.0.0.1``
+  - :setting:`net.bindIp` does not specify ``localhost`` or its associated IP address
 
   .. |mongodb-package| replace:: {{program}}
 
@@ -389,12 +398,14 @@ description: |
 
   - :setting:`net.unixDomainSocket.enabled` is ``false``
 
-  - :option:`--nounixsocket` is set
+  - {{option}} is set
 
   - :setting:`net.bindIp` is not set
 
-  - :setting:`net.bindIp` does not specify ``127.0.0.1``
+  - :setting:`net.bindIp` does not specify ``localhost`` or its associated IP address
 optional: true
+replacement:
+   option: ":option:`--nounixsocket`"
 ---
 program: mongod
 name: filePermissions
@@ -457,7 +468,7 @@ program: mongod
 name: dbpath
 args: <path>
 default: |
-  ``/data/db`` on Linux and OS X, ``\data\db`` on Windows
+  ``/data/db`` on Linux and macOS, ``\data\db`` on Windows
 directive: option
 description: |
   The directory where the {{program}} instance stores its data.
@@ -488,14 +499,14 @@ description: |
   .. versionchanged:: 3.0
 
      To change the {{role}} option for existing deployments, you must
-     restart the :program:`mongod` instances with the new {{role}}
+     restart the :binary:`~bin.mongod` instances with the new {{role}}
      value **and** a new data directory ({{newdbpath}}), and then
      repopulate the data.
 
-     - For standalone instances, you can use :program:`mongodump` on
+     - For standalone instances, you can use :binary:`~bin.mongodump` on
        the existing instance, stop the instance, restart with the new
        {{role}} value **and** a new data directory, and use
-       :program:`mongorestore` to populate the new data directory.
+       :binary:`~bin.mongorestore` to populate the new data directory.
 
      - For replica sets, you can update in a rolling manner by stopping
        a secondary member, restart with the new {{role}} value **and**
@@ -630,7 +641,9 @@ description: |
        - Recommended. Send the x.509 certificate for authentication and
          accept only x.509 certificates.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-ca-file.rst
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongod
@@ -638,10 +651,12 @@ name: nojournal
 args: null
 directive: option
 description: |
-  Disables the durability journaling. The {{program}} instance
-  enables journaling by default in 64-bit versions after v2.0.
+  Disables :doc:`journaling </core/journaling>`. {{program}}
+  enables journaling by default.
 post: |
   .. include:: /includes/not-available-for-inmemory-storage-engine.rst
+
+  .. include:: /includes/wiredtiger-node-nojournal.rst
 optional: true
 ---
 program: mongod
@@ -689,76 +704,6 @@ description: |
 optional: true
 replacement:
   verb: "Specifies the"
----
-program: mongod
-name: profile
-args: <level>
-default: 0
-directive: option
-description: |
-  Changes the level of database profiling, which inserts information about
-  operation performance into the ``system.profile`` collection. Specify one
-  of the following levels:
-
-  .. list-table::
-     :header-rows: 1
-     :widths: 20 40
-
-     * - Level
-
-       - Setting
-
-     * - 0
-
-       - Off. No profiling.
-
-     * - 1
-
-       - On. Only includes slow operations.
-
-     * - 2
-
-       - On. Includes all operations.
-
-  Database profiling can impact database
-  performance. Enable this option only after careful consideration.
-optional: true
----
-program: mongod
-name: profilingmode
-args: <level>
-default: "off"
-directive: option
-description: |
-  {{intro}} level of database profiling, which inserts information about
-  operation performance into the ``system.profile`` collection. Specify one
-  of the following levels:
-
-  .. list-table::
-     :header-rows: 1
-     :widths: 20 40
-
-     * - Level
-
-       - Setting
-
-     * - ``off``
-
-       - Off. No profiling.
-
-     * - ``slowOp``
-
-       - On. Only includes slow operations.
-
-     * - ``all``
-
-       - On. Includes all operations.
-
-  Database profiling can impact database
-  performance. Enable this option only after careful consideration.
-optional: true
-replacement:
-  intro: "Changes the"
 ---
 program: mongod
 name: quota
@@ -823,7 +768,7 @@ default: |
 directive: option
 description: |
   {{intro}} working directory that MongoDB will use during the
-  :option:`--repair` operation. When :option:`--repair` completes, the
+  :option:`--repair <mongod --repair>` operation. When ``--repair`` completes, the
   {{role}} directory is empty, and
   :setting:`~storage.dbPath` contains the repaired files.
 post: |
@@ -831,13 +776,13 @@ post: |
   specify a symlink to {{role}} to use a path on a different file
   system.
 
-  Only available for :program:`mongod` instance using the MMAPv1 storage engine.
+  Only available for :binary:`~bin.mongod` instance using the MMAPv1 storage engine.
 
   .. SEE: SERVER-4266
 optional: true
 replacement:
   intro: "Specifies a"
-  dbpath: "option:`--dbpath`"
+  dbpath: ":option:`--dbpath`"
 ---
 program: mongod
 name: setParameter
@@ -850,16 +795,50 @@ description: |
 optional: true
 ---
 program: mongod
+name: profile
+args: <level>
+default: 0
+directive: option
+description: |
+  Configures the :doc:`database profiler
+  </tutorial/manage-the-database-profiler>` level.
+  The following profiler levels are available:
+
+  .. include:: /includes/database-profiler-levels.rst
+
+  .. include:: /includes/warning-profiler-performance.rst
+
+optional: true
+---
+program: mongod
 name: slowms
 args: <integer>
 default: 100
 directive: option
 description: |
-  The threshold in milliseconds at which the database profiler considers a
-  query slow. MongoDB records all slow queries to the log, even when the
-  database profiler is off. When the profiler is on, it writes to the
-  ``system.profile`` collection. See the :dbcommand:`profile` command for
-  more information on the database profiler.
+
+   .. include:: /includes/dbcommand-slowms-definition.rst
+
+post: |
+   For :binary:`~bin.mongod` instances, {{role}} affects the diagnostic log
+   and, if enabled, the profiler.
+
+   .. seealso:: :doc:`/tutorial/manage-the-database-profiler`
+
+optional: true
+---
+program: mongod
+name: slowOpSampleRate
+args: <double>
+default: 1.0
+directive: option
+description: |
+  The fraction of *slow* operations that should be profiled or logged.
+  {{role}} accepts values between 0 and 1, inclusive.
+post: |
+  For :binary:`~bin.mongod` instances, {{role}} affects the
+  diagnostic log and, if enabled, the profiler.
+
 optional: true
 ---
 program: mongod
@@ -913,7 +892,11 @@ description: |
 
   The {{program}} process writes data very quickly to the journal and
   lazily to the data files. {{role}} has no effect on the
-  :setting:`journal <storage.journal.enabled>` files or :doc:`journaling </core/journaling>`.
+  :setting:`journal <storage.journal.enabled>` files or :doc:`journaling </core/journaling>`,
+  but if {{role}} is set to ``0`` the journal will eventually consume
+  all available disk space. If you set {{role}} to ``0`` for testing
+  purposes, you should also set :option:`--nojournal <mongod --nojournal>`
+  to ``true``.
 
   The :dbcommand:`serverStatus` command reports the background flush
   thread's status via the :serverstatus:`backgroundFlushing` field.
@@ -971,13 +954,24 @@ name: noIndexBuildRetry
 args: null
 directive: option
 description: |
-  Stops the {{program}} from rebuilding incomplete indexes on the next
+
+  .. versionchanged:: 4.0
+
+     {{role}} cannot be used in
+     conjunction with :option:`--replSet <mongod --replSet>`; i.e., you cannot
+     use {{role}} for a :binary:`~bin.mongod` instance that is part of
+     a replica set.
+
+  Stops the {{program}} **standalone** instance from rebuilding incomplete indexes on the next
   start up. This applies in cases where the {{program}} restarts after it
   has shut down or stopped in the middle of an index build. In such cases,
   the {{program}} always removes any incomplete indexes, and then also, by
   default, attempts to rebuild them. To stop the {{program}} from
   rebuilding incomplete indexes on start up, include this option on the
   command-line.
+
+  The {{role}} only applies to standalones.
+
 post: |
   .. include:: /includes/not-available-for-inmemory-storage-engine.rst
 
@@ -991,6 +985,14 @@ description: |
   Configures replication. Specify a replica set name as an argument to
   this set. All hosts in the replica set must have the same set name.
 
+  Starting in MongoDB 4.0,
+
+  - {{role}} cannot be used in conjunction with
+    :option:`--noIndexBuildRetry <mongod --noIndexBuildRetry >`.
+
+  - For the WiredTiger storage engine, {{role}} cannot be used in
+    conjunction with :option:`--nojournal <mongod --nojournal>`.
+
   .. include:: /includes/fact-unique-replica-set-names.rst
 optional: true
 ---
@@ -1000,11 +1002,23 @@ args: <value>
 directive: option
 description: |
   {{intro}} maximum size in megabytes for the replication operation log
-  (i.e., the :term:`oplog`). The {{program}} process creates an
-  :term:`oplog` based on the maximum amount of space available. For 64-bit
-  systems, the oplog is typically 5% of available disk space. Once the
-  {{program}} has created the oplog for the first time, changing the
-  {{role}} option will not affect the size of the oplog.
+  (i.e., the :term:`oplog`).
+
+  .. note:: 
+
+     .. include:: /includes/fact-oplog-size.rst
+  
+  By default, the {{program}} process creates an :term:`oplog` based on
+  the maximum amount of space available. For 64-bit systems, the oplog
+  is typically 5% of available disk space.
+
+  Once the {{program}} has created the oplog for the first time,
+  changing the {{role}} option will not affect the size of the oplog.
+  
+  To change the oplog size of a running replica set member, use the
+  :dbcommand:`replSetResizeOplog` administrative command.
+  :dbcommand:`replSetResizeOplog` enables you to resize the oplog
+  dynamically without restarting the :binary:`~bin.mongod` process.
 
   See :ref:`replica-set-oplog-sizing` for more information.
 optional: true
@@ -1151,10 +1165,8 @@ description: |
   .. important::
 
      Starting in 3.4, you must deploy config servers as a replica set.
-     The use of the deprecated mirrored :program:`mongod` instances as
-     config servers (SCCC) is no longer supported. To convert your
-     config servers from SCCC to CSRS, see
-     :doc:`/tutorial/upgrade-config-servers-to-replica-set`.
+     The use of the deprecated mirrored :binary:`~bin.mongod` instances as
+     config servers (SCCC) is no longer supported.
 
      The replica set config servers (CSRS) must run the
      :doc:`WiredTiger storage engine </core/wiredtiger>`.
@@ -1163,6 +1175,17 @@ description: |
 
   Do not use the {{role}} option with :option:`--shardsvr`. Config
   servers cannot be a shard server.
+
+  Do not use the {{role}} with the
+  :parameter:`skipShardingConfigurationChecks` parameter. That is, if
+  you are temporarily starting the :binary:`~bin.mongod` as a
+  standalone for maintenance operations, include the parameter
+  :parameter:`skipShardingConfigurationChecks` and exclude {{role}}.
+  Once maintenance has completed, remove the
+  :parameter:`skipShardingConfigurationChecks` parameter and restart
+  with {{role}}.
+
+
 optional: false
 ---
 program: mongod
@@ -1175,7 +1198,77 @@ description: |
   Configures this {{program}} instance as a shard in a
   sharded cluster. The default port for these instances is
   ``27018``.
+
+  .. important::
+
+     Starting in MongoDB 3.6, you must deploy shards as replica sets. See the :option:`--replSet`
+     option to deploy {{program}} as part of a replica set.
+
+  Do not use the {{role}} with the
+  :parameter:`skipShardingConfigurationChecks` parameter. That is, if
+  you are temporarily starting the :binary:`~bin.mongod` as a
+  standalone for maintenance operations, include the parameter
+  :parameter:`skipShardingConfigurationChecks` and exclude {{role}}.
+  Once maintenance has completed, remove the
+  :parameter:`skipShardingConfigurationChecks` parameter and restart
+  with {{role}}.
+
 optional: false
+---
+program: mongod
+name: sslCertificateSelector
+args: <parameter>=<value>
+directive: option
+description: |
+
+  .. versionadded:: 4.0
+
+     Available on Windows and macOS as an alternative to {{file}}.
+     
+     {{file}} and {{role}} options are mutually exclusive. You can only
+     specify one.
+
+  Specifies a certificate property in order to select a matching
+  certificate from the operating system's certificate store.
+
+  {{role}} accepts an argument of the format ``<property>=<value>``
+  where the property can be one of the following:
+
+  .. include:: /includes/extracts/ssl-facts-certificate-selector-properties.rst
+
+  
+optional: true
+replacement:
+   file: ":option:`--sslPEMKeyFile`"
+---
+program: mongod
+name: sslClusterCertificateSelector
+args: <parameter>=<value>
+directive: option
+description: |
+
+  .. versionadded:: 4.0
+  
+     Available on Windows and macOS as an alternative to
+     {{file}}.      
+     
+     {{file}} and {{role}} options are mutually exclusive. You can only
+     specify one.
+
+
+  Specifies a certificate property in order to select a matching
+  certificate from the operating system's certificate store to use for
+  internal authentication.
+
+  {{role}} accepts an argument of the format ``<property>=<value>``
+  where the property can be one of the following:
+
+  .. include:: /includes/extracts/ssl-facts-certificate-selector-properties.rst
+
+optional: true
+replacement:
+   file: ":option:`--sslClusterFile`"
+
 ---
 program: mongod
 name: sslOnNormalPorts
@@ -1188,14 +1281,15 @@ description: |
 
   With {{role}}, a {{program}} requires TLS/SSL encryption for all
   connections on the default MongoDB port, or the port specified by
-  :option:`--port`. By default, {{role}} is
+  {{option}}. By default, {{role}} is
   disabled.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   verb: "Enables"
   alternative: ":option:`--sslMode requireSSL <--sslMode>`"
+  option: ":option:`--port`"
 ---
 program: mongod
 name: sslMode
@@ -1233,7 +1327,9 @@ description: |
 
        - The server uses and accepts only TLS/SSL encrypted connections.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-ca-file.rst
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 
 optional: true
 replacement:
@@ -1245,16 +1341,26 @@ name: sslPEMKeyFile
 args: <filename>
 directive: option
 description: |
+
+  .. note::
+
+   Starting in 4.0, on macOS or Windows, you can use a certificate from
+   the operating system's secure store instead of a PEM key file. See
+   {{selector}}.
+
   {{intro}} :file:`.pem` file that contains both the TLS/SSL certificate
-  and key. Specify the file name of the :file:`.pem` file using relative
-  or absolute paths.
+  and key.
 
-  You must specify {{role}} when TLS/SSL is enabled.
+  - On Linux/BSD, you must specify {{role}} when TLS/SSL is enabled.
+  
+  - On Windows or macOS, you must specify either {{role}} or
+    {{selector}} when TLS/SSL is enabled.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   intro: "Specifies the"
+  selector: ":option:`--sslCertificateSelector`"
 ---
 program: mongod
 name: sslPEMKeyPassword
@@ -1266,38 +1372,57 @@ description: |
   certificate-key file is encrypted. In all cases, the {{program}} will
   redact the password from all logging and reporting output.
 
-  .. versionchanged:: 2.6
-     If the private key in the PEM file is encrypted and you do not
-     specify the {{role}} option, the {{program}} will prompt for a
-     passphrase. See :ref:`ssl-certificate-password`.
+  Starting in MongoDB 4.0:
 
-  .. include:: /includes/fact-ssl-supported.rst
+  - On Linux/BSD, if the private key in the PEM file is encrypted and
+    you do not specify the {{role}} option, MongoDB will prompt for a
+    passphrase. See :ref:`ssl-certificate-password`.
+
+  - On macOS or Windows, if the private key in the PEM file is
+    encrypted, you must explicitly specify the {{role}} option.
+    Alternatively, you can use a certificate from the secure system
+    store (see {{selector}}) instead of a PEM key file or use an
+    unencrypted PEM file.
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   intro: "Specifies the"
   pemKeyOption: ":option:`--sslPEMKeyFile`"
+  selector: ":option:`--sslCertificateSelector`"
 ---
 program: mongod
 name: sslClusterFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.6
+  .. note::
+
+     Starting in 4.0, on macOS or Windows, you can use a certificate
+     from the operating system's secure store instead of a PEM key
+     file. See {{selector}}.
 
   {{intro}} :file:`.pem` file that contains the x.509 certificate-key
   file for :ref:`membership authentication <x509-internal-authentication>`
   for the cluster or replica set.
+  
 
   If {{role}} does not specify the ``.pem`` file for internal cluster
-  authentication, the cluster uses the ``.pem`` file specified in the
-  {{pemKeyOption}} {{directive}}.
+  authentication or the alternative
+  {{selector}}, the cluster uses the
+  ``.pem`` file specified in the {{pemKeyOption}} {{directive}} or
+  the certificate returned by the {{serverselector}}.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-x509-ca-file.rst
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   pemKeyOption: ":option:`--sslPEMKeyFile`"
   intro: "Specifies the"
   directive: "option"
+  selector: ":option:`--sslClusterCertificateSelector`"
+  serverselector: ":option:`--sslCertificateSelector`"
 ---
 program: mongod
 name: sslClusterPassword
@@ -1311,64 +1436,87 @@ description: |
   if the certificate-key file is encrypted. In all cases, the {{program}}
   will redact the password from all logging and reporting output.
 
-  If the x.509 key file is encrypted and you do not specify the
-  {{role}} option, the {{program}} will prompt for a passphrase. See
-  :ref:`ssl-certificate-password`.
+  Starting in MongoDB 4.0:
 
-  .. include:: /includes/fact-ssl-supported.rst
+  - On Linux/BSD, if the private key in the x.509 file is encrypted and
+    you do not specify the {{role}} option, MongoDB will prompt for a
+    passphrase. See :ref:`ssl-certificate-password`.
+
+  - On macOS or Windows, if the private key in the x.509 file is
+    encrypted, you must explicitly specify the {{role}} option.
+    Alternatively, you can either use a certificate from the secure
+    system store (see {{selector}}) instead of a cluster PEM file or
+    use an unencrypted PEM file.
+
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   intro: "Specifies the"
+  selector: ":option:`--sslClusterCertificateSelector`"
 ---
 program: mongod
 name: sslCAFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   {{intro}} :file:`.pem` file that contains the root certificate chain
   from the Certificate Authority. Specify the file name of the
   :file:`.pem` file using relative or absolute paths.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  Starting in 4.0, on macOS or Windows, you can use a certificate from
+  the operating system's secure store instead of a PEM key file. See
+  {{selector}}. When using the secure store, you
+  do not need to, but can, also specify the {{role}}.
 
-  .. include:: /includes/warning-x509-requires-sslCAfile.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
+
 optional: true
 replacement:
   intro: "Specifies the"
+  selector: ":option:`--sslCertificateSelector`"
 ---
 program: mongod
 name: sslCRLFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   {{intro}} the :file:`.pem` file that contains the Certificate Revocation
   List. Specify the file name of the :file:`.pem` file using relative or
   absolute paths.
+  
+  .. note::
+     
+     Starting in MongoDB 4.0, you cannot specify {{role}} on macOS.  Use {{selector}} instead.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   intro: "Specifies the"
+  selector: ":option:`--sslCertificateSelector`"
+ 
 ---
 program: mongod
 name: sslAllowInvalidCertificates
 args: null
 directive: option
 description: |
-  .. versionadded:: 2.6
 
-  {{verb}} the validation checks for TLS/SSL certificates on other servers
-  in the cluster and allows the use of invalid certificates.
+  {{verb}} the validation checks for TLS/SSL certificates on other
+  servers in the cluster and allows the use of invalid certificates to
+  connect.
+
+  .. note::
+
+     .. include:: /includes/extracts/ssl-facts-x509-invalid-certificate.rst
 
   When using
   the {{role}} setting, MongoDB
   logs a warning regarding the use of the invalid certificate.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 replacement:
   verb: "Bypasses"
@@ -1377,14 +1525,6 @@ program: mongod
 name: sslAllowConnectionsWithoutCertificates
 args: null
 directive: option
-pre: |
-  .. versionadded:: 2.4
-
-  .. versionchanged:: 3.0.0
-     {{old_name}} became {{role}}. For
-     compatibility, MongoDB processes continue to accept
-     {{old_name}}, but all users should
-     update their configuration files.
 description: |
   {{verb}} the requirement for TLS/SSL certificate validation that
   {{sslCA_option}} enables. With the {{role}} option, the {{program}}
@@ -1399,7 +1539,7 @@ description: |
   Use the {{role}} option if you have a mixed deployment that includes
   clients that do not or cannot present certificates to the {{program}}.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 replacement:
   verb: "Disables"
   old_name: "``--sslWeakCertificateValidation``"
@@ -1413,13 +1553,13 @@ directive: option
 description: |
   .. versionadded:: 3.0
 
-  Disables the validation of the hostnames in TLS/SSL certificates, when
-  connecting to other {{program}} instances for inter-process
-  authentication. This allows {{program}} to connect to other
-  {{program}} instances if the hostnames in their certificates do not
-  match their configured hostname.
+  Disables the validation of the hostnames in TLS/SSL certificates,
+  when connecting to other members of the replica set or sharded cluster
+  for inter-process authentication. This allows {{program}} to connect
+  to other members if the hostnames in their certificates do not match
+  their configured hostname.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongod
@@ -1429,14 +1569,29 @@ directive: option
 description: |
   .. versionadded:: 3.0.7
 
-  Prevents a MongoDB server running with SSL from accepting incoming
-  connections that use a specific protocol or protocols. {{role}}
-  recognizes the following protocols: ``TLS1_0``, ``TLS1_1``, and
-  ``TLS1_2``. Specifying an unrecognized protocol will prevent the
-  server from starting.
+  Prevents a MongoDB server running with TLS/SSL from accepting
+  incoming connections that use a specific protocol or protocols. To
+  specify multiple protocols, use a comma separated list of protocols.
+   
+  {{role}} recognizes the following protocols: ``TLS1_0``, ``TLS1_1``,
+  and ``TLS1_2``.
 
-  To specify multiple protocols, use a comma separated list of
-  protocols.
+  - On macOS, you cannot disable ``TLS1_1`` and leave both ``TLS1_0`` and
+    ``TLS1_2`` enabled. You must disable at least one of the other
+    two, for example, ``TLS1_0,TLS1_1``.
+
+  - To list multiple protocols, specify as a comma separated list of
+    protocols. For example ``TLS1_0,TLS1_1``.
+
+  - Specifying an unrecognized protocol will prevent the server from
+    starting.
+
+  - The specified disabled protocols overrides any default disabled
+    protocols.
+
+  Starting in version 4.0, MongoDB disables the use of TLS 1.0 if TLS
+  1.1+ is available on the system. To enable the disabled TLS 1.0,
+  specify ``none`` to {{role}}. 4.0-disable-tls
 
   Members of replica sets and sharded clusters must speak at least one
   protocol in common.
@@ -1450,11 +1605,9 @@ name: sslFIPSMode
 args: null
 directive: option
 description: |
-  .. versionadded:: 2.4
-
-  {{intro}} the FIPS mode of the installed OpenSSL
+  {{intro}} the FIPS mode of the  TLS/SSL
   library{{setting_continuation}}. Your system must have a FIPS
-  compliant OpenSSL library to use the {{role}} option.
+  compliant library to use the {{role}} option.
 
   .. include:: /includes/note-fips-is-enterprise-only.rst
 optional: true
@@ -1469,7 +1622,6 @@ directive: option
 replacement:
   intro: "Enables"
 pre: |
-  .. versionadded:: 2.6
 
   Enables :doc:`auditing </core/auditing>` and specifies where
   {{program}} sends all audit events.
@@ -1501,11 +1653,14 @@ description: |
      * - ``file``
 
        - Output the audit events to the file specified in
-         :option:`--auditPath` in the format specified in
-         :option:`--auditFormat`.
+         {{optionpath}} in the format specified in
+         {{optionformat}}.
 
   .. include:: /includes/note-audit-in-enterprise-only.rst
 optional: true
+replacement:
+  optionpath: ":option:`--auditPath`"
+  optionformat: ":option:`--auditFormat`"
 ---
 program: mongod
 name: auditFormat
@@ -1529,12 +1684,12 @@ description: |
      * - ``JSON``
 
        - Output the audit events in JSON format to the file specified
-         in :option:`--auditPath`.
+         in {{path}}.
 
      * - ``BSON``
 
        - Output the audit events in BSON binary format to the file
-         specified in :option:`--auditPath`.
+         specified in {{path}}.
 
   Printing audit events to a file in JSON format degrades server
   performance more than printing to a file in BSON format.
@@ -1544,6 +1699,7 @@ optional: true
 replacement:
   intro: "Specifies the"
   destination: ":option:`--auditDestination`"
+  path: ":option:`--auditPath`"
 ---
 program: mongod
 name: auditPath
@@ -1669,7 +1825,7 @@ description: |
   ``collection``.
 
   By using a symbolic link, you can specify a different location for
-  the indexes. Specifically, when :program:`mongod` instance is **not**
+  the indexes. Specifically, when :binary:`~bin.mongod` instance is **not**
   running, move the ``index`` subdirectory to the destination and
   create a symbolic link named ``index`` under the data directory to
   the new destination.
@@ -1677,18 +1833,17 @@ description: |
 optional: true
 replacement:
   intro: "When you start {{program}} with {{role}}"
-  dbpath: ":option:`--dbpath``"
+  dbpath: ":option:`--dbpath`"
 ---
 program: mongod
 name: storageEngine
 args: string
 directive: option
 description: |
-  .. versionadded:: 3.0
 
-  .. versionchanged:: 3.2
+  .. versionchanged:: 4.0
 
-     Starting in MongoDB 3.2, ``wiredTiger`` is the default.
+     MongoDB deprecates the MMAPv1 storage engine.
 
   {{intro}} storage engine for the {{program}} database. Available
   values include:
@@ -1700,9 +1855,6 @@ description: |
      * - Value
        - Description
 
-     * - ``mmapv1``
-       - To specify the :doc:`/core/mmapv1`.
-
      * - ``wiredTiger``
        - To specify the :doc:`/core/wiredtiger`.
 
@@ -1712,6 +1864,9 @@ description: |
 
          .. versionadded:: 3.2
             Available in MongoDB Enterprise only.
+
+     * - ``mmapv1`` (Deprecated in MongoDB 4.0)
+       - To specify the :doc:`/core/mmapv1`.
 
 post: |
   If you attempt to start a {{program}} with a
@@ -1884,6 +2039,10 @@ description: |
 
         - 256-bit Advanced Encryption Standard in Galois/Counter Mode
 
+          .. versionchanged:: 4.0
+
+             .. include:: /includes/fact-aes.rst
+
    .. include:: /includes/fact-enterprise-only-admonition.rst
 ---
 program: mongod
@@ -1915,7 +2074,7 @@ description: |
    Unique KMIP identifier for an existing key within the KMIP server.
    Include to use the key associated with the identifier as the system
    key. You can only use the setting the first time you enable
-   encryption for the :program:`mongod` instance. Requires
+   encryption for the :binary:`~bin.mongod` instance. Requires
    :setting:`enableEncryption` to be true.
 
    If unspecified, MongoDB will request that the KMIP server create a
@@ -1988,8 +2147,15 @@ description: |
    authenticating MongoDB to the KMIP server. Requires that a
    :setting:`kmipServerName` be provided.
 
-   .. include:: /includes/fact-enterprise-only-admonition.rst
+   .. note::
+      
+      Starting in 4.0, on macOS or Windows, you can use a certificate
+      from the operating system's secure store instead of a PEM key
+      file. See {{selector}}.
 
+   .. include:: /includes/fact-enterprise-only-admonition.rst
+replacement:
+   selector: ":option:`--kmipClientCertificateSelector`"
 ---
 program: mongod
 name: kmipClientCertificatePassword
@@ -2019,6 +2185,17 @@ description: |
 
    Path to CA File. Used for validating secure client connection to
    KMIP server.
+   
+
+   .. note::
+      
+      Starting in 4.0, on macOS or Windows, you can use a certificate
+      from the operating system's secure store instead of a PEM key
+      file. See {{selector}}. When using the secure store, you do not
+      need to, but can, also specify the {{role}}.
+replacement:
+  selector: ":option:`--kmipClientCertificateSelector`"
+
 ---
 program: mongod
 name: enableMajorityReadConcern
@@ -2027,10 +2204,11 @@ optional: true
 args: null
 description: |
 
-   .. versionadded:: 3.2
+   .. deprecated:: 3.6
 
-   Enables :term:`read concern` level of ``"majority"``. By default,
-   ``"majority"`` level is not enabled.
+      Starting in MongoDB 3.6, :readconcern:`"majority"` read concern
+      is always enabled, and this option has no effect.
+
 ---
 program: mongod
 name: configsvrMode
@@ -2040,7 +2218,7 @@ description: |
    **Available in MongoDB 3.2 version only**
 
    If set to ``sccc``, indicates that the config servers are deployed
-   as three mirrored :program:`mongod` instances, even if one or more
+   as three mirrored :binary:`~bin.mongod` instances, even if one or more
    config servers is also a member of a replica set. ``configsvrMode``
    only accepts the value ``sccc``.
 
@@ -2064,7 +2242,7 @@ description: |
 
    Maximum amount of memory to allocate for :doc:`in-memory storage
    engine </core/inmemory>` data, including indexes, oplog if the
-   :program:`mongod` is part of replica set, replica set or sharded
+   :binary:`~bin.mongod` is part of replica set, replica set or sharded
    cluster metadata, etc.
 
    .. include:: /includes/fact-inmemory-storage-engine-default-ram.rst
@@ -2111,17 +2289,17 @@ description: |
   .. versionadded:: 3.4
 
      Allows the {{program}} to accept and create authenticated and
-     non-authenticated connections to and from other :program:`mongod`
-     and :program:`mongos` instances in the deployment. Used for
+     non-authenticated connections to and from other :binary:`~bin.mongod`
+     and :binary:`~bin.mongos` instances in the deployment. Used for
      performing rolling transition of replica sets or sharded clusters
      from a no-auth configuration to :ref:`internal authentication
      <inter-process-auth>`. Requires specifying a :ref:`internal
      authentication <inter-process-auth>` mechanism such as
-     :option:`--keyfile`.
+     {{option}}.
 
   For example, if using :ref:`keyfiles <internal-auth-keyfile>` for
   :ref:`internal authentication <inter-process-auth>`, the {{program}} creates
-  an authenticated connection with any :program:`mongod` or :program:`mongos`
+  an authenticated connection with any :binary:`~bin.mongod` or :binary:`~bin.mongos`
   in the deployment using a matching keyfile. If the security mechanisms do
   not match, the {{program}} utilizes a non-authenticated connection instead.
 
@@ -2136,7 +2314,8 @@ description: |
      using :ref:`user access controls <authorization>`. Update clients to
      connect to the {{program}} using the appropriate :ref:`user <users>`
      prior to restarting {{program}} without {{role}}.
-
+replacement:
+   option: ":option:`--keyFile`"
 optional: true
 ---
 program: mongod
@@ -2257,11 +2436,13 @@ description: |
 
   .. note::
 
-     Windows MongoDB deployments can use :option:`--ldapBindWithOSDefaults`
-     instead of {{role}} and :option:`--ldapQueryPassword`. You cannot specify
-     both {{role}} and :option:`--ldapBindWithOSDefaults` at the same time.
+     Windows MongoDB deployments can use {{bindWithOSDefaults}}
+     instead of {{role}} and {{queryPassword}}. You cannot specify
+     both {{role}} and {{bindWithOSDefaults}} at the same time.
 replacement:
   queryUser: ":option:`--ldapQueryUser`"
+  bindWithOSDefaults: ":option:`--ldapBindWithOSDefaults`"
+  queryPassword: ":option:`--ldapQueryPassword`"
 ---
 program: mongod
 name: ldapBindWithOSDefaults
@@ -2280,15 +2461,15 @@ description: |
   Only required if:
 
   - Using :ref:`LDAP authorization <security-ldap-external>`.
-  - Using an LDAP query for :option:`username transformation
-    <--ldapUserToDNMapping>`.
+  - Using an LDAP query for {{userMapping}}.
   - The LDAP server disallows anonymous binds
 
-  Use {{role}} to replace :option:`--ldapQueryUser` and
-  :option:`--ldapQueryPassword`.
+  Use {{role}} to replace {{queryUser}} and
+  {{queryPassword}}.
 replacement:
   queryUser: ":option:`--ldapQueryUser`"
   queryPassword: ":option:`--ldapQueryPassword`"
+  userMapping: ":option:`username transformation <--ldapUserToDNMapping>`"
 ---
 program: mongod
 name: ldapBindMethod
@@ -2328,18 +2509,63 @@ description: |
 
   A comma-separated list of SASL mechanisms {{program}} can
   use when authenticating to the LDAP server. The {{program}} and the
-  LDAP server must agree on at least one mechanism.
+  LDAP server must agree on at least one mechanism. The {{program}}
+  dynamically loads any SASL mechanism libraries installed on the host
+  machine at runtime.
+
+  Install and configure the appropriate libraries for the selected
+  SASL mechanism(s) on both the {{program}} host and the remote
+  LDAP server host. Your operating system may include certain SASL
+  libraries by default. Defer to the documentation associated with each
+  SASL mechanism for guidance on installation and configuration.
+
+  If using the ``GSSAPI`` SASL mechanism for use with
+  :ref:`security-kerberos`, verify the following for the
+  {{program}} host machine:
+
+  ``Linux``
+    - The ``KRB5_CLIENT_KTNAME`` environment
+      variable resolves to the name of the client :ref:`keytab-files`
+      for the host machine. For more on Kerberos environment
+      variables, please defer to the
+      `Kerberos documentation <https://web.mit.edu/kerberos/krb5-1.13/doc/admin/env_variables.html>`__.
+    - The client keytab includes a
+      :ref:`kerberos-user-principal` for the {{program}} to use when
+      connecting to the LDAP server and execute LDAP queries.
+
+  ``Windows``
+    If connecting to an Active Directory server, the Windows
+    Kerberos configuration automatically generates a
+    `Ticket-Granting-Ticket <https://msdn.microsoft.com/en-us/library/windows/desktop/aa380510(v=vs.85).aspx>`__
+    when the user logs onto the system. Set {{useOSDefaults}} to
+    ``true`` to allow {{program}} to use the generated credentials when
+    connecting to the Active Directory server and execute queries.
 
   Set {{bindMethod}} to ``sasl`` to use this option.
 
   .. note::
 
-     A complete list of SASL mechanisms is out of scope for this
-     documentation. See the IANA list of `SASL mechanisms
-     <http://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml>`_,
-     as well as the documentation for your LDAP service.
+     For a complete list of SASL mechanisms see the
+     `IANA listing
+     <http://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml>`_.
+     Defer to the documentation for your LDAP or Active Directory
+     service for identifying the SASL mechanisms compatible with the
+     service.
+
+     MongoDB is not a source of SASL mechanism libraries, nor
+     is the MongoDB documentation a definitive source for
+     installing or configuring any given SASL mechanism. For
+     documentation and support, defer to the SASL mechanism
+     library vendor or owner.
+
+     For more information on SASL, defer to the following resources:
+
+     - For Linux, please see the `Cyrus SASL documentation <https://www.cyrusimap.org/sasl/>`__.
+     - For Windows, please see the `Windows SASL documentation <https://msdn.microsoft.com/en-us/library/cc223500.aspx>`__.
+
 replacement:
   bindMethod: ":option:`--ldapBindMethod`"
+  useOSDefaults: ":option:`--ldapBindWithOSDefaults`"
 ---
 program: mongod
 name: ldapTransportSecurity
@@ -2413,7 +2639,7 @@ description: |
     authenticate to MongoDB with usernames that are not full LDAP DNs.
 
   - Using an :option:`LDAP authorization query template
-    <--ldapAuthzQueryTemplate>` that requires a DN.
+    <mongod --ldapAuthzQueryTemplate>` that requires a DN.
 
   - Transforming the usernames of clients authenticating to Mongo DB using
     different authentication mechanisms (e.g. x.509, kerberos) to a full LDAP
@@ -2456,6 +2682,9 @@ description: |
          corresponding `regex capture group
          <http://www.regular-expressions.info/refcapture.html>`_ extracted
          from the authentication username via the ``match`` regex.
+         
+         The result of the substitution must be an `RFC4514
+         <https://www.ietf.org/rfc/rfc4514.txt>`_ escaped string.
 
        - ``"cn={0},ou=engineering,
          dc=example,dc=com"``
@@ -2475,6 +2704,14 @@ description: |
 
        - ``"ou=engineering,dc=example,
          dc=com??one?(user={0})"``
+
+  .. note::
+
+     An explanation of  `RFC4514 <https://www.ietf.org/rfc/rfc4514.txt>`_,
+     `RFC4515 <https://tools.ietf.org/search/rfc4515>`_,
+     `RFC4516 <https://tools.ietf.org/html/rfc4516>`_, or LDAP queries is out
+     of scope for the MongoDB Documentation. Please review the RFC directly or
+     use your preferred LDAP resource.
 
   For each document in the array, you must use either ``substitution`` or
   ``ldapQuery``. You *cannot* specify both in the same document.
@@ -2534,13 +2771,6 @@ description: |
   This setting can be configured on a running {{program}} using the
   :dbcommand:`setParameter` database command.
 
-  .. note::
-
-     An explanation of `RFC4515 <https://tools.ietf.org/search/rfc4515>`_,
-     `RFC4516 <https://tools.ietf.org/html/rfc4516>`_ or LDAP queries is out
-     of scope for the MongoDB Documentation. Please review the RFC directly or
-     use your preferred LDAP resource.
-
 ---
 program: mongod
 name: ldapAuthzQueryTemplate
@@ -2554,7 +2784,7 @@ description: |
   <https://tools.ietf.org/search/rfc4515>`_ and `RFC4516
   <https://tools.ietf.org/html/rfc4516>`_ that {{program}} executes to obtain
   the LDAP groups to which the authenticated user belongs to. The query is
-  relative to the host or hosts specified in :option:`--ldapServer`.
+  relative to the host or hosts specified in {{ldapServers}}.
 
   Use the ``{USER}`` placeholder in the URL to substitute the authenticated
   username, or the transformed username if a {{mapping}} is specified.
@@ -2605,6 +2835,7 @@ description: |
      use your preferred LDAP resource.
 replacement:
   mapping: ":option:`username mapping <--ldapUserToDNMapping>`"
+  ldapServers: ":option:`--ldapServers`"
 ---
 program: mongod
 name: timeZoneInfo
@@ -2612,6 +2843,14 @@ directive: option
 args: <path>
 description: |
   .. include:: /includes/fact-timeZoneInfo.rst
+
+  .. code-block:: sh
+
+     wget https://downloads.mongodb.org/olson_tz_db/timezonedb-latest.zip
+     unzip timezonedb-latest.zip
+     mongod --timeZoneInfo timezonedb-2017b/
+
+  .. seealso:: :setting:`processManagement.timeZoneInfo`.
 optional: true
 ---
 program: mongod
@@ -2624,7 +2863,8 @@ description: |
 
    .. versionchanged:: 3.6
 
-      Add support for :term:`zlib` compressor.
+      - Add support for :term:`zlib` compressor.
+      - Enabled by default. To disable, set to ``disabled``.
 
    Enables network compression for communication between this
    {{program}} instance and:
@@ -2635,10 +2875,122 @@ description: |
    - other members of the sharded cluster, if the instance is part of a
      sharded cluster
 
-   - a :program:`mongo` shell.
+   - a :binary:`~bin.mongo` shell,
+
+   - drivers that support the ``OP_COMPRESSED`` message format.
 
    .. include:: /includes/fact-networkMessageCompressors.rst
 
 
 optional: true
+---
+program: mongod
+name: serviceExecutor
+inherit:
+  name: serviceExecutor
+  program: _shared
+  file: options-shared.yaml
+---
+program: mongod
+name: enableFreeMonitoring
+args: <runtime|on|off>
+directive: option
+description: |
+
+   .. versionadded:: 4.0
+
+      Available for MongoDB Community Edition.
+
+   Enables or disables :doc:`free MongoDB Cloud monitoring
+   </administration/free-monitoring>`. {{role}} accepts the following
+   values:
+
+   .. list-table::
+      :widths: 20 80
+
+      * - ``runtime`` 
+
+        - Default. You can enable or disable free monitoring during
+          runtime.
+
+          To enable or disable free monitoring during runtime, see
+          :method:`db.enableFreeMonitoring()` and
+          :method:`db.disableFreeMonitoring()`.
+
+          To enable or disable free monitoring during runtime when
+          running with access control, users must have required
+          privileges. See :method:`db.enableFreeMonitoring()` and
+          :method:`db.disableFreeMonitoring()` for details.
+
+      * - ``on``
+
+        - Enables free monitoring at startup; i.e. registers for free
+          monitoring. When enabled at startup, you cannot disable free
+          monitoring during runtime.
+
+      * - ``off`` 
+
+        - Disables free monitoring at startup, regardless of whether
+          you have previously registered for free monitoring.  When disabled at startup,
+          you cannot enable free monitoring during runtime.
+
+   Once enabled, the free monitoring state remains enabled until
+   explicitly disabled. That is, you do not need to re-enable each time
+   you start the server.
+
+optional: true
+post: |
+   
+   For the corresponding configuration file setting, see
+   :setting:`cloud.monitoring.free.state`.
+---
+program: mongod
+name: enableFreeMonitoringTag
+args: <string>
+directive: option
+description: |
+
+   .. versionadded:: 4.0
+
+      Available for MongoDB Community Edition.
+
+   Optional tag to describe environment context. The tag can be sent as
+   part of the :doc:`free MongoDB Cloud monitoring
+   </administration/free-monitoring>` registration at start up.
+
+optional: true
+post: |
+   
+   For the corresponding configuration file setting, see
+   :setting:`cloud.monitoring.free.tag`.
+---
+program: mongod
+name: kmipClientCertificateSelector
+args: <string>
+directive: option
+optional: true
+description: |
+
+  .. versionadded:: 4.0
+  
+     Available on Windows and macOS as an alternative to
+     {{file}}. 
+     
+     {{file}} and {{role}} options are mutually exclusive. You can only
+     specify one.
+
+  Specifies a certificate property in order to select a matching
+  certificate from the operating system's certificate store to
+  authenticate MongoDB to the KMIP server.
+
+  {{role}} accepts an argument of the format ``<property>=<value>``
+  where the property can be one of the following:
+
+  .. include:: /includes/extracts/ssl-facts-certificate-selector-properties.rst
+
+  .. include:: /includes/fact-enterprise-only-admonition.rst
+  
+optional: true
+replacement:
+   file: ":option:`--kmipClientCertificateFile`"
 ...

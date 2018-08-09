@@ -22,12 +22,10 @@ Definition
 
    .. include:: /includes/fact-query-optimizer-cache-behavior.rst
 
-   The :program:`mongo` shell provides the wrapper
+   The :binary:`~bin.mongo` shell provides the wrapper
    :method:`PlanCache.getPlansByQuery()` for this command.
 
    The :dbcommand:`planCacheListPlans` command has the following syntax:
-
-   .. versionchanged:: 3.6
 
    .. code-block:: javascript
 
@@ -36,9 +34,7 @@ Definition
             planCacheListPlans: <collection>,
             query: <query>,
             sort: <sort>,
-            projection: <projection>,
-            txnNumber: <long>,
-            lsid: { id: <UUID> }
+            projection: <projection>
          }
 
    The :dbcommand:`planCacheListPlans` command has the following field:
@@ -47,6 +43,11 @@ Definition
 
    To see the query shapes for which cached query plans exist, use the
    :dbcommand:`planCacheListQueryShapes` command.
+
+   .. versionadded:: 3.6
+
+      The :dbcommand:`planCacheListPlans` database command returns the
+      same output as the :method:`PlanCache.getPlansByQuery()` method.
 
 Required Access
 ---------------

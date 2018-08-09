@@ -15,7 +15,7 @@ Replica Set Data Synchronization
 In order to maintain up-to-date copies of the shared data set,
 secondary members of a replica set :term:`sync` or replicate data from
 other members. MongoDB uses two forms of data synchronization:
-:ref:`initial sync <replica-set-initial-sync>` to populate new members
+initial sync to populate new members
 with the full data set, and replication to apply ongoing changes to the
 entire data set.
 
@@ -34,7 +34,7 @@ When you perform an initial sync, MongoDB:
 
 #. Clones all databases except the :ref:`local
    <replica-set-local-database>` database. To clone, the
-   :program:`mongod` scans every collection in each source database and
+   :binary:`~bin.mongod` scans every collection in each source database and
    inserts all data into its own copies of these collections.
 
    .. versionchanged:: 3.4 
@@ -49,7 +49,7 @@ When you perform an initial sync, MongoDB:
       duration of this data copy stage.
 
 #. Applies all changes to the data set. Using the oplog from the
-   source, the :program:`mongod` updates its data set to reflect the
+   source, the :binary:`~bin.mongod` updates its data set to reflect the
    current state of the replica set.
 
    When the initial sync finishes, the member transitions from
@@ -68,30 +68,9 @@ has built-in retry logic.
 
 .. versionchanged:: 3.4
 
-   MongoDB 3.4 improves the retry logic to be more resilient to
+   MongoDB 3.4 improves the initial sync retry logic to be more resilient to
    intermittent failures on the network.
 
-
-Initial Sync and ``renameCollection``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. versionchanged:: 3.2.12
-
-If a collection is renamed on the sync source while an initial sync is
-running, the initial sync for the target member fails and restarts to
-avoid data corruption (See :issue:`SERVER-26117`). Operations that
-rename collections include:
-
-- :dbcommand:`renameCollection` command and
-  :method:`db.collection.renameCollection()` method.
-
-- Aggregation (:method:`db.collection.aggregate()` method or
-  :dbcommand:`aggregate` command) with the :pipeline:`$out` stage.
-
-- Map-reduce (:method:`db.collection.mapReduce()` method or
-  :dbcommand:`mapReduce` command) with the ``out`` option.
-
-- :dbcommand:`convertToCapped` command.
 
 .. _replica-set-replication:
 

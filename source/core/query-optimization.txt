@@ -36,7 +36,7 @@ indexes in MongoDB </indexes>`.
 
    To improve the performance of this query, add an ascending or a
    descending index to the ``inventory`` collection on the ``type``
-   field. [#ensureIndexOrder]_ In the :program:`mongo` shell, you can
+   field. [#ensureIndexOrder]_ In the :binary:`~bin.mongo` shell, you can
    create indexes using the :method:`db.collection.createIndex()`
    method:
 
@@ -149,13 +149,18 @@ The ``{ "user.login": 1 }`` index will cover the query below:
 .. [#index-embedded-document-fields] To index fields
    in embedded documents, use :term:`dot notation`.
 
+.. _multikey-covering:
+
 Multikey Covering
 ~~~~~~~~~~~~~~~~~
 
-Starting in 3.6, multikey indexes can cover queries over the non-array fields 
-if the index tracks which field or fields cause the index to be multikey. 
-Multikey indexes created in MongoDB 3.4 or later on storage engines other 
+Starting in 3.6, multikey indexes can cover queries over the non-array fields
+if the index tracks which field or fields cause the index to be multikey.
+Multikey indexes created in MongoDB 3.4 or later on storage engines other
 than MMAPv1 track this data.
+
+.. include:: /includes/fact-multikey-index-covered-query.rst
+
 
 Performance
 ~~~~~~~~~~~
@@ -175,15 +180,11 @@ Limitations
 Restrictions on Indexed Fields
 ``````````````````````````````
 
-An index **cannot** cover a query if:
-
-- any of the indexed fields in any of the documents in the collection
-  includes an array. If an indexed field is an array, the index becomes
-  a :ref:`multi-key index <index-type-multikey>` and cannot
-  support a covered query.
-
 - .. include:: /includes/fact-geospatial-index-covered-query.rst
 
+- .. include:: /includes/fact-multikey-index-covered-query.rst
+
+  .. seealso:: :ref:`multikey-covering`
 
 .. _covered-index-sharded-collection:
 
@@ -203,12 +204,11 @@ method and review the :ref:`results <explain-output-covered-queries>`.
 
 For more information see :ref:`indexes-measuring-use`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-      
-      /tutorial/evaluate-operation-performance
-      /tutorial/optimize-query-performance-with-indexes-and-projections
-      /core/write-performance
-      /reference/explain-results
+   /tutorial/evaluate-operation-performance
+   /tutorial/optimize-query-performance-with-indexes-and-projections
+   /core/write-performance
+   /reference/explain-results

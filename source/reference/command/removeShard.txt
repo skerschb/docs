@@ -17,24 +17,9 @@ removeShard
    move the shard's chunks to other shards in the cluster. Once the shard is
    drained, MongoDB removes the shard from the cluster.
    
-   The command has the following syntax:
-
-   .. code-block:: javascript
-
-      { removeShard : <shardname> } 
-
-   The command can also take the following options:
-
-   .. include:: /includes/extracts/sessions-option-table-options.rst
-
    .. |command| replace:: ``removeShard``
 
    .. include:: /includes/fact-dbcommand.rst
-   
-   You *must* run :dbcommand:`removeShard` while connected to a
-   :program:`mongos`. Issue the command against the ``admin`` database or
-   use the :method:`sh._adminCommand()` helper.
-
 
 Behavior
 --------
@@ -45,6 +30,10 @@ You can only remove one shard at a time.
 
 Access Requirements
 ~~~~~~~~~~~~~~~~~~~
+
+You *must* run :dbcommand:`removeShard` while connected to a
+:binary:`~bin.mongos`. Issue the command against the ``admin`` database or
+use the :method:`sh._adminCommand()` helper.
 
 If you have :setting:`~security.authorization` enabled, you must have the
 :authrole:`clusterManager` role or any role that
@@ -64,20 +53,29 @@ Chunk Balancing
 
 .. include:: /includes/fact-remove-shard-balance-order.rst
 
+Write Concern
+~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/mongos-operations-wc-remove-shard.rst
+
+Change Streams
+~~~~~~~~~~~~~~
+
+.. include:: /includes/extracts/changestream-remove-shard-with-link.rst
+
 Example
 -------
 
-From the :program:`mongo` shell, the :dbcommand:`removeShard`
+From the :binary:`~bin.mongo` shell, the :dbcommand:`removeShard`
 operation resembles the following:
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( { removeShard : "bristol01" } )
+   db.adminCommand( { removeShard : "bristol01" } )
 
 Replace ``bristol01`` with the name of the shard to remove. When you
-run :dbcommand:`removeShard`, the command returns immediately,
-with a message that resembles the following:
+run :dbcommand:`removeShard`, the command returns with a message that
+resembles the following:
 
 .. code-block:: javascript
 
@@ -90,7 +88,15 @@ with a message that resembles the following:
          "fizz",
          "buzz"
       ],
-      "ok" : 1
+      "ok" : 1,
+      "$clusterTime" : {
+         "clusterTime" : Timestamp(1510716515, 1),
+         "signature" : {
+            "hash" : BinData(0,"B2ViX7XLzFLS5Fl9XEuFXbwKIM4="),
+            "keyId" : NumberLong("6488045157173166092")
+         }
+      },
+      "operationTime" : Timestamp(1510716515, 1)
    }
 
 The balancer begins migrating chunks from the shard named ``bristol01``
@@ -125,7 +131,15 @@ that resembles the following:
          "fizz",
          "buzz"
       ],
-      "ok" : 1
+      "ok" : 1,
+      "$clusterTime" : {
+         "clusterTime" : Timestamp(1510716515, 1),
+         "signature" : {
+            "hash" : BinData(0,"B2ViX7XLzFLS5Fl9XEuFXbwKIM4="),
+            "keyId" : NumberLong("6488045157173166092")
+         }
+      },
+      "operationTime" : Timestamp(1510716515, 1)
    }
 
 The ``remaining`` :term:`document` specifies how many chunks and databases
@@ -141,8 +155,16 @@ resembles the following:
 .. code-block:: javascript
 
    {
-       "msg" : "removeshard completed successfully",
-       "state" : "completed",
-       "shard" : "bristol01",
-       "ok" : 1
+      "msg" : "removeshard completed successfully",
+      "state" : "completed",
+      "shard" : "bristol01",
+      "ok" : 1,
+      "$clusterTime" : {
+         "clusterTime" : Timestamp(1510716515, 1),
+         "signature" : {
+            "hash" : BinData(0,"B2ViX7XLzFLS5Fl9XEuFXbwKIM4="),
+            "keyId" : NumberLong("6488045157173166092")
+         }
+      },
+      "operationTime" : Timestamp(1510716515, 1)
    }

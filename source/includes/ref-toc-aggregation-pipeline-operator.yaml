@@ -30,6 +30,12 @@ description: |
   Returns a count of the number of documents at this stage of the
   aggregation pipeline.
 ---
+name: :pipeline:`$currentOp`
+file: /reference/operator/aggregation/currentOp
+description: |
+  Returns information on active and/or dormant operations for the
+  MongoDB deployment. To run, use the :method:`db.aggregate()` method.
+---
 name: :pipeline:`$facet`
 file: /reference/operator/aggregation/facet
 description: |
@@ -78,7 +84,7 @@ name: :pipeline:`$listLocalSessions`
 file: /reference/operator/aggregation/listLocalSessions
 description: |
   Lists all active sessions recently in use on the currently connected
-  :program:`mongos` or :program:`mongod` instance. These sessions may
+  :binary:`~bin.mongos` or :binary:`~bin.mongod` instance. These sessions may
   have not yet propagated to the ``system.sessions`` collection.
 ---
 name: :pipeline:`$listSessions`

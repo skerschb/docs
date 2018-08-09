@@ -25,15 +25,9 @@ Definition
 
    The command takes the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      db.adminCommand( { balancerStatus: 1, txnNumber: <long>, lsid: { id: <UUID> } } )
-
-   The command can take the following options:
-
-   .. include:: /includes/extracts/sessions-option-table-options.rst
+      db.adminCommand( { balancerStatus: 1 } )
 
 Output Document
 ---------------
@@ -76,14 +70,14 @@ The following is an example of a document returned by the command:
 
    * - ``"numBalancerRounds"``
 
-     - The number of balancer rounds which have occured since the
+     - The number of balancer rounds which have occurred since the
        config servers were started. This value is not persisted and is
        reset to 0 upon restart of the config servers.
 
 Example
 -------
 
-Connect to a :program:`mongos` instance and issue the following command:
+Connect to a :binary:`~bin.mongos` instance and issue the following command:
 
 .. code-block:: javascript
 

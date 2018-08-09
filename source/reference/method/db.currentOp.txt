@@ -23,6 +23,10 @@ Definition
    operations for the database instance. The :method:`db.currentOp()`
    method wraps the database command :dbcommand:`currentOp`.
 
+   .. note::
+
+      .. include:: /includes/fact-currentop.rst
+
    :method:`db.currentOp()` has the following form:
 
    .. code-block:: javascript
@@ -58,7 +62,7 @@ filter. The filter document can contain:
      - Boolean. If set to ``true``, returns information on the current user's
        operations only.
 
-       On :program:`mongod` instances, users can always run
+       On :binary:`~bin.mongod` instances, users can always run
        ``db.currentOp( { "$ownOps": true } )`` to view their own
        operations.
        
@@ -76,7 +80,7 @@ filter. The filter document can contain:
    * - <filter>
 
      - Specify filter conditions on the :ref:`db.currentOp-output-fields`.
-       See :ref:`currentOp-examples`.
+       See :ref:`currentOp-method-examples`.
        
        If the document includes ``"$all": true`` along with
        :ref:`db.currentOp-output-fields` conditions, only the ``"$all":
@@ -107,13 +111,13 @@ action.
 
 .. versionchanged:: 3.2.9
 
-   On :program:`mongod` instances, users can run ``db.currentOp( {
+   On :binary:`~bin.mongod` instances, users can run ``db.currentOp( {
    "$ownOps": true } )`` to view their own operations even without the
    :authaction:`inprog` privilege action.
 
 .. seealso::  :ref:`create-role-to-manage-ops`
 
-.. _currentOp-examples:
+.. _currentOp-method-examples:
 
 Examples
 --------

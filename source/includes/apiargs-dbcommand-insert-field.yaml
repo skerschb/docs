@@ -36,6 +36,9 @@ description: |
   A document that expresses the :doc:`write concern </reference/write-concern>`
   of the :dbcommand:`insert` command. Omit to use the default write
   concern.
+
+  .. include:: /includes/extracts/transactions-operations-write-concern.rst
+
 interface: dbcommand
 name: writeConcern
 operation: insert
@@ -50,7 +53,7 @@ description: |
   Enables {{role}} to bypass document validation
   during the operation. This lets you {{verb}} documents that do not
   meet the validation requirements.
-  
+
   .. versionadded:: 3.2
 interface: dbcommand
 operation: insert
@@ -59,53 +62,4 @@ replacement:
 optional: true
 position: 5
 type: boolean
----
-name: txnNumber
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: document
----
-name: stmtIds
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-stmtIds.rst
-
-   .. versionadded:: 3.6
-
-   .. |operation| replace:: insert
-
-   .. |operations| replace:: insert documents
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: insert
-arg_name: field
-type: Array of 32-bit integers
 ...

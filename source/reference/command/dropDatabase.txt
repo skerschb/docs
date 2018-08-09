@@ -20,17 +20,28 @@ Definition
 
    The command has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { dropDatabase: 1, txnNumber: <long>, lsid: { id: <UUID> }
+      { dropDatabase: 1, writeConcern: <document>}
 
-   The command can take the following options:
+   The command takes the following optional field:
 
-   .. include:: /includes/extracts/sessions-option-table-options.rst
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
 
-   The :program:`mongo` shell also provides the helper method
+      * - Field
+        - Description
+
+      * - writeConcern
+
+        - Optional. A document expressing the :doc:`write concern
+          </reference/write-concern>` of the :dbcommand:`drop` command.
+          Omit to use the default write concern.
+
+          .. include:: /includes/extracts/mongos-operations-wc-drop-database.rst
+
+   The :binary:`~bin.mongo` shell also provides the helper method
    :method:`db.dropDatabase()`.
 
 Behavior
@@ -41,14 +52,15 @@ Behavior
 .. include:: /includes/fact-drop-database-users.rst
 
 .. versionchanged:: 3.6
-   
+
    :dbcommand:`dropDatabase` waits until all collections drops in the
    database have propagated to a majority of the replica set members.
+
 
 Example
 -------
 
-The following example in the :program:`mongo` shell uses the ``use
+The following example in the :binary:`~bin.mongo` shell uses the ``use
 <database>`` operation to switch the current database to the ``temp``
 database and then uses the :dbcommand:`dropDatabase` command to drop
 the ``temp`` database:

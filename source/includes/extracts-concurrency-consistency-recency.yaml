@@ -1,38 +1,63 @@
 ref: concurrent-operations-read-uncommitted
 content: |
-  In MongoDB, clients can see the results of writes before the writes
-  are :term:`durable`:
+
+  Depending on the read concern, clients can see the results of writes
+  before the writes are :term:`durable`:
 
   .. include:: /includes/list-visibility-of-data.rst
-
-# The include file has the following content:
+  
+# The above include file has the following content:
 #
 #  - Regardless of :doc:`write concern </reference/write-concern>`,
 #    other clients can see the result of the write operations before
 #    the write operation is acknowledged to the issuing client.
 #
+#  - For operations in a :doc:`multi-document transactions
+#    </core/transactions>`, although other clients cannot see the
+#    results while the transaction is open, they can see the result at
+#    the time of the commit, before the commit operation is
+#    acknowledged to the issuing client.
+#
 #  - Clients can read data which may be subsequently :doc:`rolled back
-#    </core/replica-set-rollbacks>`.
+#    </core/replica-set-rollbacks>`  during replica set failovers.
 
 ---
 ref: concurrent-operations-single-document-write
 content: |
    Write operations are atomic with respect to a single document; i.e.
-   if a write is updating multiple fields in the document, a reader
+   if a write is updating multiple fields in the document, a read operation
    will never see the document with only some of the fields updated.
+   However, although a client may not see a *partially* updated
+   document, read uncommitted means that concurrent read operations may still
+   see the updated document before the changes are made :term:`durable`.
 
-   With a standalone :program:`mongod` instance, a set of read and write
+   With a standalone :binary:`~bin.mongod` instance, a set of read and write
    operations to a single document is serializable. With a replica set,
    a set of read and write operations to a single document is serializable
    *only* in the absence of a rollback.
+
 ---
 ref: concurrent-operations-multi-document-writes
 content: |
-   When a single write operation modifies multiple documents, the
-   modification of each document is atomic, but the operation as a whole
-   is not atomic and other operations may interleave. However, you can
-   *isolate* a single write operation that affects multiple documents
-   using the :update:`$isolated` operator. 
+
+   When a single write operation (e.g.
+   :method:`db.collection.updateMany()`) modifies multiple documents,
+   the modification of each document is atomic, but the operation as a
+   whole is not atomic.
+
+   When performing multi-document write operations, whether through a
+   single write operation or multiple write operations, other
+   operations may interleave.
+
+   .. include:: /includes/extracts/transactions-intro-blurb.rst
+
+# The above include file has the following content:
+#
+# Starting in version 4.0, for situations that require atomicity for
+# updates to multiple documents or consistency between reads to multiple
+# documents, MongoDB provides :doc:`multi-document transactions
+# </core/transactions>` for replica sets.
+   
 ---
 ref: concurrent-operations-multi-document-writes-no-isolation
 content: |
@@ -60,38 +85,15 @@ content: |
    #. Reads may miss matching documents that are updated during the
       course of the read operation.
 ---
-ref: concurrent-operations-isolate-operator
-content: |
-   Using the :update:`$isolated` operator, a write operation that affects
-   multiple documents can prevent other processes from interleaving once
-   the write operation modifies the first document. This ensures that no
-   client sees the changes until the write operation completes or errors
-   out.
-
-   :update:`$isolated` does **not** work with :term:`sharded clusters
-   <sharded cluster>`.
-
-   An isolated write operation does not provide "all-or-nothing" atomicity.
-   That is, an error during the write operation does not roll back all
-   its changes that preceded the error.
-
-   .. note::
-
-      :update:`$isolated` operator causes write operations to acquire
-      an exclusive lock on the collection, *even for document-level
-      locking storage engines* such as WiredTiger. That is,
-      :update:`$isolated` operator will make WiredTiger single-threaded
-      for the duration of the operation.
----
 ref: monotonic-writes
 content: |
-   MongoDB provides  monotonic write guarantees for standalone
-   :program:`mongod` instances, replica sets, and sharded clusters.
 
-   Suppose an application performs a sequence of operations that
-   consists of a write operation *W*\ :sub:`1` followed later in the
-   sequence by a write operation *W*\ :sub:`2`. MongoDB guarantees that
-   *W*\ :sub:`1` operation precedes *W*\ :sub:`2`.
+   MongoDB provides monotonic write guarantees, by default, for
+   standalone :binary:`~bin.mongod` instances and replica set.
+
+   For monotonic writes and sharded clusters, see
+   :ref:`causal-consistency`.
+
 ---
 ref: isolate-cursor-snapshot
 content: |
@@ -100,34 +102,16 @@ content: |
    situations. As a cursor returns documents other operations may
    interleave with the query. If some of these operations are
    :doc:`updates </tutorial/update-documents>` that cause the document to
-   move (in the case of MMAPv1, caused by document growth) or that
+   move (in the case of the deprecated MMAPv1, caused by document growth) or that
    change the indexed field on the index used by the query; then the
    cursor will return the same document more than once.
 
-   In very specific cases, you can isolate the cursor from returning
-   the same document more than once by using the
-   :method:`cursor.snapshot()` method. :method:`~cursor.snapshot()`
-   guarantees that the query will return each document no more than
-   once.
-
-   .. warning::
-
-      - The :method:`~cursor.snapshot()` does not guarantee that the
-        data returned by the query will reflect a single moment in time
-        *nor* does it provide isolation from insert or delete
-        operations.
-
-      - You **cannot** use :method:`~cursor.snapshot()` with
-        :term:`sharded collections <sharding>`.
-
-      - You **cannot** use :method:`~cursor.snapshot()` with the
-        :method:`~cursor.sort()` or :method:`~cursor.hint()` cursor methods.
-
-   As an alternative, if your collection has a field or fields that are
+   If your collection has a field or fields that are
    never modified, you can use a *unique* index on this field or these
-   fields to achieve a similar result as the :method:`~cursor.snapshot()`.
-   Query with :method:`~cursor.hint()` to explicitly force the query to use
-   that index.
+   fields so that the query will return each document no more than
+   once. Query with :method:`~cursor.hint()` to explicitly force the
+   query to use that index.
+   
 ---
 ref: lock-general
 content: |
@@ -144,10 +128,10 @@ content: |
 ref: lock-sharding
 content: |
    In a sharded cluster, locks apply to each individual shard, not to
-   the whole cluster; i.e. each :program:`mongod` instance is
+   the whole cluster; i.e. each :binary:`~bin.mongod` instance is
    independent of the others in the sharded cluster and uses its own
    :ref:`locks <faq-concurrency-locking>`. The operations on one
-   :program:`mongod` instance do not block the operations on any others.
+   :binary:`~bin.mongod` instance do not block the operations on any others.
 ---
 ref: lock-replica-set-primary
 content: |
@@ -157,30 +141,35 @@ content: |
 ref: no-journaling-writeConcernMajorityJournalDefault-false
 content: |
    
-   If any voting member of a replica set runs without :ref:`journaling
-   <journaling-internals>` (i.e. either runs an :ref:`in-memory storage
-   engine<storage-inmemory>` or runs with journaling disabled), you
-   must set :rsconf:`writeConcernMajorityJournalDefault` to ``false``.
+   If any voting member of a replica set uses the :ref:`in-memory
+   storage engine <storage-inmemory>`, you must set
+   :rsconf:`writeConcernMajorityJournalDefault` to ``false``.
+
 ---
 ref: no-journaling-writeConcernMajorityJournalDefault-true
 content: |
-   If any voting member of a replica set runs without :ref:`journaling
-   <journaling-internals>` and
+
+   If any voting member of a replica set uses the :ref:`in-memory
+   storage engine <storage-inmemory>` and
    :rsconf:`writeConcernMajorityJournalDefault` is ``true``,
    :writeconcern:`"majority"` write operations may fail. These include
    operations that inherently use :writeconcern:`"majority"` write
-   concern, such as the :dbcommand:`replSetStepDown` command, or various
-   :program:`mongo` shell methods that by default use
-   :writeconcern:`"majority"` write concern, such as :doc:`user management methods
-   </reference/method/js-user-management/>` and :doc:`role management
-   methods </reference/method/js-role-management>`.
+   concern, such as the :dbcommand:`replSetStepDown` command, or
+   various :binary:`~bin.mongo` shell methods that by default use
+   :writeconcern:`"majority"` write concern, such as :doc:`user
+   management methods </reference/method/js-user-management/>` and
+   :doc:`role management methods
+   </reference/method/js-role-management>`.
+   
 ---
 ref: no-journaling-rollback
 content: |
+   
    With :rsconf:`writeConcernMajorityJournalDefault` set to ``false``,
-   MongoDB will not wait for
-   :writeconcern:`w: "majority" <"majority">` writes to be durable
-   before acknowledging the writes. As such, :writeconcern:`"majority"`
-   write operations could possibly
-   roll back in the event of a loss of a replica set member.
+   MongoDB does not wait for :writeconcern:`w: "majority" <"majority">`
+   writes to be written to the on-disk journal before acknowledging the
+   writes. As such, :writeconcern:`majority` write operations could
+   possibly roll back in the event of a transient loss (e.g. crash and
+   restart) of a majority of nodes in a given replica set.
+
 ...

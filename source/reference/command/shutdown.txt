@@ -44,12 +44,8 @@ shutdown
 
       { shutdown: 1, timeoutSecs: 60 }
 
-   The equivalent :program:`mongo` shell helper syntax looks like this:
+   The equivalent :binary:`~bin.mongo` shell helper syntax looks like this:
 
    .. code-block:: javascript
 
       db.shutdownServer({timeoutSecs: 60});
-
-   The command can also take the following options:
-
-   .. include:: /includes/extracts/sessions-option-table-options.rst

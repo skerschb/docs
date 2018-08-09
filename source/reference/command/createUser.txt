@@ -22,11 +22,15 @@ Definition
    user exists.
    The :dbcommand:`createUser` command uses the following syntax:
 
-   .. versionchanged:: 3.6
+   .. versionchanged:: 4.0
+
+      Adds the optional ``mechanisms`` field to specify the specific
+      SCRAM mechanisms.
 
    .. code-block:: javascript
 
-      { createUser: "<name>",
+      {
+        createUser: "<name>",
         pwd: "<cleartext password>",
         customData: { <any information> },
         roles: [
@@ -34,8 +38,12 @@ Definition
           ...
         ],
         writeConcern: { <write concern> },
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        authenticationRestrictions: [
+           { clientSource: [ "<IP|CIDR range>", ... ], serverAddress: [ "<IP|CIDR range>", ... ] }, 
+           ...
+        ],
+        mechanisms: [ "<scram-mechanism>", ... ],
+        digestPassword: <boolean>
       }
 
    :dbcommand:`createUser` has the following fields:
@@ -46,6 +54,8 @@ Roles
 ~~~~~
 
 .. include:: /includes/fact-roles-array-contents.rst
+
+.. _create-user-auth-restrictions:
 
 Authentication Restrictions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -60,9 +70,9 @@ Behavior
 Encryption
 ~~~~~~~~~~
 
-:dbcommand:`createUser` sends password to the MongoDB instance in
-cleartext. To encrypt the password in transit, use :doc:`TLS/SSL
-</tutorial/configure-ssl>`.
+.. |command| replace:: :dbcommand:`createUser`
+
+.. include:: /includes/fact-cleartext-passwords-tls.rst
 
 External Credentials
 ~~~~~~~~~~~~~~~~~~~~
@@ -71,6 +81,8 @@ Users created on the ``$external`` database should have credentials
 stored externally to MongoDB, as, for example, with :doc:`MongoDB
 Enterprise installations that use Kerberos
 </tutorial/control-access-to-mongodb-with-kerberos-authentication>`.
+
+.. include:: /includes/extracts/sessions-external-username-limit.rst
 
 ``local`` Database
 ~~~~~~~~~~~~~~~~~~

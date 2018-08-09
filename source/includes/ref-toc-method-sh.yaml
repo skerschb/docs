@@ -1,7 +1,3 @@
-name: ":method:`sh.getBalancerLockDetails()`"
-file: /reference/method/sh.getBalancerLockDetails
-description: "Reports on the balancer lock."
----
 name: ":method:`sh.addShard()`"
 file: /reference/method/sh.addShard
 description: "Adds a :term:`shard` to a sharded cluster."
@@ -25,6 +21,14 @@ description: "Disable balancing on a single collection in a sharded database. Do
 name: ":method:`sh.enableBalancing()`"
 file: /reference/method/sh.enableBalancing
 description: "Activates the sharded collection balancer process if previously disabled using :method:`sh.disableBalancing()`."
+---
+name: ":method:`sh.disableAutoSplit()`"  
+file: /reference/method/sh.disableAutoSplit
+description: "Disables auto-splitting for the sharded cluster."
+---
+name: ":method:`sh.enableAutoSplit()`"
+file: /reference/method/sh.enableAutoSplit
+description: "Enables auto-splitting for the sharded cluster."
 ---
 name: ":method:`sh.enableSharding()`"
 file: /reference/method/sh.enableSharding
@@ -102,15 +106,15 @@ name: ":method:`sh.waitForBalancerOff()`"
 file: /reference/method/sh.waitForBalancerOff
 description: "Internal. Waits until the balancer stops running."
 ---
-name: ":method:`sh.waitForDLock()`"
-file: /reference/method/sh.waitForDLock
-description: "Internal. Waits for a specified distributed :term:`sharded cluster` lock."
----
 name: ":method:`sh.waitForPingChange()`"
 file: /reference/method/sh.waitForPingChange
-description: "Internal. Waits for a change in ping state from one of the :program:`mongos` in the sharded cluster."
+description: "Internal. Waits for a change in ping state from one of the :binary:`~bin.mongos` in the sharded cluster."
 ---
 name: ":method:`sh.updateZoneKeyRange()`"
 file: /reference/method/sh.updateZoneKeyRange
 description: "Associates a range of shard keys to a zone. Supports configuring :ref:`zones <zone-sharding>` in sharded clusters."
+---
+name: ":method:`convertShardKeyToHashed.txt()`"
+file: /reference/method/convertShardKeyToHashed
+description: "Returns the hashed value for the input."
 ...

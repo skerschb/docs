@@ -1,7 +1,7 @@
 arg_name: field
 description: |
   The name of the collection or view that acts as the input for the
-  aggregation pipeline.
+  aggregation pipeline. Use ``1`` for collection agnostic commands.
 interface: dbcommand
 name: aggregate
 operation: aggregate
@@ -25,7 +25,8 @@ arg_name: field
 description: |
   Specifies to return the information on the processing of the pipeline.
 
-  .. versionadded:: 2.6
+  Not available in :doc:`multi-document transactions </core/transactions>`.
+
 interface: dbcommand
 name: explain
 operation: aggregate
@@ -88,12 +89,9 @@ name: readConcern
 type: document
 optional: true
 description: |
-   Specifies the :term:`read concern`. The option has the following
-   syntax:
+   Specifies the :term:`read concern`.
 
-   .. code-block:: javascript
-
-      readConcern: { level: <value> }
+   .. include:: /includes/fact-readConcern-syntax.rst
 
    .. include:: /includes/fact-readConcern-option-description.rst
 
@@ -155,35 +153,17 @@ interface: dbcommand
 operation: aggregate
 position: 11
 ---
-position: 12
-name: txnNumber
+name: writeConcern
 description: |
+  A document that expresses the :doc:`write concern </reference/write-concern>`
+  to use with :pipeline:`$out` stage. 
 
-   Optional.
+  Omit to use the default write concern with the :pipeline:`$out` stage.
 
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: aggregate
-arg_name: field
-type: 64-bit integer/long
----
-position: 13
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: aggregate
+optional: true
 arg_name: field
 type: document
+interface: dbcommand
+operation: aggregate
+position: 12
 ...

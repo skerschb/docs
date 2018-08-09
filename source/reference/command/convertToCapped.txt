@@ -18,80 +18,69 @@ convertToCapped
 
    The command has the following syntax:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { convertToCapped: <collection>, size: <capped size>, txnNumber: <long>, lsid: { id: <UUID> } }
- 
+      { convertToCapped: <collection>, size: <capped size> , writeConcern: <document>}
+
+   The command takes the following fields:
+
    .. list-table::
       :header-rows: 1
-      :widths: 20 20 60
+      :widths: 20 80
 
       * - Field
-        - Type
         - Description
 
-      * - ``convertToCapped``
-        - String
-        - The non-capped collection to convert.
+      * - convertToCapped
+        - The name of the existing collection to convert.
 
-      * - ``size``
-        - Number
-        - The maximum size in bytes for the capped collection.
+      * - size
+        - The maximum size, in bytes, for the capped collection.
 
-      * - ``txnNumber``
+      * - writeConcern
 
-        - 64-bit integer/long
+        - Optional. A document expressing the :doc:`write concern
+          </reference/write-concern>` of the :dbcommand:`drop` command.
+          Omit to use the default write concern.
 
-        - Optional.
+   :dbcommand:`convertToCapped` takes an existing collection
+   (``<collection>``) and transforms it into a capped collection with
+   a maximum size in bytes, specified by the ``size`` argument
+   (``<capped size>``).
 
-          .. include:: /includes/extracts/sessions-option-txnId.rst
+   During the conversion process, the :dbcommand:`convertToCapped`
+   command exhibits the following behavior:
 
-          .. versionadded:: 3.6
+   - MongoDB traverses the documents in the original collection in
+     :term:`natural order` and loads the documents into a new
+     capped collection.
 
-      * - ``lsid``
-        - Document
-        - Optional.
+   - If the ``capped size`` specified for the capped collection is
+     smaller than the size of the original uncapped collection, then
+     MongoDB will overwrite documents in the capped collection based
+     on insertion order, or *first in, first out* order.
 
-          .. include:: /includes/extracts/sessions-option-sessionId.rst
+   - Internally, to convert the collection, MongoDB uses the following
+     procedure
 
-          .. versionadded:: 3.6
+     - :dbcommand:`cloneCollectionAsCapped` command creates the capped
+       collection and imports the data.
 
-Behavior
---------
+     - MongoDB drops the original collection.
 
-During the conversion process, the :dbcommand:`convertToCapped`
-command exhibits the following behavior:
+     - :dbcommand:`renameCollection` renames the new capped collection
+       to the name of the original collection.
 
-- MongoDB traverses the documents in the original collection in
-  :term:`natural order` and loads the documents into a new
-  capped collection.
+   - .. include:: /includes/fact-database-lock.rst
 
-- If the ``capped size`` specified for the capped collection is
-  smaller than the size of the original uncapped collection, then
-  MongoDB will overwrite documents in the capped collection based
-  on insertion order, or *first in, first out* order.
+   .. note::
 
-- Internally, to convert the collection, MongoDB uses the following
-  procedure
+      MongoDB does not support the :dbcommand:`convertToCapped`
+      command in a sharded cluster.
 
-  - :dbcommand:`cloneCollectionAsCapped` command creates the capped
-    collection and imports the data.
+   .. warning::
 
-  - MongoDB drops the original collection.
-
-  - :dbcommand:`renameCollection` renames the new capped collection
-    to the name of the original collection.
-
-.. note::
-
-   MongoDB does not support the :dbcommand:`convertToCapped`
-   command in a sharded cluster.
-
-.. warning::
-
-   .. include:: /includes/fact-convertToCapped-indexes.rst
+      .. include:: /includes/fact-convertToCapped-indexes.rst
 
 Example
 -------

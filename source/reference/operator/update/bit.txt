@@ -15,9 +15,6 @@ Definition
 
 .. update:: $bit
 
-   .. versionchanged:: 2.6
-      Added support for bitwise ``xor`` operation.
-
    The :update:`$bit` operator performs a bitwise update of a field.
    The operator supports bitwise ``and``, bitwise
    ``or``, and bitwise ``xor`` (i.e. exclusive or) operations. To
@@ -35,7 +32,7 @@ Definition
 
    .. note::
 
-      All numbers in the :program:`mongo` shell are doubles, not
+      All numbers in the :binary:`~bin.mongo` shell are doubles, not
       integers. Use the ``NumberInt()`` or the ``NumberLong()``
       constructor to specify integers. See :ref:`shell-type-int` or
       :ref:`shell-type-long` for more information.
@@ -80,7 +77,7 @@ And the updated document has the following value for ``expdata``:
 
    { "_id" : 1, "expdata" : 8 }
 
-The :program:`mongo` shell displays ``NumberInt(8)`` as ``8``.
+The :binary:`~bin.mongo` shell displays ``NumberInt(8)`` as ``8``.
 
 Bitwise OR
 ~~~~~~~~~~

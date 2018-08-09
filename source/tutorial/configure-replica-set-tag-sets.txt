@@ -92,7 +92,7 @@ Given the following replica set configuration:
    }
 
 You could add tag sets to the members of this replica set
-with the following command sequence in the :program:`mongo` shell:
+with the following command sequence in the :binary:`~bin.mongo` shell:
 
 .. code-block:: javascript
 
@@ -150,7 +150,7 @@ Given a five member replica set with members in two data centers:
 
 Create a custom write concern to require confirmation from two
 data centers using replica set tags, using the following sequence
-of operations in the :program:`mongo` shell:
+of operations in the :binary:`~bin.mongo` shell:
 
 #. Create a replica set configuration JavaScript object ``conf``:
 
@@ -195,7 +195,7 @@ mode as follows:
 
 Alternatively, if you want to ensure that each write operation
 propagates to at least 2 racks in each facility, reconfigure the
-replica set as follows in the :program:`mongo` shell:
+replica set as follows in the :binary:`~bin.mongo` shell:
 
 #. Create a replica set configuration object ``conf``:
 
@@ -221,14 +221,6 @@ replica set as follows in the :program:`mongo` shell:
 Now, the following write operation will only return after the write
 operation propagates to at least two different racks in the each
 facility:
-
-.. versionchanged:: 2.6
-
-   A new protocol for :ref:`write operations
-   <rel-notes-write-operations>` integrates write concerns with the
-   write operations.
-   Previous versions used the :dbcommand:`getLastError` command to
-   specify the write concerns.
 
 .. code-block:: javascript
 
@@ -279,7 +271,7 @@ rather a single tag/value repeated three times across the replica set members
 (i.e. ``{"dc": "east"}``). Therefore the custom write concern setting of
 ``{"dc": 3}`` will never be satisfied.
 
-Configure Tag Sets for Functional Segregation of Read and Write Operations
+Configure Tag Sets for Workload Isolation of Read and Write Operations
 --------------------------------------------------------------------------
 
 Given a replica set with tag sets that reflect:
@@ -312,7 +304,7 @@ However, to create comparable write concern modes, you would specify a
 different set of
 :rsconf:`settings.getLastErrorModes`
 configuration. Consider the following sequence of operations in
-the :program:`mongo` shell:
+the :binary:`~bin.mongo` shell:
 
 #. Create a replica set configuration object ``conf``:
 
@@ -348,14 +340,6 @@ the :program:`mongo` shell:
 Now you can specify the ``MultipleDC`` write concern mode, as in the
 following, to ensure that a write operation propagates to
 each data center.
-
-.. versionchanged:: 2.6
-
-   A new protocol for :ref:`write operations
-   <rel-notes-write-operations>` integrates write concerns with the
-   write operations.
-   Previous versions used the :dbcommand:`getLastError` command to
-   specify the write concerns.
 
 .. code-block:: javascript
 

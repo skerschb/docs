@@ -21,10 +21,25 @@ Definition
    matching documents. The operation does not perform the query but
    instead counts the results that would be returned by the query.
 
-   .. versionchanged:: 2.6
-      MongoDB supports the use of :method:`~cursor.hint()` with
-      :method:`~cursor.count()`. See :ref:`count-method-hint` for an
-      example.
+   .. important::
+
+      - Avoid using :method:`~cursor.count()` if the
+        :method:`~db.collection.find()` operation is run without a
+        query predicate since without the query predicate, these
+        :method:`~cursor.count()` returns results based on the
+        collection's metadata, which may result in an approximate
+        count. In particular,
+        
+        - On a sharded cluster, the resulting count will not correctly
+          filter out :term:`orphaned documents <orphaned document>`.
+
+        - After an unclean shutdown, the count may be
+          incorrect.
+
+      - For counts based on collection metadata, see also
+        :ref:`collStats pipeline stage with the count <collstat-count>`
+        option.
+
 
    The :method:`~cursor.count()` method has the following
    prototype form:
@@ -41,6 +56,10 @@ Definition
    MongoDB also provides an equivalent :method:`db.collection.count()`
    as an alternative to the ``db.collection.find(<query>).count()``
    construct.
+
+   MongoDB supports the use of :method:`~cursor.hint()` with
+   :method:`~cursor.count()`. See :ref:`count-method-hint` for an
+   example.
 
    .. seealso:: :method:`cursor.size()`
 

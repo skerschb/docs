@@ -16,8 +16,8 @@ developers and database administrators to customize the behavior of a
 MongoDB may be *more* "data center aware," or allow operational
 and location-based separation.
 
-MongoDB also supports segregation based on functional parameters, to ensure
-that certain :program:`mongod` instances are only used for reporting workloads
+MongoDB also supports workload isolation based on functional parameters, to ensure
+that certain :binary:`~bin.mongod` instances are only used for reporting workloads
 or that certain high-frequency portions of a sharded collection only exist on
 specific shards.
 
@@ -37,11 +37,10 @@ Further Reading
 
 - :doc:`/tutorial/deploy-geographically-distributed-replica-set`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-      
-      /core/operational-segregation
-      /core/zone-sharding
-      /tutorial/manage-shard-zone
+   /core/workload-isolation
+   /core/zone-sharding
+   /tutorial/manage-shard-zone

@@ -3,28 +3,28 @@ repository. This repository contains the following packages:
 
 .. list-table::
    :header-rows: 1
-   :widths: 25 75
+   :widths: 30 75
 
    * - Package Name
      - Description
 
-   * - ``mongodb-enterprise``
+   * - ``{+package-name-enterprise+}``
      - A ``metapackage`` that will automatically install
        the four component packages listed below.
 
-   * - ``mongodb-enterprise-server``
-     - Contains the :program:`mongod` daemon and associated
+   * - ``{+package-name-enterprise+}-server``
+     - Contains the :binary:`~bin.mongod` daemon and associated
        configuration and init scripts.
 
-   * - ``mongodb-enterprise-mongos``
-     - Contains the :program:`mongos` daemon.
+   * - ``{+package-name-enterprise+}-mongos``
+     - Contains the :binary:`~bin.mongos` daemon.
 
-   * - ``mongodb-enterprise-shell``
-     - Contains the :program:`mongo` shell.
+   * - ``{+package-name-enterprise+}-shell``
+     - Contains the :binary:`~bin.mongo` shell.
 
-   * - ``mongodb-enterprise-tools``
-     - Contains the following MongoDB tools: :program:`mongoimport`
-       :program:`bsondump`, :program:`mongodump`, :program:`mongoexport`,
-       :program:`mongofiles`, :program:`mongooplog`,
-       :program:`mongoperf`, :program:`mongorestore`, :program:`mongostat`,
-       and :program:`mongotop`.
+   * - ``{+package-name-enterprise+}-tools``
+     - Contains the following MongoDB tools: :binary:`~bin.mongoimport`
+       :binary:`~bin.bsondump`, :binary:`~bin.mongodump`, :binary:`~bin.mongoexport`,
+       :binary:`~bin.mongofiles`,
+       :binary:`~bin.mongorestore`, :binary:`~bin.mongostat`,
+       and :binary:`~bin.mongotop`.

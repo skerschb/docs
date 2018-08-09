@@ -23,7 +23,7 @@ type: string
 ---
 arg_name: field
 description: |
-  If ``true``, :program:`mongod` will drop the ``target`` of
+  If ``true``, :binary:`~bin.mongod` will drop the ``target`` of
   :dbcommand:`renameCollection` prior to renaming the collection. The
   default value is ``false``.
 interface: dbcommand
@@ -33,33 +33,19 @@ optional: true
 position: 3
 type: boolean
 ---
-name: txnNumber
+
+name: writeConcern
 description: |
+  A document that expresses the :doc:`write concern </reference/write-concern>`
+  for the operation. Omit to use the default write
+  concern.
 
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
+  .. include:: /includes/extracts/mongos-operations-wc-rename-collection.rst
+ 
+optional: true
 arg_name: field
 type: document
+interface: dbcommand
+operation: renameCollection
+position: 4
 ...

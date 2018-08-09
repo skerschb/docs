@@ -19,7 +19,7 @@ Check Replica Set Status
 ------------------------
 
 To display the current state of the replica set and current state of
-each member, run the :method:`rs.status()` method in a :program:`mongo`
+each member, run the :method:`rs.status()` method in a :binary:`~bin.mongo`
 shell connected to the replica set's :term:`primary`. For descriptions
 of the information displayed by :method:`rs.status()`, see
 :doc:`/reference/command/replSetGetStatus`.
@@ -34,6 +34,12 @@ of the information displayed by :method:`rs.status()`, see
 Check the Replication Lag
 -------------------------
 
+.. note::
+
+   Starting in version 4.0, MongoDB offers :doc:`free monitoring
+   </administration/free-monitoring>` for standalone and replica sets.
+   For more information, see :doc:`/administration/free-monitoring`.
+
 Replication lag is a delay between an operation on the :term:`primary`
 and the application of that operation from the :term:`oplog` to the
 :term:`secondary`. Replication lag can be a significant issue and can
@@ -44,7 +50,7 @@ will be inconsistent.
 
 To check the current length of replication lag:
 
-- In a :program:`mongo` shell connected to the primary, call the
+- In a :binary:`~bin.mongo` shell connected to the primary, call the
   :method:`rs.printSlaveReplicationInfo()` method.
 
   Returns the ``syncedTo`` value for each member,
@@ -70,13 +76,10 @@ To check the current length of replication lag:
      The :method:`rs.status()` method is a wrapper around the
      :dbcommand:`replSetGetStatus` database command.
 
-- Monitor the rate of replication by watching the oplog time in the
-  "replica" graph in the |mms-home|
-  and in :products:`Ops Manager, an on-premise solution
-  available in MongoDB Enterprise Advanced
-  </mongodb-enterprise-advanced?jmp=docs>`. For more information see
-  the |mms-docs| and :opsmgr:`Ops Manager
-  documentation </>`.
+- Monitor the rate of replication by checking for non-zero or increasing
+  oplog time values in the :guilabel:`Replication Lag` graph available in 
+  `Cloud Manager <https://docs.cloudmanager.mongodb.com/reference/alerts/replication-lag/>`_ 
+  and in `Ops Manager <https://docs.opsmanager.mongodb.com/current/reference/alerts/replication-lag/>`_.
 
 .. include:: /includes/replacement-mms.rst
 
@@ -230,7 +233,7 @@ A larger :term:`oplog` can give a replica set a greater tolerance for
 lag, and make the set more resilient.
 
 To check the size of the oplog for a given :term:`replica set` member,
-connect to the member in a :program:`mongo` shell and run the
+connect to the member in a :binary:`~bin.mongo` shell and run the
 :method:`rs.printReplicationInfo()` method.
 
 The output displays the size of the oplog and the date ranges of the
@@ -247,7 +250,7 @@ operations:
    now:                     Wed Oct 03 2012 15:00:21 GMT-0400 (EDT)
 
 The oplog should be long enough to hold all transactions for the
-longest downtime you expect on a secondary. At a minimum, an oplog
+longest downtime you expect on a secondary. [#oplog]_ At a minimum, an oplog
 should be able to hold minimum 24 hours of operations; however, many
 users prefer to have 72 hours or even a week's work of operations.
 
@@ -263,13 +266,16 @@ For more information on how oplog size affects operations, see:
 To change oplog size, see the :doc:`/tutorial/change-oplog-size`
 tutorial.
 
+.. [#oplog]
+
+   .. include:: /includes/fact-oplog-size.rst
 
 Oplog Entry Timestamp Error
 ---------------------------
 
 .. todo:: link assertion 13290 here once assertion guide exists.
 
-Consider the following error in :program:`mongod` output and logs:
+Consider the following error in :binary:`~bin.mongod` output and logs:
 
 .. code-block:: javascript
 

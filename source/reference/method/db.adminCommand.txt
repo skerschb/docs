@@ -38,11 +38,19 @@ For a list of available administrative database commands, see
 
 .. note::
 
-   For a :program:`mongod` or :program:`mongos` running with
+   For a :binary:`~bin.mongod` or :binary:`~bin.mongos` running with
    :setting:`~security.authorization`, the authorized user must have
    the appropriate privileges to run the database command. See the
    reference documentation for the command for more information on
    security requirements.
+
+Response
+--------
+
+The method returns a response document that contains the following
+fields:
+
+.. include:: /includes/fact-runCommand-results.rst
 
 .. _admincommand-examples:
 

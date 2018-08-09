@@ -18,10 +18,10 @@ Definition
 .. dbcommand:: killOp
 
    Terminates an operation as specified by the operation ID.
-   The :program:`mongo` shell provides the 
+   The :binary:`~bin.mongo` shell provides the 
    :method:`db.killOp()` helper.
    To find operations and their corresponding IDs,
-   see :method:`db.currentOp()`.
+   see :pipeline:`$currentOp` or :method:`db.currentOp()`.
    
    .. |command| replace:: killOp
 
@@ -31,15 +31,21 @@ Definition
 
    The command has the following form:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { "killOp": 1, "op": <opid>, txnNumber: <long>, lsid: { id: <UUID> } } 
+      { "killOp": 1, "op": <opid> } 
 
    .. include:: /includes/apiargs/method-db.killOp-param.rst
 
    .. include:: /includes/extracts/warning-terminating-ops-command.rst
+
+
+.. versionchanged:: 4.0
+
+   The ``killOp`` command can be run on a :binary:`~bin.mongos` and can
+   kill queries that span shards in a cluster. For information on how
+   to list sharding operations that are active on a mongos, see the
+   ``localOps`` parameter in  :pipeline:`$currentOp`.
 
 Access Control
 --------------
@@ -49,7 +55,7 @@ operations not owned by the user, the user must have access that
 includes the :authaction:`killop` privilege action.
 
 .. versionchanged:: 3.2.9
-   On :program:`mongod` instances, users can kill their own operations
+   On :binary:`~bin.mongod` instances, users can kill their own operations
    even without the :authaction:`killop` privilege action.
 
 Example
@@ -60,8 +66,7 @@ the running operation with opid ``3478``.
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand( { "killOp": 1, "op": 3478 } )
+   db.adminCommand( { "killOp": 1, "op": 3478 } )
 
 The operation returns the following result:
 
@@ -69,6 +74,8 @@ The operation returns the following result:
 
    { "info" : "attempting to kill op", "ok" : 1 }
 
-:dbcommand:`killOp` only confirms its attempt to end the
-specified operation. Use :method:`db.currentOp()` to confirm the
+:dbcommand:`killOp` reports success if it succeeded in marking the
+specified operation for termination. Operations may not actually be
+terminated until they reach an appropriate interruption point. Use
+:pipeline:`$currentOp` or :method:`db.currentOp()` to confirm the
 target operation was terminated.

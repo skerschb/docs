@@ -1,6 +1,6 @@
-=========================================
-Install MongoDB Community Edition on OS X
-=========================================
+==========================================
+Install MongoDB Community Edition on macOS
+==========================================
 
 .. default-domain:: mongodb
 
@@ -13,16 +13,25 @@ Install MongoDB Community Edition on OS X
 Overview
 --------
 
-Use this tutorial to install MongoDB Community Edition on OS X systems.
+Use this tutorial to install MongoDB Community Edition on macOS systems.
 
 .. admonition:: Platform Support
 
-   Starting in version 3.0, MongoDB only supports OS X versions 10.7 (Lion)
-   and later on Intel x86-64.
+   - .. include:: /includes/extracts/4.0-errata-wt-4018.rst
+
+     For details, see :issue:`WT-4018`.
+   
+   - MongoDB only supports macOS versions 10.11 and later on Intel
+     x86-64. See :ref:`mongodb-supported-platforms` for more
+     information.
 
 You may download MongoDB Community Edition through either the `MongoDB
-Download Center <https://www.mongodb.com/download-center>`_ or the
-popular OS X package manager `Homebrew <http://brew.sh/>`_.
+Download Center <https://www.mongodb.com/download-center#production>`_ or the
+popular macOS package manager `Homebrew <http://brew.sh/>`_.
+
+.. note::
+
+   .. include:: /includes/fact-default-bind-ip-change.rst
 
 Install MongoDB Community Edition
 ---------------------------------

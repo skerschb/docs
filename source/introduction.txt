@@ -79,34 +79,38 @@ functionality:
 
 - :ref:`Sharding <sharding-introduction>` distributes data across a
   cluster of machines.
-  
-- MongoDB 3.4 supports creating :ref:`zones <zone-sharding>` of data based on
-  the :term:`shard key`. In a balanced cluster, MongoDB directs reads and
-  writes covered by a zone only to those shards inside the zone. See the
-  :ref:`zone-sharding` manual page for more information.
+
+- Starting in 3.4, MongoDB supports creating :ref:`zones
+  <zone-sharding>` of data based on the :term:`shard key`. In a
+  balanced cluster, MongoDB directs reads and writes covered by a zone
+  only to those shards inside the zone. See the :ref:`zone-sharding`
+  manual page for more information.
+
 
 Support for Multiple Storage Engines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MongoDB supports :doc:`multiple storage engines
-</core/storage-engines>`, such as:
+</core/storage-engines>`:
 
-- :doc:`/core/wiredtiger` and
+- :doc:`/core/wiredtiger` (including support for
+  :doc:`/core/security-encryption-at-rest`)
 
-- :doc:`/core/mmapv1`.
+- :doc:`/core/inmemory`
+
+- :doc:`/core/mmapv1` (*Deprecated in MongoDB 4.0*)
 
 In addition, MongoDB provides pluggable storage engine API that allows
 third parties to develop storage engines for MongoDB.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly: 
-
-      /tutorial/getting-started
-      /core/databases-and-collections
-      /core/document
-      /reference/bson-types
-      /reference/bson-type-comparison-order.txt
-      /reference/mongodb-extended-json
-
+   /tutorial/getting-started
+   /tutorial/atlas-free-tier-setup
+   /core/databases-and-collections
+   /core/document
+   /reference/bson-types
+   /reference/bson-type-comparison-order.txt
+   /reference/mongodb-extended-json

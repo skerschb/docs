@@ -18,6 +18,12 @@ You can authenticate members of :term:`replica sets <replica set>` and
 the members, MongoDB can use either keyfiles or :ref:`x.509 <security-auth-x509>`
 certificates.
 
+The selected method is used for all internal communication. For example, when a
+client authenticates to a :binary:`~bin.mongos` using one of the supported
+:ref:`authentication mechanisms <security-authentication-mechanisms>`,
+the ``mongos`` then uses the configured internal authentication method to
+connect to the required :binary:`~bin.mongod` processes.
+
 .. note::
 
    Enabling internal authentication also enables :doc:`client
@@ -28,7 +34,7 @@ certificates.
 Keyfiles
 --------
 
-Keyfiles use :doc:`/core/security-scram-sha-1` challenge and response
+Keyfiles use :doc:`/core/security-scram` challenge and response
 authentication mechanism. The contents of the keyfiles serve as the
 shared password for the members. A key's length must be between 6 and
 1024 characters and may only contain characters in the base64 set.
@@ -46,8 +52,8 @@ produce identical keys:
 
 .. include:: /includes/extracts/keyfile-file-permission.rst
 
-The content of the keyfile must be the same on all :program:`mongod` and
-:program:`mongos` instances that connect to each other. You must store the
+The content of the keyfile must be the same on all :binary:`~bin.mongod` and
+:binary:`~bin.mongos` instances that connect to each other. You must store the
 keyfile on each member of the replica set or sharded clusters.
 
 To specify the keyfile, use the :setting:`security.keyFile` setting or
@@ -64,6 +70,12 @@ x.509
 Members of a replica set or sharded cluster can use x.509 certificates for
 internal authentication instead of using keyfiles. MongoDB supports x.509
 certificate authentication for use with a secure TLS/SSL connection.
+
+.. note::
+
+   .. include:: /includes/fact-tls-1.0.rst
+
+.. |binary| replace:: MongoDB
 
 Member Certificate Requirements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,16 +98,15 @@ For an example of x.509 internal authentication, see
 To upgrade from keyfile internal authentication to x.509 internal authentication,
 see :doc:`/tutorial/upgrade-keyfile-to-x509`.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/enforce-keyfile-access-control-in-existing-replica-set
-      /tutorial/enforce-keyfile-access-control-in-existing-replica-set-without-downtime
-      /tutorial/deploy-replica-set-with-keyfile-access-control
-      /tutorial/enforce-keyfile-access-control-in-existing-sharded-cluster
-      /tutorial/enforce-keyfile-access-control-in-existing-sharded-cluster-no-downtime
-      /tutorial/deploy-sharded-cluster-with-keyfile-access-control      
-      /tutorial/configure-x509-member-authentication
-      /tutorial/upgrade-keyfile-to-x509
+   /tutorial/deploy-replica-set-with-keyfile-access-control
+   /tutorial/enforce-keyfile-access-control-in-existing-replica-set
+   /tutorial/enforce-keyfile-access-control-in-existing-replica-set-without-downtime
+   /tutorial/deploy-sharded-cluster-with-keyfile-access-control
+   /tutorial/enforce-keyfile-access-control-in-existing-sharded-cluster
+   /tutorial/enforce-keyfile-access-control-in-existing-sharded-cluster-no-downtime
+   /tutorial/configure-x509-member-authentication
+   /tutorial/upgrade-keyfile-to-x509

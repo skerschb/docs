@@ -4,11 +4,11 @@ source:
   file: steps-deploy-replica-set-with-auth.yaml
   ref: deploy-repset-start-members
 pre: |
-  Running a :program:`mongod` with the ``keyFile`` parameter enforces both 
+  Running a :binary:`~bin.mongod` with the ``keyFile`` parameter enforces both 
   :doc:`/core/security-internal-authentication` and 
   :doc:`/core/authorization`.
 
-  Start *each* :program:`mongod` in the replica set using either 
+  Start *each* :binary:`~bin.mongod` in the replica set using either 
   a configuration file or the command line.
 action:
   - pre: |
@@ -29,10 +29,9 @@ action:
       storage:
          dbPath: <path>
     post: |
-      Include any other options as appropriate for your deployment. See
-      :doc:`/reference/configuration-options` for settings available.
+       .. include:: /includes/extracts/default-bind-ip-security-additional-config-file.rst
   - pre: |
-       Start the :program:`mongod` specifying the ``--config`` option
+       Start the :binary:`~bin.mongod` specifying the ``--config`` option
        and the path to the configuration file.
     language: sh
     code: |
@@ -45,9 +44,9 @@ action:
       following example:
     language: sh
     code: |
-       mongod --keyFile <path-to-keyfile> --shardsvr --replSet <replSetname>  --dbpath <path>
+       mongod --keyFile <path-to-keyfile> --shardsvr --replSet <replSetName>  --dbpath <path>
     post: |
-       Include any other options as appropriate for your deployment.
+       .. include:: /includes/extracts/default-bind-ip-security-additional-command-line.rst
 ---
 stepnum: 2
 level: 4

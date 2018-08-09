@@ -13,364 +13,657 @@ Delete Documents
    :description: MongoDB Manual: How to delete documents in MongoDB. How to remove documents in MongoDB. How to specify conditions for removing or deleting documents in MongoDB.
    :keywords: delete from collection, remove documents from collection, delete documents from collection, MongoDB Manual
 
-.. tabs::
+This page provides examples in:
+
+.. tabs-pillstrip:: languages
+
+.. tabs-drivers::
 
    tabs:
      - id: shell
        content: |
-         This page provides examples of delete operations using the
-         following methods in the :program:`mongo` shell:
+         This page uses the following :binary:`~bin.mongo` shell methods:
 
          - :method:`db.collection.deleteMany()`
          - :method:`db.collection.deleteOne()`
 
+         The examples on this page use the ``inventory`` collection. To populate
+         the ``inventory`` collection, run the following:
+
+     - id: compass
+       content: |
+
+         This page uses :ref:`MongoDB Compass <compass-index>` to
+         delete the documents.
+
+         Populate the ``inventory`` collection with the following
+         documents:
+
      - id: python
        content: |
-         This page provides examples of delete operations using the
-         following methods in the `PyMongo <https://api.mongodb.com/python/current/index.html>`_
-         Python driver:
+         This page uses the
+         following `PyMongo <https://api.mongodb.com/python/current/index.html>`_
+         Python driver methods:
 
          - :py:meth:`pymongo.collection.Collection.delete_many`
          - :py:meth:`pymongo.collection.Collection.delete_one`
 
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
+     - id: motor
+       content: |
+         This page uses the
+         following `Motor <https://motor.readthedocs.io/en/stable/>`_
+         driver methods:
+
+         - :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_many`
+         - :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_one`
+
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
      - id: java-sync
        content: |
-          This page provides examples of delete operations using the
-          following methods in the `Java Synchronous Driver`_:
+         This page uses the
+         following `Java Synchronous Driver`_ methods:
 
-          - com.mongodb.client.MongoCollection.deleteMany_
+         - com.mongodb.client.MongoCollection.deleteMany_
 
-          - com.mongodb.client.MongoCollection.deleteOne_
+         - com.mongodb.client.MongoCollection.deleteOne_
+
+         .. include:: /includes/fact-populate-inventory-coll.rst
 
      - id: java-async
        content: |
-          This page provides examples of delete operations using the
-          following methods in the `Java Reactive Streams Driver
-          <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/>`_:
+         This page uses the
+         following `Java Reactive Streams Driver
+         <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/>`_ methods:
 
-          - `com.mongodb.reactivestreams.client.MongoCollection.deleteMany
-            <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteMany(org.bson.conversions.Bson)>`_
+         - `com.mongodb.reactivestreams.client.MongoCollection.deleteMany
+           <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteMany(org.bson.conversions.Bson)>`_
 
-          - `com.mongodb.reactivestreams.client.MongoCollection.deleteOne
-            <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteOne(org.bson.conversions.Bson)>`_
+         - `com.mongodb.reactivestreams.client.MongoCollection.deleteOne
+           <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteOne(org.bson.conversions.Bson)>`_
+
+         .. include:: /includes/fact-populate-inventory-coll.rst
 
      - id: nodejs
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         :node-docs:`MongoDB Node.js Driver <>`:
+         This page uses the
+         following :node-docs:`MongoDB Node.js Driver <>` methods:
 
          - :node-api:`Collection.deleteMany() <Collection.html#deleteMany>`
          - :node-api:`Collection.deleteOne() <Collection.html#deleteOne>`
 
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
      - id: php
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         `MongoDB PHP Library <https://docs.mongodb.com/php-library/master/>`_:
+         This page uses the
+         following  `MongoDB PHP Library <https://docs.mongodb.com/php-library/master/>`_ methods:
 
          - :phpmethod:`MongoDB\\Collection::deleteMany() <phpmethod.MongoDB\\Collection::deleteMany>`
          - :phpmethod:`MongoDB\\Collection::deleteOne() <phpmethod.MongoDB\\Collection::deleteOne>`
 
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
      - id: perl
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         `MongoDB Perl Driver <https://metacpan.org/release/MongoDB>`_:
+         This page uses the
+         following  `MongoDB Perl Driver <https://metacpan.org/release/MongoDB>`_ methods:
+
 
          - :perl-api:`MongoDB::Collection::delete_many()<Collection#delete_many>`
          - :perl-api:`MongoDB::Collection::delete_one()<Collection#delete_one>`
 
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
      - id: ruby
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         `MongoDB Ruby Driver <https://docs.mongodb.com/ruby-driver/master/>`_:
+         This page uses the
+         following `MongoDB Ruby Driver <https://docs.mongodb.com/ruby-driver/master/>`_ methods:
 
          - :ruby-api:`Mongo::Collection#delete_many()<Collection.html#delete_many-instance_method>`
          - :ruby-api:`Mongo::Collection#delete_one()<Collection.html#delete_one-instance_method>`
 
+         .. include:: /includes/fact-populate-inventory-coll.rst
+
      - id: scala
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         `MongoDB Scala Driver <http://mongodb.github.io/mongo-scala-driver/>`_:
-            
+         This page uses the
+         following  `MongoDB Scala Driver <http://mongodb.github.io/mongo-scala-driver/>`_ methods:
+
          - :scala-api:`collection.deleteMany()<deleteMany(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
-            
+
          - :scala-api:`collection.deleteOne()<deleteOne(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
+
+         .. include:: /includes/fact-populate-inventory-coll.rst
 
      - id: csharp
        content: |
-         This page provides examples of delete operations using the
-         following methods in the
-         `MongoDB C# Driver <https://mongodb.github.io/mongo-csharp-driver/>`_:
+         This page uses the
+         following `MongoDB C# Driver <https://docs.mongodb.com/ecosystem/drivers/csharp/>`_ methods:
 
          - :csharp-api:`IMongoCollection.DeleteMany() <M_MongoDB_Driver_IMongoCollection_1_DeleteMany>`
          - :csharp-api:`IMongoCollection.DeleteOne() <M_MongoDB_Driver_IMongoCollection_1_DeleteOne>`
 
-The examples on this page use the ``inventory`` collection. To populate
-the ``inventory`` collection, run the following:
+         .. include:: /includes/fact-populate-inventory-coll.rst
 
-.. include:: /includes/driver-example-delete-55.rst
+.. include:: /includes/driver-examples/driver-example-delete-55.rst
 
 .. _write-op-deleteMany:
 
-Delete All Documents
---------------------
-
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
        content: |
-         To remove all documents from a collection, pass an empty
+         .. raw:: html
+
+            <br>
+
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``{}`` to the
          :method:`db.collection.deleteMany()` method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: python
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``{}`` to the
          :py:meth:`pymongo.collection.Collection.delete_many` method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
+     - id: motor
+       content: |
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
+         :ref:`filter<document-query-filter>` document ``{}`` to the
+         :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_many`
+         method.
+
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: java-sync
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          org.bson.Document_ object as the
          :ref:`filter<document-query-filter>` to the
          com.mongodb.client.MongoCollection.deleteMany_ method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: java-async
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          org.bson.Document_ object as the
          :ref:`filter<document-query-filter>` to the
          `com.mongodb.reactivestreams.client.MongoCollection.deleteMany
          <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteMany(org.bson.conversions.Bson)>`_
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: nodejs
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``{}`` to the
          :node-api:`Collection.deleteMany() <Collection.html#deleteMany>`
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: php
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``[]`` to the
          :phpmethod:`MongoDB\\Collection::deleteMany() <phpmethod.MongoDB\\Collection::deleteMany>`
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: perl
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``{}`` to the
          :perl-api:`MongoDB::Collection::delete_many()<Collection#delete_many>`
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: ruby
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` document ``{}`` to the
          :ruby-api:`Mongo::Collection#delete_many()<Collection.html#delete_many-instance_method>`
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: scala
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>` ``Document()`` to the
          :scala-api:`collection.deleteMany()<deleteMany(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
          method.
 
+         .. include:: /includes/fact-delete-all-inventory.rst
+
      - id: csharp
        content: |
-         To remove all documents from a collection, pass an empty
+         Delete All Documents
+         --------------------
+
+         To delete all documents from a collection, pass an empty
          :ref:`filter<document-query-filter>`
          ``Builders<BsonDocument>.Filter.Empty`` to the
          :csharp-api:`IMongoCollection.DeleteMany()
          <M_MongoDB_Driver_IMongoCollection_1_DeleteMany>` method.
 
-The following example deletes *all* documents from the ``inventory``
-collection:
+         .. include:: /includes/fact-delete-all-inventory.rst
 
-.. include:: /includes/driver-example-delete-56.rst
+.. include:: /includes/driver-examples/driver-example-delete-56.rst
 
-.. include:: /includes/driver-example-delete-result.rst
+.. include:: /includes/driver-examples/driver-example-delete-result.rst
 
-Delete All Documents that Match a Condition
--------------------------------------------
-
-You can specify criteria, or filters, that identify the documents to
-delete. The :ref:`filters <document-query-filter>` use the same syntax
-as read operations.
-
-.. include:: /includes/extracts/filter-equality.rst
-
-.. include:: /includes/extracts/filter-query-operators.rst
-
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :method:`~db.collection.deleteMany()` method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: python
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :py:meth:`~pymongo.collection.Collection.delete_many` method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
+     - id: motor
+       content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
+         To delete all documents that match a deletion criteria, pass a
+         :ref:`filter <document-query-filter>` parameter to the
+         :py:meth:`~motor.motor_asyncio.AsyncIOMotorCollection.delete_many`
+         method.
+
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: java-sync
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          com.mongodb.client.MongoCollection.deleteMany_ method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: java-async
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          `com.mongodb.reactivestreams.client.MongoCollection.deleteMany
          <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteMany(org.bson.conversions.Bson)>`_
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: nodejs
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :node-api:`deleteMany() <Collection.html#deleteMany>`
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: php
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :phpmethod:`deleteMany() <phpmethod.MongoDB\\Collection::deleteMany>`
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: perl
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :perl-api:`delete_many()<Collection#delete_many>`
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: ruby
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :ruby-api:`delete_many()<Collection.html#delete_many-instance_method>`
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: scala
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :scala-api:`deleteMany()<deleteMany(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
          method.
 
+         .. include:: /includes/fact-remove-condition-inv-example.rst
+
      - id: csharp
        content: |
+         Delete All Documents that Match a Condition
+         -------------------------------------------
+
+         .. include:: /includes/fact-delete-condition-inventory.rst
+
+         .. include:: /includes/extracts/filter-equality.rst
+
+         .. include:: /includes/extracts/filter-query-operators.rst
+
          To delete all documents that match a deletion criteria, pass a
          :ref:`filter <document-query-filter>` parameter to the
          :csharp-api:`IMongoCollection.DeleteMany() <M_MongoDB_Driver_IMongoCollection_1_DeleteMany>`
          method.
 
-The following example removes all documents from the ``inventory``
-collection where the ``status`` field equals ``"A"``:
+         .. include:: /includes/fact-remove-condition-inv-example.rst
 
-.. include:: /includes/driver-example-delete-57.rst
+.. include:: /includes/driver-examples/driver-example-delete-57.rst
 
-.. include:: /includes/driver-example-delete-result.rst
+.. include:: /includes/driver-examples/driver-example-delete-result.rst
 
-Remove Only One Document that Matches a Condition
--------------------------------------------------
-
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the :method:`db.collection.deleteOne()` method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
+     - id: compass
+       content: |
+         Delete a Single Document
+         ------------------------
+
+         MongoDB Compass provides a simple way to delete a document
+         from a collection. The following example shows how to delete
+         the document with ``item`` equal to ``paper`` from the
+         ``inventory`` collection:
+
+         .. note::
+
+            In this example we are using the Compass
+            :ref:`Table View <documents-table-view>` to delete the
+            document. The deletion process using the Compass
+            :ref:`List View <documents-list-view>` follows a very
+            similar approach.
+
+            For more information on the differences between Table View
+            and List View in Compass, refer to the
+            :ref:`Compass documentation <compass-view-documents>`.
+
      - id: python
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
          :py:meth:`pymongo.collection.Collection.delete_one` method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
+     - id: motor
+       content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
+         To delete at most a single document that matches a specified
+         filter (even though multiple documents may match the specified
+         filter) use the
+         :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_one`
+         method.
+
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
      - id: java-sync
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the com.mongodb.client.MongoCollection.deleteOne_
          method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
      - id: java-async
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the `com.mongodb.reactivestreams.client.MongoCollection.deleteMany
          <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#deleteMany(org.bson.conversions.Bson)>`_
          method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
      - id: nodejs
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
          :node-api:`Collection.deleteOne() <Collection.html#deleteOne>`
          method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
      - id: php
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
          :phpmethod:`MongoDB\\Collection::deleteOne() <phpmethod.MongoDB\\Collection::deleteOne>`
          method.
 
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
+
      - id: perl
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
-         :perl-api:`MongoDB::Collection::delete_one()<Collection#delete_one>` method.
+         :perl-api:`MongoDB::Collection::delete_one()<Collection#delete_one>`
+         method.
+
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
 
      - id: ruby
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
-         :ruby-api:`Mongo::Collection#delete_one()<Collection.html#delete_one-instance_method>` method.
+         :ruby-api:`Mongo::Collection#delete_one()<Collection.html#delete_one-instance_method>`
+         method.
+
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
 
      - id: csharp
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
          :csharp-api:`IMongoCollection.DeleteOne() <M_MongoDB_Driver_IMongoCollection_1_DeleteOne>`
+         method.
+
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
 
      - id: scala
        content: |
+         Delete Only One Document that Matches a Condition
+         -------------------------------------------------
+
          To delete at most a single document that matches a specified
          filter (even though multiple documents may match the specified
          filter) use the
-         :scala-api:`collection.deleteOne()<deleteOne(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>` method.
+         :scala-api:`collection.deleteOne()<deleteOne(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
+         method.
 
-The following example deletes the *first* document where ``status`` is
-``"D"``.
+         .. include:: /includes/fact-remove-one-condition-inv-example.rst
 
-.. include:: /includes/driver-example-delete-58.rst
+.. include:: /includes/driver-examples/driver-example-delete-58.rst
 
 .. _write-op-delete-behavior:
 .. _write-op-remove-behavior:
@@ -398,7 +691,7 @@ With write concerns, you can specify the level of acknowledgement
 requested from MongoDB for write operations. For details, see
 :doc:`/reference/write-concern`.
 
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
@@ -411,6 +704,14 @@ requested from MongoDB for write operations. For details, see
 
             - :ref:`additional-deletes`
 
+     - id: compass
+       content: |
+         .. seealso::
+
+            - `Compass Documents <https://docs.mongodb.com/compass/master/documents/>`_
+
+            - :ref:`Compass Query Bar <compass-query-bar>`
+
      - id: python
        content: |
          .. seealso::
@@ -418,6 +719,16 @@ requested from MongoDB for write operations. For details, see
             - :py:meth:`pymongo.collection.Collection.delete_many`
 
             - :py:meth:`pymongo.collection.Collection.delete_one`
+
+            - :ref:`additional-deletes`
+
+     - id: motor
+       content: |
+         .. seealso::
+
+            - :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_many`
+
+            - :py:meth:`motor.motor_asyncio.AsyncIOMotorCollection.delete_one`
 
             - :ref:`additional-deletes`
 
@@ -485,9 +796,9 @@ requested from MongoDB for write operations. For details, see
      - id: scala
        content: |
          .. seealso::
-            
+
             - :scala-api:`collection.deleteMany()<deleteMany(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
-            
+
             - :scala-api:`collection.deleteOne()<deleteOne(filter:org.mongodb.scala.bson.conversions.Bson,options:org.mongodb.scala.model.DeleteOptions):org.mongodb.scala.SingleObservable[org.mongodb.scala.result.DeleteResult]>`
 
             - :ref:`additional-deletes`
@@ -502,9 +813,8 @@ requested from MongoDB for write operations. For details, see
 
             - :ref:`additional-deletes`
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
+   :hidden:
 
-   .. toctree::
-      :titlesonly:
-
-      /reference/delete-methods
+   /reference/delete-methods

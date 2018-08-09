@@ -23,8 +23,6 @@ Definition
 
    The :dbcommand:`createRole` command uses the following syntax:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
       { createRole: "<new role>",
@@ -36,9 +34,14 @@ Definition
           { role: "<role>", db: "<database>" } | "<role>",
           ...
         ],
-        writeConcern: <write concern document>,
-        txnNumber: <long>,
-        lsid: { id: <UUID> }
+        authenticationRestrictions: [
+          {
+            clientSource: ["<IP>" | "<CIDR range>", ...],
+            serverAddress: ["<IP>" | "<CIDR range>", ...]
+          },
+          ...
+        ],
+        writeConcern: <write concern document>
       }
 
    The :dbcommand:`createRole` command has the following fields:
@@ -46,7 +49,16 @@ Definition
    .. include:: /includes/apiargs/dbcommand-createRole-field.rst
 
    .. |local-cmd-name| replace:: :dbcommand:`createRole`
-   .. include:: /includes/fact-roles-array-contents.rst
+
+Roles
+~~~~~
+
+.. include:: /includes/fact-roles-array-contents.rst
+
+Authentication Restrictions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/fact-auth-restrictions-array-contents.rst
 
 Behavior
 --------
@@ -70,8 +82,7 @@ The following :dbcommand:`createRole` command creates the
 
 .. code-block:: javascript
 
-   use admin
-   db.runCommand({ createRole: "myClusterwideAdmin",
+   db.adminCommand({ createRole: "myClusterwideAdmin",
      privileges: [
        { resource: { cluster: true }, actions: [ "addShard" ] },
        { resource: { db: "config", collection: "" }, actions: [ "find", "update", "insert", "remove" ] },

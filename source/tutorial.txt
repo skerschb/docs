@@ -18,7 +18,6 @@ would like to see included here, please open a :issue:`Jira Case
 Installation
 ------------
 
-- :doc:`/tutorial/install-mongodb-on-linux`
 - :doc:`/tutorial/install-mongodb-on-red-hat`
 - :doc:`/tutorial/install-mongodb-on-debian`
 - :doc:`/tutorial/install-mongodb-on-ubuntu`
@@ -109,7 +108,6 @@ Security
 Development Patterns
 --------------------
 
-- :doc:`/tutorial/perform-two-phase-commits`
 - :doc:`/tutorial/aggregation-zip-code-data-set`
 - :doc:`/tutorial/aggregation-with-user-preference-data`
 - :doc:`/tutorial/model-data-for-keyword-search`

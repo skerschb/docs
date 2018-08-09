@@ -14,12 +14,14 @@ project, this Manual and additional editions of this text.
    /crud
    /aggregation
    /data-modeling
-   /administration
+   /core/transactions
    /indexes
-   /storage
    /security
+   /changeStreams
    /replication
    /sharding
+   /administration
+   /storage
    /faq
    /reference
    /release-notes

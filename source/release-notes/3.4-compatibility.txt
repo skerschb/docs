@@ -25,15 +25,15 @@ Sharded Cluster Changes
 ``shardsvr`` Requirement
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-For a 3.4 sharded cluster, :program:`mongod` instances for the
+For a 3.4 sharded cluster, :binary:`~bin.mongod` instances for the
 shards **must** explicitly specify its role as a ``shardsvr``,
 either via the configuration file setting
 :setting:`sharding.clusterRole` or via the command line option
-:option:`--shardsvr`.
+:option:`--shardsvr <mongod --shardsvr>`.
 
 .. note::
 
-   Default port for :program:`mongod` instances with the ``shardsvr``
+   Default port for :binary:`~bin.mongod` instances with the ``shardsvr``
    role is ``27018``. To use a different port, specify
    :setting:`net.port` setting or ``--port`` option.
 
@@ -42,34 +42,37 @@ either via the configuration file setting
 3.4 ``mongos`` and Earlier Versions of ``mongod``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Version 3.4 :program:`mongos` instances cannot connect to earlier
-versions of :program:`mongod` instances.
+Version 3.4 :binary:`~bin.mongos` instances cannot connect to earlier
+versions of :binary:`~bin.mongod` instances.
 
 Removal for Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 MongoDB 3.4 removes the following configuration options from
-the :program:`mongos`:
+the :binary:`~bin.mongos`:
 
 - ``sharding.chunkSize`` configuration file setting and
-  :option:`--chunkSize` command-line option
+  ``--chunkSize`` command-line option
 
 - ``sharding.autoSplit`` configuration file setting and
-  :option:`--noAutoSplit` command line option
+  ``--noAutoSplit`` command-line option
+
+.. _3.4-compat-remove-sccc:
 
 Removal of Support for SCCC Config Servers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 3.4 sharded clusters no longer support the use of mirrored (SCCC)
-:program:`mongod` instances as config servers. The use of SCCC config
+:binary:`~bin.mongod` instances as config servers. The use of SCCC config
 servers, deprecated in the 3.2 release, is no longer valid. Instead,
 deploy your config servers as a replica set (CSRS).
 
 To upgrade your sharded cluster to version 3.4, the config servers must
 be running as a replica set.
 
-To convert your existing config servers from SCCC to CSRS, see
-:doc:`/tutorial/upgrade-config-servers-to-replica-set`.
+To convert your existing config servers from SCCC to CSRS, see the
+MongoDB 3.4 manual :v3.4:`Upgrade Config Servers to Replica Set
+</tutorial/upgrade-config-servers-to-replica-set>`.
 
 .. seealso:: 
 
@@ -116,7 +119,7 @@ Deprecated Operations
 ``group``
 ~~~~~~~~~
 
-Mongodb 3.4 deprecates the following commands and :program:`mongo`
+Mongodb 3.4 deprecates the following commands and :binary:`~bin.mongo`
 shell methods:
 
 - :dbcommand:`group` command and :method:`db.collection.group()`.
@@ -204,9 +207,9 @@ General Compatibility Changes
 - Removal of deprecated ``textSearchEnabled`` parameter. Starting from
   version 2.6, MongoDB enables the text search feature by default.
 
-- Removal of :program:`mongosniff`. In MongoDB 3.4,
-  :program:`mongosniff` is replaced by :program:`mongoreplay`, which
-  offers a more flexible superset of :program:`mongosniff`'s
+- Removal of :binary:`~bin.mongosniff`. In MongoDB 3.4,
+  :binary:`~bin.mongosniff` is replaced by :binary:`~bin.mongoreplay`, which
+  offers a more flexible superset of :binary:`~bin.mongosniff`'s
   functionality.
 
 - Updates to :pipeline:`$project` specification behavior: empty
@@ -241,7 +244,20 @@ To set the ``featureCompatibilityVersion``, see
 3.4 deployments have the following default
 ``featureCompatibilityVersion`` values:
 
-.. include:: /includes/list-table-featureCompatibilityVersion-defaults.rst
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - 3.4 Deployments
+     - ``featureCompatibilityVersion``
+
+   * - For new deployments
+     - ``"3.4"``
+
+   * - For deployments :ref:`upgraded from 3.2 <3.4-upgrade>`
+   
+     - ``"3.2"`` until you :dbcommand:`setFeatureCompatibilityVersion`
+       to ``"3.4"``.
 
 Earlier versions of MongoDB will not start if the database contains
 views, collation specifications, or ``v:2`` indexes. If the data

@@ -47,7 +47,8 @@ Query and Write Actions
    - :dbcommand:`getMore`
    - :dbcommand:`getPrevError`
    - :dbcommand:`group`
-   - :dbcommand:`killCursors`
+   - :dbcommand:`killCursors`, provided that the cursor is associated
+     with a currently authenticated user.
    - :dbcommand:`listCollections`
    - :dbcommand:`listIndexes`
    - :dbcommand:`mapReduce` with the ``{out: inline}`` option.
@@ -65,6 +66,13 @@ Query and Write Actions
    Required on the *source* collection for the :dbcommand:`cloneCollectionAsCapped`
    and :dbcommand:`renameCollection` commands and the
    :method:`db.collection.renameCollection()` helper method.
+
+   .. versionchanged:: 4.0
+
+      If a user running the :dbcommand:`listDatabases` command does not
+      have the :authaction:`listDatabases` privilege action, the command
+      returns a list of databases for which the user has the
+      :authaction:`find` privilege action.
 
    Apply this action to database or collection resources.
 
@@ -137,7 +145,7 @@ Query and Write Actions
    .. versionadded:: 3.2
 
    Users can bypass :doc:`document validation
-   </core/document-validation>` on commands and methods that support
+   </core/schema-validation>` on commands and methods that support
    the ``bypassDocumentValidation`` option. The following commands and
    their equivalent methods support bypassing document validation:
 
@@ -152,6 +160,34 @@ Query and Write Actions
    - :dbcommand:`update`
 
    Apply this action to database or collection resources.
+
+.. authaction:: useUUID
+
+   .. versionadded:: 3.6
+
+   User can execute the following commands using a
+   :abbr:`UUID (Universally Unique Identifier)` as if it were a
+   namespace:
+
+   - :dbcommand:`find`
+   - :dbcommand:`listIndexes`
+   - :dbcommand:`parallelCollectionScan`
+
+   For example, this privilege authorizes a user to run the
+   following command which executes a :dbcommand:`find` command on a
+   collection with the given UUID. In order to be successful, this
+   operation also requires that the user is authorized to execute the
+   ``find`` command on the collection namespace corresponding to the given
+   UUID.
+
+   .. code-block:: javascript
+
+      db.runCommand({find: UUID("123e4567-e89b-12d3-a456-426655440000")})
+
+   For more information on collection UUIDs, see
+   :ref:`Collections <collections>`.
+
+   Apply this action to the ``cluster`` resource.
 
 Database Management Actions
 ---------------------------
@@ -226,11 +262,52 @@ Database Management Actions
 
 .. authaction:: killCursors
 
-   User can kill cursors on the target collection.
+   User can kill cursors with which they are associated. Cursors are
+   associated with the users that were authenticated when the cursor was
+   created. Apply this action to collection resources.
+
+.. authaction:: killAnyCursor
+
+   .. versionadded:: 3.6.3
+
+   User can kill **any** cursor regardless of their association
+   with the cursor. Apply this action to collection resources.
 
 .. authaction:: revokeRole
 
    User can remove any role from any user from any database in the system.
+   Apply this action to database resources.
+
+.. authaction:: setAuthenticationRestriction
+
+   .. versionadded:: 3.6
+
+   User can specify the
+   :ref:`authenticationRestrictions <create-user-auth-restrictions>`
+   field in the ``user`` document when running the following commands:
+
+   - :doc:`createUser </reference/command/createUser/>`
+   - :doc:`updateUser </reference/command/updateUser/>`
+
+   User can specify the ``authenticationRestrictions`` field in the
+   ``role`` document when running the following commands:
+
+   - :doc:`createRole </reference/command/createRole/>`
+   - :doc:`updateRole </reference/command/updateRole/>`
+
+   .. note::
+
+      The following built-in roles grant this privilege:
+
+      - The :authrole:`userAdmin` role provides this privilege
+        on the database that the role is assigned.
+
+      - The  :authrole:`userAdminAnyDatabase` role provides this
+        privilege on all databases.
+
+      Transitively, the :authrole:`restore` and :authrole:`root` roles
+      also provide this privilege.
+
    Apply this action to database resources.
 
 .. authaction:: unlock
@@ -274,7 +351,7 @@ Deployment Management Actions
 
    .. versionchanged:: 3.2.9
       Even without the :authaction:`inprog` privilege, on
-      :program:`mongod` instances, users can view their own operations
+      :binary:`~bin.mongod` instances, users can view their own operations
       by running ``db.currentOp( { "$ownOps": true } )``.
 
 .. authaction:: invalidateUserCache
@@ -289,7 +366,7 @@ Deployment Management Actions
 
    .. versionchanged:: 3.2.9
       Even without the :authaction:`killop` privilege, on
-      :program:`mongod` instances, users can kill
+      :binary:`~bin.mongod` instances, users can kill
       their own operations.
 
 .. authaction:: planCacheRead
@@ -310,6 +387,16 @@ Deployment Management Actions
 
    User can perform the :dbcommand:`storageDetails` command. Apply this
    action to database or collection resources.
+
+Change Stream Actions
+---------------------
+
+.. authaction:: changeStream
+
+   User with :authaction:`changeStream` and :authaction:`find` on the
+   specific collection, all non-``system`` collections in a
+   specifc database, or all non-``system`` collections across all databases can
+   open :doc:`change stream cursor </changeStreams>` for that resource.
 
 Replication Actions
 -------------------
@@ -465,6 +552,16 @@ Server Administration Actions
    User can perform the :dbcommand:`dropIndexes` command. Apply this action
    to database or collection resources.
 
+.. authaction:: forceUUID
+
+   .. versionadded:: 3.6
+
+   User can create a collection with a user-defined
+   :ref:`collection UUID <collections-uuids>` using the
+   :dbcommand:`applyOps` command.
+
+   Apply this action to the ``cluster`` resource.
+
 .. authaction:: fsync
 
    User can perform the :dbcommand:`fsync` command. Apply this action to
@@ -529,6 +626,18 @@ Server Administration Actions
 Session Actions
 ---------------
 
+.. authaction:: impersonate
+
+   .. versionadded:: 3.6
+
+   User can perform the :dbcommand:`killAllSessionsByPattern` command
+   with ``users`` and ``roles`` pattern. Apply this action to the
+   ``cluster`` resource.
+
+   To run :dbcommand:`killAllSessionsByPattern` command, users must
+   also have :authaction:`killAnySession` privileges on the cluster
+   resource.
+
 .. authaction:: listSessions
 
    .. versionadded:: 3.6
@@ -536,6 +645,33 @@ Session Actions
    User can perform the :pipeline:`$listSessions` operation or
    :pipeline:`$listLocalSessions` operation for all users or specified
    user(s). Apply this action to the ``cluster`` resource.
+
+.. authaction:: killAnySession
+
+   .. versionadded:: 3.6
+
+   User can perform the :dbcommand:`killAllSessions` and the
+   :dbcommand:`killAllSessionsByPattern` command. Apply this action to
+   the ``cluster`` resource.
+
+   .. seealso:: :authaction:`impersonate`
+
+Free Monitoring Actions
+-----------------------
+
+.. authaction:: checkFreeMonitoringStatus
+
+   User with this action on the ``cluster`` resource can check the
+   status of :doc:`/administration/free-monitoring`.
+
+   .. versionadded:: 4.0
+
+.. authaction:: setFreeMonitoring
+
+   User with this action on the ``cluster`` resource can enable or
+   disable :doc:`/administration/free-monitoring`.
+
+   .. versionadded:: 4.0
 
 Diagnostic Actions
 ------------------
@@ -565,11 +701,6 @@ Diagnostic Actions
    User can perform the :dbcommand:`dbStats` command. Apply this action to
    database resources.
 
-.. authaction:: diagLogging
-
-   User can perform the :dbcommand:`diagLogging` command. Apply this
-   action to the ``cluster`` resource.
-
 .. authaction:: getCmdLineOpts
 
    User can perform the :dbcommand:`getCmdLineOpts` command. Apply this
@@ -593,14 +724,30 @@ Diagnostic Actions
    User can perform the :dbcommand:`listDatabases` command. Apply this
    action to the ``cluster`` resource.
 
+   .. versionchanged:: 4.0
+
+      If a user running the :dbcommand:`listDatabases` command does
+      not have the :authaction:`listDatabases` privilege action, the
+      :dbcommand:`listDatabases` command only returns a list of
+      databases for which the user has the :authaction:`find` action
+      privilege.
+
 .. authaction:: listCollections
 
    User can perform the :dbcommand:`listCollections` command. Apply this
    action to database resources.
 
+   .. note::
+   
+      Starting in version 4.0, user without the required privilege can
+      run the :dbcommand:`listCollections` command with **both**
+      ``authorizedCollections`` and ``nameOnly`` options set to
+      ``true``. In this case, the command returns just the name and
+      type of the collection(s) to which the user has privileges.
+
 .. authaction:: listIndexes
 
-   User can perform the :dbcommand:`ListIndexes` command. Apply this
+   User can perform the :dbcommand:`listIndexes` command. Apply this
    action to database or collection resources.
 
 .. authaction:: netstat

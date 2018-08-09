@@ -11,6 +11,10 @@ Project Fields to Return from Query
 
 .. default-domain:: mongodb
 
+This page provides examples in:
+
+.. tabs-pillstrip:: languages
+
 By default, queries in MongoDB return all fields in matching documents.
 To limit the amount of data that MongoDB sends to applications, you can
 include a :term:`projection` document to specify or restrict fields to
@@ -18,14 +22,14 @@ return.
 
 .. |query_operations| replace:: query operations with projection
 
-.. include:: /includes/driver-example-query-intro.rst
+.. include:: /includes/driver-examples/driver-example-query-intro.rst
 
-.. include:: /includes/driver-example-query-42.rst
+.. include:: /includes/driver-examples/driver-example-query-42.rst
 
 Return All Fields in Matching Documents
 ---------------------------------------
 
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
@@ -33,6 +37,11 @@ Return All Fields in Matching Documents
          If you do not specify a :term:`projection` document, the
          :method:`db.collection.find()` method returns all fields in the
          matching documents.
+
+     - id: compass
+       content: |
+         If you do not specify a :term:`projection` document, Compass
+         returns all fields in the matching documents.
 
      - id: python
        content: |
@@ -49,7 +58,7 @@ Return All Fields in Matching Documents
      - id: java-async
        content: |
          If you do not specify a :term:`projection`, the `com.mongodb.reactivestreams.client.MongoCollection.find
-         <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#find(org.bson.conversions.Bson)>`_
+         <http://mongodb.github.io/mongo-java-driver-reactivestreams/1.6/javadoc/com/mongodb/reactivestreams/client/MongoCollection.html#find(org.bson.conversions.Bson)>`__
          method returns all fields in the matching documents.
 
      - id: nodejs
@@ -79,7 +88,7 @@ Return All Fields in Matching Documents
      - id: scala
        content: |
          If you do not specify a :term:`projection`, the
-         :scala-api:`collection.find()<find[C](filter:org.mongodb.scala.bson.conversions.Bson)(implicite:org.mongodb.scala.bson.DefaultHelper.DefaultsTo[C,TResult],implicitct:scala.reflect.ClassTag[C]):org.mongodb.scala.FindObservable[C]>` 
+         :scala-api:`collection.find()<find[C](filter:org.mongodb.scala.bson.conversions.Bson)(implicite:org.mongodb.scala.bson.DefaultHelper.DefaultsTo[C,TResult],implicitct:scala.reflect.ClassTag[C]):org.mongodb.scala.FindObservable[C]>`
          method returns all fields in the matching documents.
 
      - id: csharp
@@ -91,7 +100,7 @@ Return All Fields in Matching Documents
 The following example returns all fields from all documents in the
 ``inventory`` collection where the ``status`` equals ``"A"``:
 
-.. include:: /includes/driver-example-query-43.rst
+.. include:: /includes/driver-examples/driver-example-query-43.rst
 
 The operation corresponds to the following SQL statement:
 
@@ -108,7 +117,7 @@ operation returns all documents that match the query. In the result
 set, only the ``item``, ``status`` and, by default, the ``_id`` fields
 return in the matching documents.
 
-.. include:: /includes/driver-example-query-44.rst
+.. include:: /includes/driver-examples/driver-example-query-44.rst
 
 The operation corresponds to the following SQL statement:
 
@@ -123,7 +132,7 @@ You can remove the ``_id`` field from the results by setting its
 exclusion ``<field>`` to ``0`` in the projection, as in the
 following example:
 
-.. include:: /includes/driver-example-query-45.rst
+.. include:: /includes/driver-examples/driver-example-query-45.rst
 
 The operation corresponds to the following SQL statement:
 
@@ -139,10 +148,12 @@ can use a projection to exclude specific fields. The following example
 which returns all fields except for the ``status`` and the ``instock``
 fields in the matching documents:
 
-.. include:: /includes/driver-example-query-46.rst
+.. include:: /includes/driver-examples/driver-example-query-46.rst
 
-With the exception of the ``_id`` field, you cannot combine inclusion
-and exclusion statements in projection documents.
+.. note::
+
+   With the exception of the ``_id`` field, you cannot combine inclusion
+   and exclusion statements in projection documents.
 
 Return Specific Fields in Embedded Documents
 --------------------------------------------
@@ -151,11 +162,16 @@ You can return specific fields in an embedded document. Use the
 :ref:`dot notation <document-dot-notation>` to refer to the embedded
 field and set to ``1`` in the projection document.
 
-The following example returns: the ``_id`` field (returned by default),
-``item`` field, ``status`` field, and the ``uom`` field in the ``size``
-document; the ``uom`` field remains embedded in the ``size`` document.
+The following example returns:
 
-.. include:: /includes/driver-example-query-47.rst
+- The ``_id`` field (returned by default),
+- The ``item`` field,
+- The ``status`` field,
+- The ``uom`` field in the ``size`` document.
+
+The ``uom`` field remains embedded in the ``size`` document.
+
+.. include:: /includes/driver-examples/driver-example-query-47.rst
 
 Suppress Specific Fields in Embedded Documents
 ----------------------------------------------
@@ -168,7 +184,7 @@ The following example specifies a projection to exclude the ``uom``
 field inside the ``size`` document. All other fields are returned in
 the matching documents:
 
-.. include:: /includes/driver-example-query-48.rst
+.. include:: /includes/driver-examples/driver-example-query-48.rst
 
 Projection on Embedded Documents in an Array
 --------------------------------------------
@@ -176,30 +192,29 @@ Projection on Embedded Documents in an Array
 Use :ref:`dot notation <document-dot-notation>` to project specific
 fields inside documents embedded in an array.
 
-The following example specifies a projection to return the ``item``
-field, the ``status`` field, and the ``qty`` field in the documents
-embedded in the ``instock`` array. The ``_id`` field is returned by
-default.
+The following example specifies a projection to return:
 
-.. include:: /includes/driver-example-query-49.rst
+- The ``_id`` field (returned by default),
+- The ``item`` field,
+- The ``status`` field,
+- The ``qty`` field in the documents embedded in the ``instock`` array.
+
+.. include:: /includes/driver-examples/driver-example-query-49.rst
 
 Project Specific Array Elements in the Returned Array
 -----------------------------------------------------
 
-For fields that contain arrays, MongoDB provides the following
-projection operators: :projection:`$elemMatch`, :projection:`$slice`,
-and :projection:`$`.
-
-The following example uses the :projection:`$slice` projection operator
-to return just the last element in the ``instock`` array.
-
-.. include:: /includes/driver-example-query-50.rst
-
-.. tabs::
+.. tabs-drivers::
 
    tabs:
      - id: shell
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -207,8 +222,23 @@ to return just the last element in the ``instock`` array.
          ``{ "instock.0": 1 }`` projection will *not* project the array
          with the first element.
 
+     - id: compass
+       content: |
+         Currently, MongoDB Compass does not support any methods for
+         projecting specific array elements in a returned array.
+
+         For additional details and examples on projection in MongoDB
+         Compass, refer to the Compass
+         :ref:`Query Bar <query-bar-project>` documentation.
+
      - id: python
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -218,6 +248,12 @@ to return just the last element in the ``instock`` array.
 
      - id: java-sync
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -227,6 +263,12 @@ to return just the last element in the ``instock`` array.
 
      - id: java-async
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -236,6 +278,12 @@ to return just the last element in the ``instock`` array.
 
      - id: nodejs
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -245,6 +293,12 @@ to return just the last element in the ``instock`` array.
 
      - id: php
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -254,6 +308,12 @@ to return just the last element in the ``instock`` array.
 
      - id: perl
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -263,6 +323,12 @@ to return just the last element in the ``instock`` array.
 
      - id: ruby
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -272,6 +338,12 @@ to return just the last element in the ``instock`` array.
 
      - id: scala
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array. For instance, you *cannot*
@@ -281,6 +353,12 @@ to return just the last element in the ``instock`` array.
 
      - id: csharp
        content: |
+         .. include:: /includes/fact-projection-ops.rst
+
+         .. include:: /includes/fact-projection-slice-example.rst
+
+         .. include:: /includes/driver-examples/driver-example-query-50.rst
+
          :projection:`$elemMatch`, :projection:`$slice`, and
          :projection:`$` are the *only* way to project specific elements
          to include in the returned array.
@@ -294,9 +372,3 @@ to return just the last element in the ``instock`` array.
 
 .. seealso:: :doc:`/tutorial/query-documents`
 
-.. tabs::
-
-   tabs:
-     - id: shell
-       content: |
-         .. include:: /includes/footnote-set-shell-batch-size.rst

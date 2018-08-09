@@ -16,11 +16,11 @@ content: |
    If you specify a collation at the collection level:
 
    - Indexes on that collection will be created with that collation unless
-     the index creation operation explictly specify a different collation.
+     the index creation operation explicitly specify a different collation.
 
    - Operations on that collection use the collection's default
-     collation unless they explictly specify a different collation.
-     
+     collation unless they explicitly specify a different collation.
+
      .. include:: /includes/extracts/collation-single-per-operation.rst
 ---
 ref: collation-unspecified
@@ -90,7 +90,7 @@ content: |-
    If you have specified a collation at the collection level, then:
 
    - If you do not specify a collation when creating the index, MongoDB
-     creates the index with that collation.
+     creates the index with the collection's default collation.
 
    - If you do specify a collation when creating the index, MongoDB
      creates the index with the specified collation.
@@ -117,7 +117,7 @@ content: |-
    .. code-block:: javascript
 
       db.myColl.createIndex( { category: 1 }, { collation: { locale: "fr" } } )
-   
+
    The following query operation, which specifies the same collation as
    the index, can use the index:
 
@@ -144,7 +144,7 @@ content: |-
 
    .. code-block:: javascript
 
-      db.myColl.createIndex( 
+      db.myColl.createIndex(
          { score: 1, price: 1, category: 1 },
          { collation: { locale: "fr" } } )
 
@@ -164,6 +164,7 @@ content: |-
 
       db.myColl.find( { score: 5, category: "cafe" } )
 
+
 ---
 ref: collation-index
 content: |-
@@ -174,6 +175,30 @@ content: |-
    .. include:: /includes/extracts/collation-index-options.rst
 
    .. include:: /includes/extracts/collation-index-use.rst
+---
+ref: collation-index-type-restrictions
+content: |
+
+   The following indexes only support simple binary comparison and do
+   not support :ref:`collation <collation>`:
+
+   - :doc:`text </core/index-text>` indexes, 
+
+   - :doc:`2d </core/2d>` indexes, and 
+
+   - :doc:`geoHaystack </core/geohaystack>` indexes.
+
+---
+ref: collation-index-type-restrictions-addendum
+content: |
+
+   .. tip::
+
+      To create a ``text``, a ``2d``, or a ``geoHaystack`` index on a
+      collection that has a non-simple collation, you must explicitly
+      specify ``{collation: {locale: "simple"} }`` when creating the
+      index.
+
 ---
 ref: collation-option
 content: |
@@ -219,7 +244,7 @@ content: |-
         - | :method:`db.collection.findAndModify()`
           | :method:`db.collection.findOneAndDelete()`
           | :method:`db.collection.findOneAndReplace()`
-          | :method:`db.collection.findOneAndUpdate()` 
+          | :method:`db.collection.findOneAndUpdate()`
 
       * - :dbcommand:`find`
 
@@ -246,7 +271,7 @@ content: |-
 
         - | :method:`sh.shardCollection()`
 
-      * - 
+      * -
 
         - Individual update, replace, and delete operations in
           :method:`db.collection.bulkWrite()`.

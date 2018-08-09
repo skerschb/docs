@@ -10,8 +10,6 @@ connectionStatus
    :depth: 1
    :class: singlecol
 
-.. versionadded:: 2.4.0
-
 Definition
 ----------
 
@@ -22,11 +20,11 @@ Definition
 
    .. code-block:: javascript
 
-      { connectionStatus: 1, showPrivileges: <boolean>, txnNumber: <long>, lsid: { id: <UUID> } }
+      { connectionStatus: 1, showPrivileges: <boolean> }
 
    :dbcommand:`connectionStatus` supports the following optional
-   fields:
-
+   field:
+   
    .. include:: /includes/apiargs/dbcommand-connectionStatus-field.rst
 
 Example

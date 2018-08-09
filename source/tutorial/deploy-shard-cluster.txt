@@ -18,10 +18,10 @@ Overview
 --------
 
 This tutorial involves creating a new sharded cluster that consists of a
-:program:`mongos`, the config server replica set, and two shard replica sets.
+:binary:`~bin.mongos`, the config server replica set, and two shard replica sets.
 
-For instructions specific to sharding a collection, see 
-:ref:`deploy-hashed-sharded-cluster-shard-collection` or 
+For instructions specific to sharding a collection, see
+:ref:`deploy-hashed-sharded-cluster-shard-collection` or
 :ref:`deploy-ranged-sharded-cluster-shard-collection`.
 
 Considerations
@@ -30,9 +30,9 @@ Considerations
 Connectivity
 ~~~~~~~~~~~~
 
-Each member of a sharded cluster must be able to connect to *all* other 
-members in the cluster. This includes all shards and config servers. 
-Ensure that network and security systems, including all interface and 
+Each member of a sharded cluster must be able to connect to *all* other
+members in the cluster. This includes all shards and config servers.
+Ensure that network and security systems, including all interface and
 firewalls, allow these connections.
 
 CloudManager and OpsManager
@@ -49,9 +49,9 @@ See ``Deploy a Sharded Cluster`` in the
 Operating System
 ~~~~~~~~~~~~~~~~
 
-This tutorial uses the :program:`mongod` and :program:`mongos`
-programs. Windows users should use the :program:`mongod.exe` and
-:program:`mongos.exe` programs instead.
+This tutorial uses the :binary:`~bin.mongod` and :binary:`~bin.mongos`
+programs. Windows users should use the :binary:`~bin.mongod.exe` and
+:binary:`~bin.mongos.exe` programs instead.
 
 Security
 ~~~~~~~~
@@ -80,9 +80,9 @@ For details on using x.509 for client authentication, see
 Host Identifier
 ~~~~~~~~~~~~~~~
 
-If you use either ``localhost`` or ``127.0.0.1`` as the hostname portion of 
-any host identifier, you *must* use that identifier as the host setting 
-for any other MongoDB component in the cluster. 
+If you use either ``localhost`` or its IP address as the hostname portion of
+any host identifier, you *must* use that identifier as the host setting
+for any other MongoDB component in the cluster.
 
 For example, the :method:`sh.addShard()` method takes a ``host`` parameter for
 the hostname of the target shard. If you set ``host`` to ``localhost``, you
@@ -101,9 +101,14 @@ Create the Config Server Replica Set
 
 The following steps deploys a config server replica set.
 
-For a production deployment, deploys a config server replica set with at
+For a production deployment, deploy a config server replica set with at
 least three members. For testing purposes, you can create a
 single-member replica set.
+
+.. note::
+
+   The config server replica set must not use the same name as any of the
+   shard replica sets.
 
 .. include:: /includes/steps/deploy-sharded-cluster-config-server-noauth.rst
 
@@ -116,6 +121,11 @@ Create the Shard Replica Sets
 For a production deployment, use a replica set with at least three
 members. For testing purposes, you can create a single-member replica
 set.
+
+.. note::
+
+   Shard replica sets must not use the same name as the config server replica
+   set.
 
 .. include:: /includes/steps/deploy-sharded-cluster-shard-replica-noauth.rst
 
@@ -142,7 +152,7 @@ The following operation adds a single shard replica set to the cluster:
 
    sh.addShard( "<replSetName>/s1-mongo1.example.net:27017")
 
-The following operation is an example of adding a standalone :program:`mongod`
+The following operation is an example of adding a standalone :binary:`~bin.mongod`
 shard to the cluster:
 
 .. code-block:: javascript
@@ -156,7 +166,7 @@ Repeat these steps until the cluster includes all shards.
 Enable Sharding for a Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To proceed, you must be connected to a :program:`mongos` associated to the
+To proceed, you must be connected to a :binary:`~bin.mongos` associated to the
 target sharded cluster.
 
 Before you can shard a collection, you must enable sharding for the
@@ -181,13 +191,13 @@ Shard a Collection
 
 This section contains an overall description of the sharding process.
 
-For instructions specific to :ref:`sharding-ranged` sharding, 
+For instructions specific to :ref:`sharding-ranged` sharding,
 see :ref:`deploy-ranged-sharded-cluster-shard-collection`.
 
 For instructions specific to :ref:`sharding-hashed` sharding,
 see :ref:`deploy-hashed-sharded-cluster-shard-collection`
 
-To proceed, you must be connected to a :program:`mongos` associated to the
+To proceed, you must be connected to a :binary:`~bin.mongos` associated to the
 target sharded cluster.
 
 To shard a collection, use the :method:`sh.shardCollection()` method. You must

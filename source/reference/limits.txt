@@ -81,7 +81,7 @@ Naming Restrictions
    If your collection name includes special characters, such as the
    underscore character, or begins with numbers, then to access the
    collection use the :method:`db.getCollection()` method in the
-   :program:`mongo` shell or a :api:`similar method for your driver <>`.
+   :binary:`~bin.mongo` shell or a :api:`similar method for your driver <>`.
 
    .. include:: /includes/fact-collection-namespace-limit.rst
 
@@ -89,9 +89,18 @@ Naming Restrictions
 
 .. limit:: Restrictions on Field Names
 
-   Field names cannot contain dots (i.e. ``.``) or null characters, and they
-   must not start with a dollar sign (i.e. ``$``). See
-   :ref:`faq-dollar-sign-escaping` for an alternate approach.
+   Field names cannot contain null characters.
+
+   .. versionchanged:: 3.6
+
+   Field names can contain dots (i.e. ``.``) and dollar signs (i.e. ``$``).
+   However, only nested field names may start with a dollar sign. For example,
+   attempting to insert ``{ "a" : { "$b": 1 } }`` will succeed but attempting
+   to insert ``{"$a": 1}`` results in error.
+
+   Although valid, avoid using ``.`` or ``$`` in field names since querying on
+   such fields is not yet functional. See :issue:`SERVER-30575` for more
+   information.
 
 .. _faq-dev-namespace:
 
@@ -201,12 +210,29 @@ Indexes
 
    .. include:: /includes/fact-geospatial-index-covered-query.rst
 
+.. limit:: Memory Usage in Foreground Index Builds
+
+   .. include:: /includes/fact-index-build-default-memory-limit.rst
+
+   .. include:: /includes/fact-index-build-memory-limit.rst
+
+.. limit:: Collation and Index Types
+
+   The following index types only support simple binary comparison and
+   do not support :ref:`collation <collation>`:
+
+   - :doc:`text </core/index-text>` indexes, 
+
+   - :doc:`2d </core/2d>` indexes, and 
+
+   - :doc:`geoHaystack </core/geohaystack>` indexes.
+
+   .. include:: /includes/extracts/collation-index-type-restrictions-addendum.rst
+
 Data
 ----
 
 .. limit:: Maximum Number of Documents in a Capped Collection
-
-   .. versionchanged:: 2.4
 
    If you specify a maximum number of documents for a capped
    collection using the ``max`` parameter to
@@ -227,7 +253,7 @@ Data
 
    .. versionchanged:: 3.0
 
-   Using the MMAPv1 storage engine, a single :program:`mongod`
+   Using the MMAPv1 storage engine, a single :binary:`~bin.mongod`
    instance cannot manage a data set that exceeds maximum virtual
    memory address space provided by the underlying operating system.
 
@@ -285,7 +311,11 @@ Replica Sets
    If you do not explicitly specify an oplog size (i.e. with
    :setting:`~replication.oplogSizeMB` or :option:`--oplogSize
    <mongod --oplogSize>`) MongoDB will create an oplog that is no
-   larger than 50 gigabytes.
+   larger than 50 gigabytes. [#oplog]_
+
+   .. [#oplog]
+
+      .. include:: /includes/fact-oplog-size.rst
 
 .. _limits-sharding:
 
@@ -389,11 +419,30 @@ Operations
 
    .. include:: /includes/fact-geometry-hemisphere-limitation.rst
 
-.. limit:: Write Command Operation Limit Size
+.. limit:: Multi-document Transactions
 
-   :doc:`Write commands </reference/command/nav-crud>` can accept no
-   more than 1000 operations. The :method:`Bulk()` operations in the
-   :program:`mongo` shell and comparable methods in the drivers do not
+   For :doc:`multi-document transactions </core/transactions>`:
+
+   .. include:: /includes/extracts/transactions-operations-crud.rst
+
+   .. include:: /includes/extracts/transactions-operations-restrictions.rst
+   
+   Transactions have a lifetime limit as specified by
+   :parameter:`transactionLifetimeLimitSeconds`. The default is 60 seconds.
+
+.. limit:: Write Command Batch Limit Size
+
+   ``100,000`` :doc:`writes </reference/command/nav-crud>` are
+   allowed in a single batch operation, defined by a single request to
+   the server.
+
+   .. versionchanged:: 3.6
+
+      The limit raises from ``1,000`` to ``100,000`` writes. This limit
+      also applies to legacy ``OP_INSERT`` messages.
+
+   The :method:`Bulk()` operations in the
+   :binary:`~bin.mongo` shell and comparable methods in the drivers do not
    have this limit.
 
 .. limit:: Views
@@ -410,6 +459,14 @@ Operations
    - .. include:: /includes/extracts/views-unsupported-mapReduce.rst
 
    - .. include:: /includes/extracts/views-unsupported-geoNear.rst
+
+Sessions
+--------
+
+.. limit:: Sessions and $external Username Limit 
+
+   .. include:: /includes/extracts/sessions-external-username-limit.rst
+
 
 Shell
 -----

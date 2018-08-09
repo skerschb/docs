@@ -95,7 +95,7 @@ content: |
 ref: x509-member-auth-configuration
 content: |
    To specify x.509 for internal authentication, in addition to the other
-   SSL configurations appropriate for your deployment, for each member of
+   TLS/SSL configurations appropriate for your deployment, for each member of
    the replica set or sharded cluster, include either:
 
    - :setting:`security.clusterAuthMode` and :setting:`net.ssl.clusterFile`
@@ -108,7 +108,7 @@ content: |
 ref: x509-member-certificate-PEMKeyFile
 content: |
    To configure MongoDB for client certificate authentication, the
-   :program:`mongod` and :program:`mongos` specify a ``PEMKeyFile`` to
+   :binary:`~bin.mongod` and :binary:`~bin.mongos` specify a ``PEMKeyFile`` to
    prove its identity to clients, either through
    :setting:`net.ssl.PEMKeyFile` setting in the configuration file or
    ``--sslPEMKeyFile`` command line option.

@@ -17,7 +17,7 @@ Definition
 
    Copies data directly between MongoDB instances. The
    :method:`db.cloneCollection()` method wraps the
-   :dbcommand:`cloneCollection` database command and accepts the
+   :dbcommand:`cloneCollection` command and accepts the
    following arguments:
 
    .. include:: /includes/apiargs/method-db.cloneCollection-param.rst
@@ -32,7 +32,8 @@ Example
 
 .. code-block:: javascript
 
-  db.cloneCollection('mongodb.example.net:27017', 'users.profile',
+  use users
+  db.cloneCollection('mongodb.example.net:27017', 'profiles',
                       { 'active' : true } )
 
 .. include:: /includes/example-clone-collection-text.rst

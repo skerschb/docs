@@ -54,9 +54,16 @@ authors:
   - MongoDB Documentation Project
 section: 1
 ---
-file: reference/program/mongooplog
-name: mongooplog
-title: MongoDB Oplog Utility
+file: reference/program/mongoldap
+name: mongoimport
+title: MongoDB LDAP Configuration Testing Utility
+authors:
+  - MongoDB Documentation Project
+section: 1
+---
+file: reference/program/mongoreplay
+name: mongorestore
+title: MongoDB Traffic Capture and Replay Tool
 authors:
   - MongoDB Documentation Project
 section: 1
@@ -75,23 +82,9 @@ authors:
   - MongoDB Documentation Project
 section: 1
 ---
-file: reference/program/mongosniff
-name: mongosniff
-title: MongoDB Protocol Introspection Utility
-authors:
-  - MongoDB Documentation Project
-section: 1
----
 file: reference/program/mongotop
 name: mongotop
 title: MongoDB Activity Monitor
-authors:
-  - MongoDB Documentation Project
-section: 1
----
-file: reference/program/mongoperf
-name: mongoperf
-title: MongoDB Performance Utility
 authors:
   - MongoDB Documentation Project
 section: 1

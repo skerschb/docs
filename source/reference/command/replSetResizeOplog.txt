@@ -15,18 +15,14 @@ Definition
 
 .. dbcommand:: replSetResizeOplog
 
-.. versionadded:: 3.6
+   .. versionadded:: 3.6
 
-   The :dbcommand:`replSetResizeOplog` dynamically resizes a replica
-   set member's oplog to satisfy the operational needs in a replica
-   set. It bypasses the need to perform a maintenance
-   operation to resize the oplog.  The command may only be run against the
-   ``admin`` database.
+   Use the :dbcommand:`replSetResizeOplog` administrative command to 
+   change the size of a replica set member's oplog. [#oplog]_
+   :dbcommand:`replSetResizeOplog` enables you to resize the oplog 
+   dynamically without restarting the :binary:`~bin.mongod` process. 
 
-   This feature is only available for nodes running on the WiredTiger
-   storage engine. If you are using the MMAPv1 storage engine, see
-   :doc:`/tutorial/change-oplog-size` to follow the maintenance
-   procedure.
+   You must run this command against the ``admin`` database.
 
    The command has the following form:
 
@@ -40,9 +36,18 @@ Definition
       in megabytes, while the oplog size is stored in bytes. The size
       parameter must also be over 990 megabytes.
 
-   The command can also take the following options:
+Behavior
+--------
 
-   .. include:: /includes/extracts/sessions-option-table-options.rst
+You can only use :dbcommand:`replSetResizeOplog` on 
+:binary:`~bin.mongod` instances running with the 
+:ref:`Wired Tiger storage engine <storage-wiredtiger>`.
+
+Changing the oplog size of a given replica set member with
+:dbcommand:`replSetResizeOplog` does not change the oplog size of any
+other member in the replica set. You must run
+:dbcommand:`replSetResizeOplog` on each replica set member in your
+cluster to change the oplog size for all members.
 
 Example
 --------
@@ -50,6 +55,8 @@ Example
 Use the :dbcommand:`stats` command to display the current oplog size,
 ``maxSize``. For example:
 
+.. cssclass:: copyable-code
+         
 .. code-block:: javascript
 
    use local
@@ -69,13 +76,15 @@ The following command changes the oplog size of this member to
 To change the size, run the :dbcommand:`replSetResizeOplog`, passing
 the desired size in megabytes as a parameter.
 
+.. cssclass:: copyable-code
+
 .. code-block:: javascript
 
-   use admin
-   db.runCommand({replSetResizeOplog:1, size: 16384})
-   { "ok" : 1, "operationTime" : Timestamp(1500329291, 1) }
+   db.adminCommand({replSetResizeOplog:1, size: 16384})
 
 To verify the new oplog size, rerun the :dbcommand:`stats` command:
+
+.. cssclass:: copyable-code
 
 .. code-block:: javascript
 
@@ -92,4 +101,9 @@ The above command returns:
 
    Reducing the size of the oplog in a node removes data from it. This
    may cause replica members syncing with that node to become stale.
-   To resync those members, see :ref:`resync-replica-set-member`.
+   To resync those members, see :doc:`/tutorial/resync-replica-set-member`.
+
+.. [#oplog]
+
+   .. include:: /includes/fact-oplog-size.rst
+

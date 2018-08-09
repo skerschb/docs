@@ -138,6 +138,8 @@ inherit:
   name: keyFile
   program: mongod
   file: options-mongod.yaml
+replacement:
+  auth_option: "``client authorization``"
 ---
 program: mongos
 name: nounixsocket
@@ -191,19 +193,19 @@ description: |
   .. versionchanged:: 3.2
 
   {{intro}} :ref:`configuration servers <sharding-config-server>` for the
-  :term:`sharded cluster`. 
- 
+  :term:`sharded cluster`.
+
   .. include:: /includes/fact-mirrored-config-servers-deprecated.rst
 
   Specify the config server replica set name and the hostname and port of
   at least one of the members of the config server replica set.
-  
+
   .. code-block:: javascript
-  
+
      sharding:
        configDB: <configReplSetName>/cfg1.example.net:27017, cfg2.example.net:27017,...
 
-  The :program:`mongos` instances for the sharded cluster must specify
+  The :binary:`~bin.mongos` instances for the sharded cluster must specify
   the same config server replica set name but can specify hostname and
   port of different members of the replica set.
 
@@ -217,21 +219,21 @@ args: null
 default: 15
 directive: option
 description: |
-  {{intro}} ping time, in milliseconds, that :program:`mongos` uses
+  {{intro}} ping time, in milliseconds, that :binary:`~bin.mongos` uses
   to determine which secondary replica set members to pass read
   operations from clients. The default value of ``15`` corresponds to
   the default value in all of the client :doc:`drivers
   </applications/drivers>`.
 
-  When :program:`mongos` receives a request that permits reads to
-  :term:`secondary` members, the :program:`mongos` will:
+  When :binary:`~bin.mongos` receives a request that permits reads to
+  :term:`secondary` members, the :binary:`~bin.mongos` will:
 
   - Find the member of the set with the lowest ping time.
 
   - Construct a list of replica set members that is within a ping time of
     15 milliseconds of the nearest suitable member of the set.
 
-    If you specify a value for the {{role}} option, :program:`mongos` will
+    If you specify a value for the {{role}} option, :binary:`~bin.mongos` will
     construct the list of replica members that are within the latency
     allowed by this value.
 
@@ -240,7 +242,7 @@ description: |
   The ping time used for a member compared by the {{role}} setting is a
   moving average of recent ping times, calculated at most every 10
   seconds. As a result, some queries may reach members above the threshold
-  until the :program:`mongos` recalculates the average.
+  until the :binary:`~bin.mongos` recalculates the average.
 
   See the :ref:`replica-set-read-preference-behavior-member-selection`
   section of the :doc:`read preference </core/read-preference>`
@@ -255,6 +257,20 @@ inherit:
   name: ssl
   program: _shared
   file: options-shared.yaml
+---
+program: mongos
+name: sslCertificateSelector
+inherit:
+  name: sslCertificateSelector
+  program: mongod
+  file: options-mongod.yaml
+---
+program: mongos
+name: sslClusterCertificateSelector
+inherit:
+  name: sslClusterCertificateSelector
+  program: mongod
+  file: options-mongod.yaml
 ---
 program: mongos
 name: sslMode
@@ -388,7 +404,7 @@ args: null
 directive: option
 description: |
   This option is for internal testing use only and runs unit tests
-  without starting a :program:`mongos` instance.
+  without starting a :binary:`~bin.mongos` instance.
 optional: true
 ---
 program: mongos
@@ -491,12 +507,64 @@ description: |
 
    Enables network compression for communication between this
    {{program}} instance and:
-      
+
    - other members of the sharded cluster
 
-   - a :program:`mongo` shell.
+   - a :binary:`~bin.mongo` shell.
 
    .. include:: /includes/fact-networkMessageCompressors.rst
 
 optional: true
+---
+program: mongos
+name: serviceExecutor
+inherit:
+  name: serviceExecutor
+  program: _shared
+  file: options-shared.yaml
+---
+program: mongos
+name: timeZoneInfo
+directive: option
+args: <path>
+description: |
+  .. include:: /includes/fact-timeZoneInfo.rst
+
+  .. code-block:: sh
+
+     wget https://downloads.mongodb.org/olson_tz_db/timezonedb-latest.zip
+     unzip timezonedb-latest.zip
+     mongos --timeZoneInfo timezonedb-2017b/
+---
+program: mongos
+name: slowms
+args: <integer>
+default: 100
+directive: option
+description: |
+
+   .. include:: /includes/dbcommand-slowms-definition.rst
+
+   For :binary:`~bin.mongos` instances, {{slowms}} affects the diagnostic
+   log only and not the profiler since profiling is not available on
+   :binary:`~bin.mongos`.
+
+   .. versionadded:: 4.0
+
+---
+program: mongos
+name: slowOpSampleRate
+args: <double>
+default: 1.0
+directive: option
+description: |
+  The fraction of *slow* operations that should be logged.
+  {{role}} accepts values between 0 and 1, inclusive.
+post: |
+   For :binary:`~bin.mongos` instances, {{role}} affects the diagnostic log
+   only and not the profiler since profiling is not available on
+   :binary:`~bin.mongos`.
+
+   .. versionadded:: 4.0
+
 ...

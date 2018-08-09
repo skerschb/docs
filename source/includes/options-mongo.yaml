@@ -45,7 +45,7 @@ name: port
 directive: option
 args: <port>
 description: |
-  Specifies the port where the :program:`mongod` or :program:`mongos`
+  Specifies the port where the :binary:`~bin.mongod` or :binary:`~bin.mongos`
   instance is listening. If {{role}} is not specified,
   {{program}} attempts to connect to port ``27017``.
 optional: true
@@ -55,7 +55,7 @@ name: host
 directive: option
 args: <hostname>
 description: |
-  Specifies the name of the host machine where the 
+  Specifies the name of the host machine where the
   {{instance}} is running. If this is not specified,
   {{program}} attempts to connect to a MongoDB process running on
   the localhost.
@@ -73,9 +73,26 @@ description: |
   the CN or SAN of the {{instance}}'s ``--sslPEMKeyFile`` certificate.
   If the hostname does not match the CN/SAN, {{program}} will fail to
   connect.
+
+  For `DNS seedlist connections <https://docs.mongodb.com/manual/reference/connection-string/#dns-seedlist-connection-format/>`_, specify the connection protocol as
+  ``mongodb+srv``, followed by the DNS SRV hostname record and any
+  options. The  ``authSource`` and ``replicaSet`` options, if included in
+  the connection string, will override any corresponding DNS-configured options
+  set in the TXT record. Use of the ``mongodb+srv:`` connection string implicitly
+  enables TLS/SSL (normally set with ``ssl=true``) for the client connection. The
+  TLS/SSL option can be turned off by setting ``ssl=false`` in the query string.
+
+  Example:
+
+  .. code-block:: none
+
+     mongodb+srv://server.example.com/?connectionTimeout=3000ms
+
+  .. versionadded:: 3.6
+
 optional: true
 replacement:
-  instance: ":program:`mongod` or :program:`mongos`"
+  instance: ":binary:`~bin.mongod` or :binary:`~bin.mongos`"
 ---
 program: mongo
 name: eval
@@ -213,31 +230,39 @@ args: null
 directive: option
 description: |
 
-  Enables connection to a :program:`mongod` or :program:`mongos` that has
+  .. versionchanged:: 3.2.6
+
+  Enables connection to a :binary:`~bin.mongod` or :binary:`~bin.mongos` that has
   TLS/SSL support enabled.
 
-  .. include:: /includes/extracts/mongo-ssl-options-mongo.rst
+  .. include:: /includes/extracts/ssl-facts-mongo-shell-ca.rst
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
+---
+program: mongo
+name: sslCertificateSelector
+inherit:
+  name: sslCertificateSelector
+  program: mongod
+  file: options-mongod.yaml
 ---
 program: mongo
 name: sslPEMKeyFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   Specifies the :file:`.pem` file that contains both the TLS/SSL certificate
   and key. Specify the file name of the :file:`.pem` file using relative
   or absolute paths.
 
   This option is required when using the ``--ssl`` option to connect
-  to a :program:`mongod` or :program:`mongos` that has
+  to a :binary:`~bin.mongod` or :binary:`~bin.mongos` that has
   :setting:`~net.ssl.CAFile` enabled *without*
   :setting:`~net.ssl.allowConnectionsWithoutCertificates`.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongo
@@ -245,19 +270,17 @@ name: sslPEMKeyPassword
 args: <value>
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   Specifies the password to de-crypt the certificate-key file (i.e.
   ``--sslPEMKeyFile``). Use the {{role}} option only if the
   certificate-key file is encrypted. In all cases, the {{program}} will
   redact the password from all logging and reporting output.
 
-  .. versionchanged:: 2.6
-     If the private key in the PEM file is encrypted and you do not
-     specify the {{role}} option, the {{program}} will prompt for a
-     passphrase. See :ref:`ssl-certificate-password`.
+  If the private key in the PEM file is encrypted and you do not
+  specify the {{role}} option, the {{program}} will prompt for a
+  passphrase. See :ref:`ssl-certificate-password`.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongo
@@ -265,17 +288,13 @@ name: sslCAFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.4
-
   Specifies the :file:`.pem` file that contains the root certificate chain
   from the Certificate Authority. Specify the file name of the
   :file:`.pem` file using relative or absolute paths.
 
-  .. include:: /includes/extracts/mongo-ssl-options-mongo.rst
+  .. include:: /includes/extracts/ssl-facts-mongo-shell-ca.rst
 
-  .. include:: /includes/extracts/mongo-warning-sslCAFile.rst
-
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 
 optional: true
 ---
@@ -284,13 +303,12 @@ name: sslCRLFile
 args: <filename>
 directive: option
 description: |
-  .. versionadded:: 2.4
 
   Specifies the :file:`.pem` file that contains the Certificate Revocation
   List. Specify the file name of the :file:`.pem` file using relative or
   absolute paths.
 
-  .. include:: /includes/fact-ssl-supported.rst
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongo
@@ -306,18 +324,20 @@ name: sslAllowInvalidCertificates
 args: null
 directive: option
 description: |
-  .. versionadded:: 2.6
 
   Bypasses the validation checks for server certificates and allows
-  the use of invalid certificates. When using the
-  :setting:`~net.ssl.allowInvalidCertificates` setting, MongoDB logs as a
-  warning the use of the invalid certificate.
+  the use of invalid certificates to connect.
 
-  .. include:: /includes/extracts/mongo-ssl-options-mongo.rst
+  .. note::
+     
+     .. include:: /includes/extracts/ssl-facts-x509-invalid-certificate.rst
 
-  .. include:: /includes/extracts/mongo-warning-sslCAFile.rst
+  .. include:: /includes/extracts/ssl-facts-invalid-cert-warning-clients.rst
 
-  .. include:: /includes/fact-ssl-supported.rst
+  When using the :setting:`~net.ssl.allowInvalidCertificates` setting,
+  MongoDB logs as a warning the use of the invalid certificate.
+
+  .. include:: /includes/extracts/ssl-facts-see-more.rst
 optional: true
 ---
 program: mongo
@@ -342,14 +362,26 @@ inherit:
   file: options-shared.yaml
 ---
 program: mongo
+name: enableJavaScriptJIT
+directive: option
+optional: true
+args: null
+description: |
+   .. versionadded:: 4.0
+
+   Enable the JavaScript engine's JIT compiler.
+---
+program: mongo
 name: disableJavaScriptJIT
 directive: option
 optional: true
 args: null
 description: |
-   .. versionadded:: 3.2
+   .. versionchanged:: 4.0
 
-   Disables use of the JavaScript engine's JIT compiler.
+      .. include:: /includes/fact-jit-disabled.rst
+
+   Disables the JavaScript engine's JIT compiler.
 ---
 program: mongo
 name: disableJavaScriptProtection
@@ -361,7 +393,7 @@ description: |
 
    Allows fields of type :ref:`javascript<bson-types>` and
    :ref:`javascriptWithScope<bson-types>` to be automatically
-   marshalled to JavaScript functions in the :program:`mongo`
+   marshalled to JavaScript functions in the :binary:`~bin.mongo`
    shell.
 
    With the ``--disableJavaScriptProtection`` flag set, it is possible
@@ -380,7 +412,7 @@ description: |
       > doc.jsFunc()
       hello
 
-   The default behavior (when :program:`mongo` starts *without* the
+   The default behavior (when :binary:`~bin.mongo` starts *without* the
    ``--disableJavaScriptProtection`` flag) is to convert embedded
    JavaScript functions to the non-executable MongoDB shell type
    ``Code``. The following example demonstrates the default behavior
@@ -412,15 +444,56 @@ description: |
 
    .. versionchanged:: 3.6
 
-      Add support for :term:`zlib` compressor.
+      - Add support for :term:`zlib` compressor.
+      - Enabled by default. To disable, set to ``disabled``.
 
    Enables network compression for communication between this
    {{program}} shell and:
 
-   - a :program:`mongod` instance
-   
-   - a :program:`mongos` instance.
+   - a :binary:`~bin.mongod` instance
+
+   - a :binary:`~bin.mongos` instance.
 
    .. include:: /includes/fact-networkMessageCompressors.rst
 
+---
+program: mongo
+name:  retryWrites
+args:
+directive: option
+description: |
+
+   .. versionadded:: 3.6
+
+   Enables retryable writes as the default for sessions in the
+   :binary:`~bin.mongo` shell.
+
+   For more information on sessions, see :ref:`sessions`.
+---
+name: sslDisabledProtocols
+args: <string>
+description: |
+
+   Disables the specified TLS protocols. The option recognizes the
+   following protocols: ``TLS1_0``, ``TLS1_1``, and ``TLS1_2``:
+
+   - On macOS, you cannot disable ``TLS1_1`` and leave both ``TLS1_0`` and
+     ``TLS1_2`` enabled. You must also disable at least one of the other
+     two; for example, ``TLS1_0,TLS1_1``.
+
+   - To list multiple protocols, specify as a comma separated list of
+     protocols. For example ``TLS1_0,TLS1_1``.
+
+   - The specified disabled protocols overrides any default disabled
+     protocols.
+
+   Starting in version 4.0, MongoDB disables the use of TLS 1.0 if TLS
+   1.1+ is available on the system. To enable the
+   disabled TLS 1.0, specify ``none`` to {{role}}.  See :ref:`4.0-disable-tls`.
+
+   .. versionadded:: 3.6.5
+
+optional: true
+program: mongo
+directive: option
 ...

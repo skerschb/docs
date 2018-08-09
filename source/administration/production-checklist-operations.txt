@@ -30,7 +30,7 @@ Filesystem
      Using NFS drives can result in degraded and unstable performance.
      See: :ref:`production-nfs` for more information.
 
-     - VMWare users should use VMWare virtual drives over NFS.
+     - VMware users should use VMware virtual drives over NFS.
 
    - Linux/Unix: format your drives into XFS or EXT4. If possible, use
      XFS as it generally performs better with MongoDB.
@@ -85,7 +85,7 @@ Replication
      addresses.
 
    - Ensure full bidirectional network connectivity between all
-     :program:`mongod` instances.
+     :binary:`~bin.mongod` instances.
 
    - Ensure that each host can resolve itself.
 
@@ -93,12 +93,10 @@ Replication
 
      .. TODO: add link to fault tolerance page when WRITING-1222 closes
 
-   - Ensure that :program:`mongod` instances have ``0`` or ``1`` votes.
+   - Ensure that :binary:`~bin.mongod` instances have ``0`` or ``1`` votes.
 
    - For high availability, deploy your replica set into a *minimum* of
      three data centers.
-
-     .. TODO: add link to fault tolerance page when WRITING-1222 closes
 
 Sharding
 ~~~~~~~~
@@ -111,14 +109,14 @@ Sharding
      enough RAM to hold the data files entirely in memory and that it
      has dedicated storage.
 
-   - Deploy :program:`mongos` routers in accordance with the
+   - Deploy :binary:`~bin.mongos` routers in accordance with the
      :ref:`sc-production-configuration` guidelines.
 
    - Use NTP to synchronize the clocks on all components of your sharded
      cluster.
 
    - Ensure full bidirectional network connectivity between
-     :program:`mongod`, :program:`mongos`, and config servers.
+     :binary:`~bin.mongod`, :binary:`~bin.mongos`, and config servers.
 
    - Use CNAMEs to identify your config servers to the cluster so that
      you can rename and renumber your config servers without downtime.
@@ -147,7 +145,7 @@ Hardware
 
    - SAN and Virtualization:
 
-     - Ensure that each :program:`mongod` has provisioned IOPS for its
+     - Ensure that each :binary:`~bin.mongod` has provisioned IOPS for its
        :setting:`~storage.dbPath`, or has its own physical drive or LUN.
 
      - Avoid dynamic memory features, such as memory ballooning, when
@@ -162,14 +160,14 @@ Deployments to Cloud Hardware
 .. cssclass:: checklist
 
    - Windows Azure: Adjust the TCP keepalive (``tcp_keepalive_time``) to
-     100-120. The default TTL for TCP connections on Windows Azure load
-     balancers is too slow for MongoDB's connection pooling behavior.
+     100-120. The TCP idle timeout on the Azure load balancer is too
+     slow for MongoDB's connection pooling behavior. See:
+     :ref:`Azure Production Notes <windows-azure-production-notes>`
+     for more information.
 
    - Use MongoDB version 2.6.4 or later on systems with high-latency
      storage, such as Windows Azure, as these versions include
-     performance improvements for those systems. See: :ecosystem:`Azure
-     Deployment Recommendations </platforms/windows-azure>` for more
-     information.
+     performance improvements for those systems.
 
 Operating System Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -212,25 +210,27 @@ Linux
 
    - Use the ``noop`` disk scheduler for virtualized drives in guest VMs.
 
-   - Disable NUMA or set vm.zone_reclaim_mode to 0 and run :program:`mongod`
+   - Disable NUMA or set vm.zone_reclaim_mode to 0 and run :binary:`~bin.mongod`
      instances with node interleaving. See: :ref:`production-numa`
      for more information.
 
    - Adjust the ``ulimit`` values on your hardware to suit your use case. If
-     multiple :program:`mongod` or :program:`mongos` instances are
+     multiple :binary:`~bin.mongod` or :binary:`~bin.mongos` instances are
      running under the same user, scale the ``ulimit`` values
      accordingly. See: :doc:`/reference/ulimit` for more information.
 
    - Use ``noatime`` for the :setting:`~storage.dbPath` mount point.
 
    - Configure sufficient file handles (``fs.file-max``), kernel pid
-     limit (``kernel.pid_max``), and maximum threads per process
-     (``kernel.threads-max``) for your deployment. For large systems,
+     limit (``kernel.pid_max``), maximum threads per process
+     (``kernel.threads-max``), and maximum number of memory map areas per
+     process (``vm.max_map_count``) for your deployment. For large systems,
      the following values provide a good starting point:
 
      - ``fs.file-max`` value of 98000,
-     - ``kernel.pid_max`` value of 64000, and 
-     - ``kernel.threads-max`` value of 64000 
+     - ``kernel.pid_max`` value of 64000,
+     - ``kernel.threads-max`` value of 64000, and
+     - ``vm.max_map_count`` value of 128000
 
    - Ensure that your system has swap space configured. Refer to your
      operating system's documentation for details on appropriate sizing.
@@ -247,6 +247,8 @@ Windows
 
    - Consider disabling NTFS "last access time"  updates. This is 
      analogous to disabling ``atime`` on Unix-like systems.
+   - Format NTFS disks using the default 
+     :guilabel:`Allocation unit size` of `4096 bytes <https://support.microsoft.com/en-us/help/140365/default-cluster-size-for-ntfs-fat-and-exfat>`__.
 
 Backups
 ~~~~~~~

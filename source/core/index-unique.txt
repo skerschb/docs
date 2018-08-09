@@ -36,7 +36,7 @@ Unique Index on a Single Field
 
 For example, to create a unique index on the ``user_id`` field of the
 ``members`` collection, use the following operation in the
-:program:`mongo` shell:
+:binary:`~bin.mongo` shell:
 
 .. code-block:: javascript
 
@@ -54,7 +54,7 @@ uniqueness on the *combination* of the index key values.
 
 For example, to create a unique index on ``groupNumber``, ``lastname``,
 and ``firstname`` fields of the ``members`` collection, use the
-following operation in the :program:`mongo` shell:
+following operation in the :binary:`~bin.mongo` shell:
 
 .. code-block:: javascript
 
@@ -100,6 +100,22 @@ would violate the unique constraint for the index.
 You may not specify a unique constraint on a :ref:`hashed
 index <index-type-hashed>`.
 
+Building Unique Index on Replica Sets and Sharded Clusters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For replica sets and sharded clusters, using a :doc:`rolling procedure
+</tutorial/build-indexes-on-replica-sets>` to create a unique index
+requires that you stop all writes to the collection during the
+procedure. If you cannot stop all writes to the collection during the
+procedure, do not use the rolling procedure. Instead, build your unique index
+on the collection by:
+
+- issuing :method:`db.collection.createIndex()` on the primary for a
+  replica set, or
+
+- issuing :method:`db.collection.createIndex()` on the
+  :binary:`~bin.mongos` for a sharded cluster.
+ 
 .. _unique-separate-documents:
 
 Unique Constraint Across Separate Documents

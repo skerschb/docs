@@ -20,7 +20,7 @@ sharded cluster.
 Hashed sharding provides a more even data distribution across the sharded
 cluster at the cost of reducing :ref:`sharding-query-isolation`. With
 hashed sharding, documents with "close" shard key values are unlikely
-to be on the same chunk or shard, and the :program:`mongos` is more
+to be on the same chunk or shard, and the :binary:`~bin.mongos` is more
 likely to perform :ref:`sharding-mongos-broadcast` to fulfill a given
 query.
 
@@ -46,9 +46,9 @@ Considerations
 Operating System
 ~~~~~~~~~~~~~~~~
 
-This tutorial uses the :program:`mongod` and :program:`mongos`
-programs. Windows users should use the :program:`mongod.exe` and
-:program:`mongos.exe` programs instead.
+This tutorial uses the :binary:`~bin.mongod` and :binary:`~bin.mongos`
+programs. Windows users should use the :binary:`~bin.mongod.exe` and
+:binary:`~bin.mongos.exe` programs instead.
 
 IP Binding
 ~~~~~~~~~~
@@ -71,7 +71,7 @@ tutorial on deploying a sharded cluster with a
 
 In production environments, sharded clusters should employ at
 minimum :doc:`/core/security-x.509` security for internal authentication
-and client acces:
+and client access:
 
 - For details on using x.509 for internal authentication, see
   :doc:`/tutorial/configure-x509-member-authentication`.
@@ -139,21 +139,15 @@ Connect a ``mongos`` to the Sharded Cluster
 
 .. include:: /includes/steps/deploy-sharded-cluster-connect-noauth.rst
 
-Once you have connected the :program:`mongo` shell to the
-:program:`mongos`, continue to the next procedure to add shards to
+Once you have connected the :binary:`~bin.mongo` shell to the
+:binary:`~bin.mongos`, continue to the next procedure to add shards to
 the cluster.
 
 Add Shards to the Cluster
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In the :program:`mongo` shell connected to the :program:`mongos`, use
-the :method:`sh.addShard()` method to add each shard to the cluster. If
-the shard is a replica set, specify the name of the replica set and
-specify a member of the set.
-
-.. tip::
-
-   In production deployments, *all* shards should be replica sets.
+In the :binary:`~bin.mongo` shell connected to the :binary:`~bin.mongos`, use
+the :method:`sh.addShard()` method to add each shard to the cluster.
 
 The following operation adds a single shard replica set to the cluster:
 
@@ -163,21 +157,12 @@ The following operation adds a single shard replica set to the cluster:
 
 Repeat to add all shards.
 
-If in a development environment, the shard is a standalone
-:program:`mongod` instance, specify the instance's hostname and port.
-The following operation is an example of adding a standalone
-:program:`mongod` shard to the cluster:
-
-.. code-block:: javascript
-
-   sh.addShard( "s1-mongo1.example.net:27018")
-
 .. _deploy-hashed-sharded-cluster-shard-database:
 
 Enable Sharding for a Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-From the :program:`mongo` shell connected to the :program:`mongos`, use
+From the :binary:`~bin.mongo` shell connected to the :binary:`~bin.mongos`, use
 the :method:`sh.enableSharding()` method to enable sharding on the
 target database. Enabling sharding on a database makes it possible to
 shard collections within a database.
@@ -191,7 +176,7 @@ shard collections within a database.
 Shard a Collection using Hashed Sharding
 ----------------------------------------
 
-From the :program:`mongo` shell connected to the :program:`mongos`, use
+From the :binary:`~bin.mongo` shell connected to the :binary:`~bin.mongos`, use
 the :method:`sh.shardCollection()` method to shard a collection.
 
 .. note:: 
@@ -204,7 +189,7 @@ the :method:`sh.shardCollection()` method to shard a collection.
 If the collection already contains data, you must create a
 :ref:`index-type-hashed` on the :term:`shard key` using the
 :method:`db.collection.createIndex()` method before using
-:method:`~sh.shardCollection()`.
+:method:`~sh.shardCollection()`. [#hashvalue]_
 
 If the collection is empty, MongoDB creates the index as part of
 :method:`sh.shardCollection()`.
@@ -223,4 +208,10 @@ The following operation shards the target collection using the
   well as your ability to take advantage of certain sharding features
   such as :ref:`zones <zone-sharding>`. See the selection
   considerations listed in the :ref:`hashed-sharding-shard-key`.
+
+.. [#hashvalue]
+   Starting in version 4.0, the :binary:`~bin.mongo` shell provides the
+   method :method:`convertShardKeyToHashed()`. This method uses the
+   same hashing function as the hashed index and can be used to see
+   what the hashed value would be for a key.
 

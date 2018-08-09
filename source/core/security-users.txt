@@ -42,8 +42,8 @@ Authentication Database
 When adding a user, you create the user in a specific database. This
 database is the authentication database for the user.
 
-A user can have privileges across different databases; i.e. a user's
-privileges are not limited to the authentication database. By assigning
+A user can have privileges across different databases; that is, a user's
+privileges are not limited to their authentication database. By assigning
 to the user roles in other databases, a user created in one database can
 have permissions to act on other databases. For more information on
 roles, see :doc:`/core/authorization`.
@@ -62,22 +62,7 @@ the user multiple times in different databases.
 Authenticate a User
 -------------------
 
-To authenticate a user, either
-
-- Use the command line authentication options (e.g. ``-u``, ``-p``,
-  ``--authenticationDatabase``) when connecting to the :program:`mongod` or
-  :program:`mongos` instance, or
-
-- Connect first to the :program:`mongod` or :program:`mongos` instance, and
-  then run the :dbcommand:`authenticate` command or the :method:`db.auth()`
-  method against the authentication database.
-
-To authenticate, the client must authenticate the user against the user's
-:ref:`authentication database <mongo-shell-authentication-options>`. 
-
-For instance, if using the :program:`mongo` shell as a client, you can
-specify the authentication database for the user with the
-``--authenticationDatabase`` option.
+.. include:: /includes/fact-authenticate.rst
 
 Centralized User Data
 ---------------------
@@ -101,12 +86,12 @@ management commands <user-management-commands>`.
 Sharded Cluster Users
 ---------------------
 
-To create users for a sharded cluster, connect to the :program:`mongos`
+To create users for a sharded cluster, connect to the :binary:`~bin.mongos`
 instance and add the users. Clients then authenticate these users through the
-:program:`mongos` instances.
+:binary:`~bin.mongos` instances.
 
 .. versionchanged:: 2.6
-    
+
    MongoDB stores these sharded cluster user data in the ``admin`` database of
    the :term:`config servers <config server>`. Previously, the credentials for
    authenticating to a database on a sharded cluster resided on the
@@ -128,12 +113,12 @@ and create the user. MongoDB stores *shard local* users in the ``admin``
 database of the shard itself.
 
 These *shard local* users are completely independent from the users added to
-the sharded cluster via :program:`mongos`. *Shard local* users are local to the
-shard and are inaccessible by :program:`mongos`.
+the sharded cluster via :binary:`~bin.mongos`. *Shard local* users are local to the
+shard and are inaccessible by :binary:`~bin.mongos`.
 
 Direct connections to a shard should only be for shard-specific maintenance and
 configuration. In general, clients should connect to the sharded cluster
-through the :program:`mongos`.
+through the :binary:`~bin.mongos`.
 
 .. _localhost-exception:
 
@@ -168,7 +153,7 @@ MongoDB instance.
 
 In the case of a sharded cluster, the localhost exception applies to each shard
 individually as well as to the cluster as a whole. Once you create a sharded
-cluster and add a user administrator through the :program:`mongos` instance,
+cluster and add a user administrator through the :binary:`~bin.mongos` instance,
 you must still prevent unauthorized access to the individual shards. Follow one
 of the following steps for each shard in your cluster:
 
@@ -177,9 +162,7 @@ of the following steps for each shard in your cluster:
 - Disable the localhost exception at startup. To disable the localhost
   exception, set the :parameter:`enableLocalhostAuthBypass` parameter to ``0``.
 
-.. class:: hidden
+.. toctree::
+   :titlesonly:
 
-   .. toctree::
-      :titlesonly:
-
-      /tutorial/create-users
+   /tutorial/create-users

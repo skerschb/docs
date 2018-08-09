@@ -15,24 +15,43 @@ drop
    The :dbcommand:`drop` command removes an entire collection from a
    database. The command has following syntax:
 
-   .. versionchanged:: 3.6
-
    .. code-block:: javascript
 
-      { drop: <collection_name>, txnNumber: <long>, lsid: { id: <UUID> } }
+      { drop: <collection_name>, writeConcern: <document>}
 
-   The command can take the following options:
+   The command takes the following fields:
 
-   .. include:: /includes/extracts/sessions-option-table-options.rst
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
 
-   This command also removes any indexes associated with the dropped
-   collection.
+      * - Field
+        - Description
 
-   .. warning::
+      * - drop
+        - The name of the collection to drop.
 
-      This command obtains a write lock on the affected database and
-      will block other operations until it has completed.
+      * - writeConcern
 
-   The :program:`mongo` shell provides the equivalent helper method
+        - Optional. A document expressing the :doc:`write concern
+          </reference/write-concern>` of the :dbcommand:`drop` command.
+          Omit to use the default write concern.
+
+          .. include:: /includes/extracts/mongos-operations-wc-drop.rst
+
+   The :binary:`~bin.mongo` shell provides the equivalent helper method
    :method:`db.collection.drop()`.
+
+Behavior
+--------
+
+This command also removes any indexes associated with the dropped
+collection.
+
+.. warning::
+
+   This command obtains a write lock on the affected database and
+   will block other operations until it has completed.
+
+
 

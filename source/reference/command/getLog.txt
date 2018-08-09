@@ -13,9 +13,9 @@ getLog
 .. dbcommand:: getLog
 
    :dbcommand:`getLog` is an administrative command that returns the most
-   recent 1024 logged :program:`mongod` events. :dbcommand:`getLog` *does not*
-   read log data from the :program:`mongod` log file. It instead reads data
-   from a RAM cache of logged :program:`mongod` events. To run
+   recent 1024 logged :binary:`~bin.mongod` events. :dbcommand:`getLog` *does not*
+   read log data from the :binary:`~bin.mongod` log file. It instead reads data
+   from a RAM cache of logged :binary:`~bin.mongod` events. To run
    :dbcommand:`getLog`, use the :method:`db.runCommand( { command } )
    <db.runCommand()>` method on the ``admin`` database.
 
@@ -23,53 +23,22 @@ getLog
 
    .. code-block:: javascript
 
-      { getLog: <value>, txnNumber: <long>, lsid: { id: <UUID> } }
+      { getLog: <value> }
 
-   .. list-table::
-      :header-rows: 1
-      :widths: 20 20 60
+   The possible values for :dbcommand:`getLog` are:
 
-      * - Field
-        - Type
-        - Description
+   - ``global`` - returns the combined output of all recent log
+     entries.
 
-      * - ``getLog``
+   - ``rs`` - if the :binary:`~bin.mongod` is part of a :term:`replica
+     set`, :dbcommand:`getLog` returns recent notices related to
+     replica set activity.
 
-        - String
+   - ``startupWarnings`` - returns logs that *may* contain errors
+     or warnings from MongoDB's log from when the current process
+     started. If :binary:`~bin.mongod` started without warnings, this
+     filter may return an empty array.
 
-        - Log filter. Possible values for ``getLog`` are:
-
-          - ``"*"`` to return the supported filters for ``getLog``.
-
-          - ``"global"`` to return the combined output of all recent
-            log entries.
-
-          - ``"rs"`` to return recent notices related to replica set
-            activity if the :program:`mongod` is part of a replica set.
-
-          - ``"startupWarnings"`` to return logs that *may* contain
-            errors or warnings from MongoDB's log from when the current
-            process started. If :program:`mongod` started without
-            warnings, this filter may return an empty array..
-
-      * - ``txnNumber``
-
-        - 64-bit integer/long
-
-        - Optional.
-
-          .. include:: /includes/extracts/sessions-option-txnId.rst
-          
-          .. versionadded:: 3.6
-
-      * - ``lsid``
-        - Document
-        - Optional.
-
-          .. include:: /includes/extracts/sessions-option-sessionId.rst
-          
-          .. versionadded:: 3.6
-          
    :return:
 
       A document that contains an array of log events as ``log`` and the number
@@ -79,7 +48,7 @@ Behavior
 --------
 
 Specify ``*`` to :dbcommand:`getLog` to return a list of available log filters
-for the :program:`mongod`.
+for the :binary:`~bin.mongod`.
 
 :dbcommand:`getLog` truncates any event that contains more than 512
 characters. 
@@ -95,7 +64,7 @@ The following operation returns the available log filters for passing to
 
 .. code-block:: javascript
 
-   db.getSiblingDB("admin").runCommand( { getLog: "*" } )
+   db.adminCommand( { getLog: "*" } )
 
 The operation returns the following document:
 
@@ -107,11 +76,11 @@ Retrieve Recent Events from Log
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following operation retrieves the most recent ``global`` events for the
-:program:`mongod`
+:binary:`~bin.mongod`
 
 .. code-block:: javascript
 
-   db.getSiblingDB("admin").runCommand( { getLog : "global" } )
+   db.adminCommand( { getLog : "global" } )
 
 The operation returns a document similar to the following:
 

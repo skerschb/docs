@@ -34,16 +34,40 @@ Install MongoDB Enterprise
 
 .. include:: /includes/extracts/install-past-mongodb-enterprise-amazon.rst
 
-.. include:: /includes/steps/install-mongodb-enterprise-on-amazon.rst
+Using ``.rpm`` Packages (Recommended)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. tabs::
+
+   tabs:
+     - id: amz1
+       name: Amazon Linux
+       content: |
+
+         .. include:: /includes/steps/install-mongodb-enterprise-on-amazon.rst
+
+     - id: amz2
+       name: Amazon Linux 2
+       content: |
+
+         .. include:: /includes/steps/install-mongodb-enterprise-on-amazon2.rst
 
 .. _install-amazon-from-tarball:
 
-Install MongoDB Enterprise From Tarball
----------------------------------------
+Using ``.tar.gz`` Tarballs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. |package-format| replace:: ``.rpm``
+Prerequisites
+`````````````
 
-.. include:: /includes/fact-install-tarball-link.rst
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. include:: /includes/extracts/install-mongodb-enterprise-manually-redhat-6.rst
+
+Procedure
+`````````
+
+.. include:: /includes/steps/install-mongodb-enterprise-on-linux.rst
 
 Run MongoDB Enterprise
 ----------------------

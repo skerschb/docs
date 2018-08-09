@@ -115,7 +115,9 @@ arg_name: field
 description: |
   Specifies whether to convert intermediate data into BSON
   format between the execution of the ``map`` and ``reduce``
-  functions. Defaults to ``false``.
+  functions.
+
+  Defaults to ``false``.
 
   If ``false``:
 
@@ -140,7 +142,6 @@ description: |
     500,000 distinct ``key`` arguments to the mapper's ``emit()``
     function.
 
-  The ``jsMode`` defaults to false.
 interface: command
 name: jsMode
 operation: mapReduce
@@ -151,14 +152,17 @@ type: boolean
 arg_name: field
 description: |
   Specifies whether to include the ``timing`` information in the
-  result information. The ``verbose`` defaults to ``true`` to include
+  result information. Set ``verbose`` to ``true`` to include
   the ``timing`` information.
+
+  Defaults to ``false``.
+
 interface: command
 name: verbose
 operation: mapReduce
 optional: true
 position: 10
-type: Boolean
+type: boolean
 ---
 name: bypassDocumentValidation
 source:
@@ -169,6 +173,16 @@ interface: command
 position: 11
 replacement:
   verb: "insert"
+post: |
+  .. note::
+
+     If the :ref:`output option <mapreduce-out-cmd>` is set to
+     ``inline``, no :doc:`document validation
+     </core/schema-validation/>` occurs. If the output goes to
+     a collection, :dbcommand:`mapReduce` observes any validation 
+     rules which the collection has and does not insert any invalid
+     documents unless the ``bypassDocumentValidation`` parameter is
+     set to true.
 ---
 arg_name: field
 operation: mapReduce
@@ -177,33 +191,19 @@ source:
   ref: collation
 position: 12
 ---
-name: txnNumber
+
+name: writeConcern
 description: |
 
-   Optional.
+  A document that expresses the :doc:`write concern
+  </reference/write-concern>` to use when outputing to a collection.
+  Omit to use the default write concern.
 
-   .. include:: /includes/extracts/sessions-option-txnId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
-arg_name: field
-type: 64-bit integer/long
----
-name: lsid
-description: |
-
-   Optional.
-
-   .. include:: /includes/extracts/sessions-option-sessionId.rst
-
-   .. versionadded:: 3.6
-
-interface: dbcommand
-optional: false  #temporary kluge to work around docs build tool bug
-operation: ""
+optional: true
 arg_name: field
 type: document
+interface: dbcommand
+operation: mapReduce
+position: 13
+
 ...

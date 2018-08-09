@@ -43,10 +43,10 @@ Replica Set Configuration Fields
 
    :rsconf:`_id` *must* be identical to the
    :setting:`replication.replSetName` or the value of `--replSet`
-   specified to :program:`mongod` on the command line.
+   specified to :binary:`~bin.mongod` on the command line.
 
    .. see::
-      :setting:`~replication.replSetName` or :option:`--replSet`
+      :setting:`~replication.replSetName` or :option:`--replSet <mongod --replSet>`
       for information on setting the replica set name.
 
 .. rsconf::  version
@@ -77,25 +77,21 @@ Replica Set Configuration Fields
 
    *Type*: number
 
-   *Default*: 1 for new replica sets
+   *Default*: 1
 
-   Version of the :ref:`replica set election protocol
-   <3.2-rel-notes-rs-enhancements>`.
+   Starting in 4.0, MongoDB only supports ``protocolVersion: 1`` and no
+   longer supports ``protocolVersion: 0``.
 
-   Starting in MongoDB 3.2, new replica sets use ``protocolVersion: 1`` by default.
-   Previous versions of MongoDB use version 0 of the protocol and
-   cannot run as members of a replica set configuration that specifies
-   ``protocolVersion`` 1.
-   
+
    .. seealso:: :doc:`/reference/replica-set-protocol-versions`
 
 .. rsconf:: writeConcernMajorityJournalDefault
 
-   .. versionadded:: 3.4
+   .. versionadded:: 3.2.6
 
    *Type*: boolean
 
-   *Default*: true if ``protocolVersion`` is 1 and false if ``protocolVersion`` is 0
+   *Default*: true
 
    Determines the behavior of :writeconcern:`{ w: "majority" }
    <"majority">` write concern if the write concern does not explicitly
@@ -157,7 +153,7 @@ Replica Set Configuration Fields
 
       An integer identifier of every member in the replica set.
       Values must be between 0 and 255 inclusive. Each replica set member
-      must have a unique :rsconf:`_id<members[n]._id`>.
+      must have a unique :rsconf:`_id<members[n]._id>`.
       Once set, you cannot change the :rsconf:`_id<members[n]._id>` of a member.
 
       .. note::
@@ -207,21 +203,21 @@ Replica Set Configuration Fields
 
       *Default*: true
 
-      A boolean that indicates whether the :program:`mongod` builds
+      A boolean that indicates whether the :binary:`~bin.mongod` builds
       :term:`indexes <index>` on this member. You can only set this
       value when adding a member to a replica set. You cannot change
       :rsconf:`members[n].buildIndexes` field after
       the member has been added to the set. To add a member, see
       :method:`rs.add()` and :method:`rs.reconfig()`.
 
-      Do not set to ``false`` for :program:`mongod` instances that receive
+      Do not set to ``false`` for :binary:`~bin.mongod` instances that receive
       queries from clients.
 
       Setting ``buildIndexes`` to ``false`` may be useful if **all**
       the following conditions are true:
 
       - you are only using this instance to perform backups using
-        :program:`mongodump`, *and*
+        :binary:`~bin.mongodump`, *and*
 
       - this member will receive no queries, *and*
 
@@ -454,9 +450,12 @@ Replica Set Configuration Fields
       respond in time, other members mark the delinquent member as
       inaccessible.
 
-      The setting only applies when using :rsconf:`protocolVersion: 0`. 
-      When using :rsconf:`protocolVersion: 1` the relevant setting is 
-      :rsconf:`settings.electionTimeoutMillis`.
+      .. note::
+
+         For :rsconf:`pv1 <protocolVersion>`,
+         :rsconf:`settings.electionTimeoutMillis` has a greater
+         influence on whether the secondary members call for an
+         election than the :rsconf:`settings.heartbeatTimeoutSecs`.
 
    .. rsconf::  settings.electionTimeoutMillis
 
@@ -487,20 +486,73 @@ Replica Set Configuration Fields
 
       *Type*: int
 
-      *Default*: 2000 (2 seconds)
+      .. versionchanged:: 3.6
+         \
+
+      *Default*: -1, infinite catchup time.
 
       Time limit in milliseconds for a newly elected primary to sync
       (catch up) with the other replica set members that may have more
-      recent writes. Specifying a higher time limit may reduce the
+      recent writes. Infinite or high time limits may reduce the
       amount of data that the other members would need to roll back
       after an election but may increase the failover time.
 
       The newly elected primary ends the catchup period early once it
       is fully caught up with other members of the set. During the
       catchup period, the newly elected primary is unavailable for
-      writes from clients.
+      writes from clients. Use :dbcommand:`replSetAbortPrimaryCatchUp`
+      to abort the catchup then complete the transition to primary.
 
       The setting only applies when using :rsconf:`protocolVersion: 1`.
+
+      .. note::
+
+         To downgrade a replica set initiated in version 3.6 to 3.4,
+         change ``catchUpTimeoutMillis`` from ``-1`` to a
+         positive number. Failure to change this value to a positive
+         number causes nodes running version 3.4 to neither restart nor
+         join the replica set.
+
+   .. _repl-conf-catchup-takeover-delay:
+
+   .. rsconf::  settings.catchUpTakeoverDelayMillis
+
+      .. versionadded:: 3.6
+
+      *Optional*.
+
+      *Type*: int
+
+      *Default*: 30000 (30 seconds)
+
+      Time in milliseconds a node waits to initiate a
+      *catchup takeover* after determining it is ahead of the current
+      :term:`primary`. During a catchup takeover, the node ahead of the
+      current primary initiates an :term:`election` to become the new
+      primary of the :term:`replica set`.
+
+      After the node initiating the takeover determines that it is
+      ahead of the current :term:`primary`, it waits the specified
+      number of milliseconds and then verifies the following:
+
+      1. It is still ahead of the current primary,
+
+      #. It is the most up-to-date node among all available nodes,
+
+      #. The current primary is currently catching up to it.
+
+      Once determining that all of these conditions are met, the node
+      initiating the takeover immediately runs for election.
+
+      For more information on Replica
+      Set Elections, see :doc:`/core/replica-set-elections/`.
+
+      .. note::
+
+         Setting ``catchUpTakeoverDelayMillis`` to ``-1`` disables
+         catchup takeover. Setting :rsconf:`catchUpTimeoutMillis` to
+         ``0`` disables *primary catchup* and consequently also catchup
+         takeover.
 
    .. rsconf::  settings.heartbeatIntervalMillis
 

@@ -14,11 +14,14 @@ Overview
 --------
 
 Use this tutorial to install MongoDB Community Edition from ``.deb`` packages on
-Debian 7 "Wheezy" or Debian 8 "Jessie". While Debian includes its own
-MongoDB packages, use the official MongoDB Community Edition packages to
-ensure that you have the latest release.
+Debian.
 
-MongoDB only provides packages for 64-bit builds of Debian 7 and 8.
+MongoDB only provides packages for 64-bit builds of Debian 8 and 9. See
+:ref:`mongodb-supported-platforms` for more information.
+
+.. |package-name| replace:: ``{+package-name-org+}``
+.. |distro-name| replace:: Debian
+.. include:: /includes/important-dont-use-distro-packages.rst
 
 Packages
 --------
@@ -37,11 +40,26 @@ Install MongoDB Community Edition
 
 .. include:: /includes/fact-installation-64bit.rst
 
+Using ``.deb`` Packages (Recommended)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The Debian package management tools (i.e. ``dpkg`` and ``apt``) ensure
 package consistency and authenticity by requiring that distributors
 sign packages with GPG keys.
 
 .. include:: /includes/steps/install-mongodb-on-debian.rst
+
+Using ``.tgz`` Tarballs
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. include:: /includes/extracts/install-mongodb-community-manually-debian.rst
+
+Procedure
+`````````
+
+.. include:: /includes/steps/install-mongodb-on-linux.rst
 
 Run MongoDB Community Edition
 -----------------------------

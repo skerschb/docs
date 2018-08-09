@@ -45,7 +45,7 @@ Definition
         - Index key specification.
 
       * - ``host``
-        - The hostname and port of the :program:`mongod` process.
+        - The hostname and port of the :binary:`~bin.mongod` process.
 
       * - ``accesses``
 
@@ -57,7 +57,7 @@ Definition
           - ``since`` is the time from which MongoDB gathered the
             statistics.
 
-   Statistics for an index will be reset on :program:`mongod` restart
+   Statistics for an index will be reset on :binary:`~bin.mongod` restart
    or index drop and recreation.
 
 .. include:: /includes/note-indexstats-behavior.rst   
@@ -70,6 +70,9 @@ access driven by user requests. It does not include internal operations like
 deletion via :doc:`/core/index-ttl` or chunk split and migration operations.
 
 ``$indexStats`` must be the first stage in an aggregation pipeline.
+
+``$indexStats`` is not allowed in :doc:`transactions </core/transactions>`.
+
 
 Example
 -------

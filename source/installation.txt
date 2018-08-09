@@ -10,7 +10,7 @@ Install MongoDB
 .. contents:: On this page
    :local:
    :backlinks: none
-   :depth: 1
+   :depth: 2
    :class: singlecol
 
 .. index:: tutorials; installation
@@ -18,8 +18,24 @@ Install MongoDB
 .. index:: installation guides
 .. index:: installation
 
-This section of the manual contains tutorials on installation of
-MongoDB.
+MongoDB is released as two editions: *Community* and *Enterprise*.
+Community is the open source release of MongoDB. Enterprise provides 
+additional administration, authentication, and monitoring features. 
+*Installation steps vary depending on the edition; both procedures are 
+outlined in this section.*
+
+For upgrade instructions, see :ref:`4.0-upgrade` instead.
+
+.. note::
+
+   .. versionadded:: 3.6
+
+      Each MongoDB installer is packaged with a platform-specific
+      :ref:`MongoDB Compass <compass-index>` installation script. This
+      script installs MongoDB Compass as part of the MongoDB Server
+      installation process.
+
+.. _mongodb-supported-platforms:
 
 Supported Platforms
 -------------------
@@ -43,8 +59,8 @@ PPC64LE (MongoDB Enterprise Edition)
 
 .. include:: /includes/fact-platform-ppc64le.rst
 
-s390x (MongoDB Enterprise Edition)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+s390x
+~~~~~
 
 .. include:: /includes/fact-platform-s390x.rst
 
@@ -66,6 +82,14 @@ MongoDB Enterprise
 .. include:: /includes/toc/installation-community-landing.rst
 
 .. include:: /includes/toc/installation-enterprise-landing.rst
+
+Upgrade Community Edition to Enterprise Edition
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. toctree::
+   :titlesonly:
+   
+   /administration/upgrade-community-to-enterprise
 
 .. include:: /includes/toc/install-verify-files.rst
 
