@@ -8,7 +8,7 @@ project, this Manual and additional editions of this text.
 .. toctree::
    :titlesonly:
 
-   Itroduction </introduction>
+   Itoduction </introduction>
    Installation </installation>
    /mongo
    /crud
