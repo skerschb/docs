@@ -10,7 +10,7 @@ Upgrade to the Latest Revision of MongoDB
    :depth: 1
    :class: singlecol
 
-Revisions provide security patches, bug fixes, and new or changed
+Hello Revisions provide security patches, bug fixes, and new or changed
 features that do not contain any backward breaking changes. Always
 upgrade to the latest revision in your release series. The third number
 in the :ref:`MongoDB version number <release-version-numbers>` indicates
