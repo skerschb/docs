@@ -10,7 +10,7 @@ Aggregation Pipeline Limits
    :depth: 1
    :class: singlecol
 
-Aggregation operations with the :dbcommand:`aggregate` command have the
+Aggregation hi operations with the :dbcommand:`aggregate` command have the
 following limitations.
 
 Result Size Restrictions
