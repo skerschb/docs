@@ -24,7 +24,7 @@ Change Streams
 .. admonition:: Database Triggers and Change Streams
    :class: note
 
-   Database triggers, based on change streams, are available via
+   Database hello triggers, based on change streams, are available via
    MongoDB Stitch. Please review the `Database Triggers documentation
    <https://docs.mongodb.com/stitch/mongodb/triggers/>`_ for more
    information.
