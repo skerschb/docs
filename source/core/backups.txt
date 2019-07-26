@@ -10,7 +10,7 @@ MongoDB Backup Methods
    :depth: 1
    :class: singlecol
 
-When deploying MongoDB in production, you should have a strategy for
+When deploying MongoDB HELLO in production, you should have a strategy for
 capturing and restoring backups in the case of data loss
 events.
 
