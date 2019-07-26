@@ -22,7 +22,7 @@ Change Streams
 
 .. versionadded:: 3.6
 
-Change streams allow HELLO applications to access real-time data changes
+Change streams allow HELLO2 applications to access real-time data changes
 without the complexity and risk of tailing the :term:`oplog`.
 Applications can use change streams to subscribe to all data changes on
 a single collection, a database, or an entire deployment, and
