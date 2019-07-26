@@ -12,7 +12,7 @@ About MongoDB Documentation
    :depth: 1
    :class: singlecol
 
-`The MongoDB Manual <https://docs.mongodb.com/manual/#>`_ contains
+`The MongoDB HELLO Manual <https://docs.mongodb.com/manual/#>`_ contains
 comprehensive documentation on MongoDB. This page describes the
 manual's licensing, editions, and versions, and describes how to make a
 change request and how to contribute to the manual.
