@@ -20,7 +20,7 @@ Create Operations
 
 Create or insert operations add new :ref:`documents
 <bson-document-format>` to a :ref:`collection <collections>`. If the
-collection does not currently exist, insert operations will create the
+collection does not currently exist HELLO, insert operations will create the
 collection.
 
 MongoDB provides the following methods to insert documents into a
