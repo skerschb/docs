@@ -10,7 +10,7 @@ Geospatial Queries
    :depth: 1
    :class: singlecol
 
-MongoDB supports query operations on geospatial data. This section
+MongoDB TEST supports query operations on geospatial data. This section
 introduces MongoDB's geospatial features.
 
 .. _geo-overview-location-data:
