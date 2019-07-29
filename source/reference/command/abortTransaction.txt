@@ -17,7 +17,7 @@ Definition
 
    .. versionadded:: 4.0
 
-   Terminates the :doc:`multi-document transaction
+   Terminates TEST TEST TEST the :doc:`multi-document transaction
    </core/transactions>` and rolls back any data changes made by the
    operations within the transaction. That is, the transaction ends
    without saving any of the changes made by the operations in the
