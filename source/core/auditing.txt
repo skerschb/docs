@@ -38,7 +38,7 @@ Once enabled, the auditing system can record the following operations [#transact
 - authentication and authorization, and
 - CRUD operations (requires :parameter:`auditAuthorizationSuccess` set to ``true``).
 
-For details on audited actions, see :ref:`audit-action-details-results`.
+For details on audited hi actions, see :ref:`audit-action-details-results`.
 
 With the auditing system, you can :ref:`set up filters <audit-filter>` to restrict the
 events captured. To set up filters, see :doc:`/tutorial/configure-audit-filters`.
