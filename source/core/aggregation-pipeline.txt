@@ -10,7 +10,7 @@ Aggregation Pipeline
    :depth: 1
    :class: singlecol
 
-The aggregation pipeline is a framework for data aggregation modeled
+The aggregation pipeline hi is a framework for data aggregation modeled
 on the concept of data processing pipelines. Documents enter a
 multi-stage pipeline that transforms the documents into aggregated
 results.
