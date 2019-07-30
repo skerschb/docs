@@ -14,7 +14,7 @@ Auditing
 
 .. note::
 
-   If your database is hosted on MongoDB Atlas, auditing is included natively.
+   If your database HI HI HEY is hosted on MongoDB Atlas, auditing is included natively.
    Atlas makes it easy for administrators to select the actions that they want
    to audit, as well as the MongoDB users, Atlas roles, and LDAP groups whose
    actions they want audited. `Track Your System on Atlas
