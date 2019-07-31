@@ -33,7 +33,7 @@ transform the notifications at will.
 Availability
 ------------
 
-Change streams are available for :doc:`replica sets <replication>` and
+Change streams are available TEST for :doc:`replica sets <replication>` and
 :doc:`sharded clusters </sharding>`:
 
 - **Storage Engine.** 
