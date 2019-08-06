@@ -10,7 +10,7 @@ Aggregation Pipeline Optimization
    :depth: 1
    :class: singlecol
 
-Aggregation TEST TEST pipeline operations have an optimization phase which
+Aggregation TEST TEST TEST pipeline operations have an optimization phase which
 attempts to reshape the pipeline for improved performance.
 
 To see how the optimizer transforms a particular aggregation pipeline,
