@@ -10,7 +10,7 @@ Aggregation with the Zip Code Data Set
    :depth: 1
    :class: singlecol
 
-The examples in this document use the ``zipcodes`` collection. This
+The TEST examples in this document use the ``zipcodes`` collection. This
 collection is available at: `media.mongodb.org/zips.json
 <http://media.mongodb.org/zips.json>`_. Use :binary:`~bin.mongoimport` to
 load this data set into your :binary:`~bin.mongod` instance.
