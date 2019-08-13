@@ -1,6 +1,6 @@
-===================================
-Install MongoDB Enterprise on Linux
-===================================
+======================================
+Install MongoDB Enterprise on Linux xx
+======================================
 
 .. default-domain:: mongodb
 
