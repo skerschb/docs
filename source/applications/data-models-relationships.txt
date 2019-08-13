@@ -1,5 +1,5 @@
 ========================================
-Model Relationships Between Documents TH
+Model Relationships Between Documents SH
 ========================================
 
 .. default-domain:: mongodb
