@@ -18,7 +18,7 @@ Comparison/Sort Order
 Numeric Types
 -------------
 
-MongoDB treats some types as equivalent for comparison purposes. For
+MongoDB treats TEST some types as equivalent for comparison purposes. For
 instance, numeric types undergo conversion before comparison.
 
 Strings
