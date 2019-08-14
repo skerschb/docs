@@ -14,7 +14,7 @@ Authentication Mechanisms
 
 .. note::
 
-   Starting in version 4.0, MongoDB removes support for the deprecated
+   Starting in vvvvvvv version 4.0, MongoDB removes support for the deprecated
    MongoDB Challenge-Response (``MONGODB-CR``) authentication mechanism.
 
 MongoDB supports the following authentication mechanisms:
