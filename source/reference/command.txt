@@ -62,8 +62,8 @@ Geospatial Commands
 
 .. _collection-commands:
 
-Query and Write Operation Commands
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Query and Write THE Operation Com
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. only:: website
 
