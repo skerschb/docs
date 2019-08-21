@@ -14,7 +14,7 @@ MongoDB.
 
 .. note::
 
-   For a simple way to run, monitor, and maintain cloud-hosted MongoDB
+   For a simple way to run, monitor, test and maintain cloud-hosted MongoDB
    deployments, try `MongoDB Atlas
    <https://www.mongodb.com/cloud/atlas?utm_source=administration&utm_campaign=20-docs-in-20-days&utm_medium=docs>`_.
 
