@@ -1,5 +1,5 @@
 GIT_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
-USER=`whoami`
+USER=$(shell whoami)
 STAGING_URL="https://docs-mongodborg-staging.corp.mongodb.com"
 PRODUCTION_URL="https://docs.mongodb.com"
 STAGING_BUCKET=docs-mongodb-org-staging
@@ -12,7 +12,6 @@ SNOOTY_DB_PWD = $(shell printenv MONGO_ATLAS_PASSWORD)
 
 # "PROJECT" currently exists to support having multiple projects
 # within one bucket. For the manual it is empty.
-PROJECT=
 
 DRIVERS_PATH=source/driver-examples
 
@@ -88,7 +87,7 @@ deploy-search-index: ## Update the search index for this branch
 		mut-index upload build/public/${GIT_BRANCH} -o manual-${GIT_BRANCH}.json -u ${PRODUCTION_URL}/${GIT_BRANCH} -s; \
 	fi
 
-next-gen-html:
+next-gen-html: examples
 	# snooty parse and then build-front-end
 	echo "${SNOOTY_DB_PWD}" | snooty build "${REPO_DIR}" "mongodb+srv://${SNOOTY_DB_USR}:@cluster0-ylwlz.mongodb.net/snooty?retryWrites=true" || exit 0;
 	cp -r "${REPO_DIR}/../../snooty" ${REPO_DIR};

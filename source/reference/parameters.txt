@@ -142,6 +142,36 @@ Authentication Parameters
 
    Defaults to 30 seconds.
 
+.. parameter:: ldapUseConnectionPool
+
+   .. versionadded:: 4.0.9
+
+   Specifies whether MongoDB should use connection pooling when
+   connecting to the LDAP server for authentication/authorization.
+
+   **Starting in version 4.2**, MongoDB uses the following default values:
+
+   - true on Windows.
+
+   - true on Linux where MongoDB Enterprise binaries are linked against
+     ``libldap_r``.
+
+   - false on Linux where MongoDB Enterprise binaries are linked against
+     ``libldap``.
+     
+     .. tip::
+
+        To allow concurrent authentication commands for LDAP users, you
+        may wish to link to ``libldap_r``. For assistance, contact
+        :doc:`support </support>`.
+
+   **In earlier versions (versions 4.0.9+)**, the default value is
+   ``false``.
+
+   You can only set :parameter:`ldapUseConnectionPool` during
+   start-up, and cannot change this setting with the
+   :dbcommand:`setParameter` database command.
+
 .. parameter:: opensslCipherConfig
 
    .. versionadded:: 3.6
@@ -167,13 +197,54 @@ Authentication Parameters
 
    .. code-block:: sh
 
-      mongod --setParameter opensslCipherConfig=HIGH:!EXPORT:!aNULL@STRENGTH --tlsMode requireTLS --tlsCertificateKeyFile Certs/server.pem
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL@STRENGTH' --tlsMode requireTLS --tlsCertificateKeyFile Certs/server.pem
 
    For versions 4.0 and earlier:
 
    .. code-block:: sh
 
-      mongod --setParameter opensslCipherConfig=HIGH:!EXPORT:!aNULL@STRENGTH --sslMode requireSSL --sslPEMKeyFile Certs/server.pem
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL@STRENGTH' --sslMode requireSSL --sslPEMKeyFile Certs/server.pem
+
+.. parameter:: opensslDiffieHellmanParameters
+
+   .. versionadded:: 3.6
+
+   *Available on Linux only*
+
+   Specify the path to the PEM file that contains the OpenSSL
+   Diffie-Hellman parameters. Specifying the OpenSSL Diffie-Hellman
+   parameters enables support for :ref:`dhe` cipher suites during
+   TLS/SSL encryption.
+   
+   Ephemeral Diffie-Hellman (DHE) cipher suites (and Ephemeral Elliptic
+   Curve Diffie-Hellman (ECDHE) cipher suites) provide
+   :ref:`tls-forward-secrecy`. :ref:`tls-forward-secrecy` cipher suites
+   create an ephemeral session key that is protected by the server's
+   private key but never transmitted. This ensures that even if a
+   server's private key is compromised, you cannot decrypt past
+   sessions with the compromised key.
+
+   .. note::
+   
+      Starting in MongoDB 4.2, if
+      :parameter:`opensslDiffieHellmanParameters` is unset but
+      :ref:`ECDHE is enabled <ecdhe>`, MongoDB enables DHE using
+      ``ffdhe3072`` Diffie-Hellman parameter, as defined in
+      :rfc:`7919#appendix-A.2`. The ``ffdhe3072`` is a strong parameter
+      (i.e. size is greater than 1024). Strong parameters are not
+      supported with Java 6 and 7 unless extended support has been
+      purchased from Oracle.
+
+   You can only set :parameter:`opensslDiffieHellmanParameters` during
+   startup, and cannot change this setting using the
+   :dbcommand:`setParameter` database command.
+
+   If for performance reasons, you need to disable support for DHE
+   cipher suites, use the :parameter:`opensslCipherConfig` parameter:
+
+   .. code-block:: sh
+
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL:!DHE:!kDHE@STRENGTH' ...
 
 .. parameter:: saslauthdPath
 
@@ -887,7 +958,7 @@ General Parameters
    * The directory of :option:`--logpath <mongod --logpath>` file
    * The directory of :option:`--auditPath <mongod --auditPath>` file
 
-   Valid values for :parameter:`watchdobgPeriodSeconds` are:
+   Valid values for :parameter:`watchdogPeriodSeconds` are:
 
    - ``-1`` (the default), to disable/pause :ref:`Storage Node Watchdog
      <storage-node-watchdog>`, or
@@ -2359,6 +2430,49 @@ Storage Parameters
 WiredTiger Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. parameter:: wiredTigerMaxCacheOverflowSizeGB
+
+   *Available in 4.0-series starting in 4.0.12*
+
+   *Default*: 0 (No specified maximum)
+
+   |mongod-only|
+
+   Specify the maximum size (in GB) for the "lookaside (or cache
+   overflow) table" file :file:`WiredTigerLAS.wt`.
+
+   The parameter can accept the following values:
+
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
+
+      * - Value
+        - Description
+
+      * - ``0``
+
+        - The default value. If set to ``0``, the file size is
+          unbounded.
+
+      * - number >= 0.1
+
+        - The maximum size (in GB). If the :file:`WiredTigerLAS.wt`
+          file exceeds this size, :binary:`~bin.mongod` exits with a
+          fatal assertion. You can clear the :file:`WiredTigerLAS.wt`
+          file and restart :binary:`~bin.mongod`.
+
+   You can only set this parameter during runtime using the
+   :dbcommand:`setParameter` database command:
+   
+   .. code-block:: javascript
+
+      db.adminCommand( { setParameter: 1, wiredTigerMaxCacheOverflowSizeGB: 100 } )
+
+   To set the maximum size during start up, use the
+   :setting:`storage.wiredTiger.engineConfig.maxCacheOverflowFileSizeGB`
+   instead.
+   
 .. parameter:: wiredTigerConcurrentReadTransactions
 
    .. versionadded:: 3.0.0
