@@ -50,7 +50,7 @@ Pipeline
 --------
 
 The MongoDB aggregation pipeline consists of :ref:`stages
-<aggregation-pipeline-operator-reference>`. Each stage transforms the
+<aggregation-pipeline-operator-reference>`. Each stage test transforms the
 documents as they pass through the pipeline. Pipeline stages do not
 need to produce one output document for every input document; e.g.,
 some stages may generate new documents or filter out documents.
