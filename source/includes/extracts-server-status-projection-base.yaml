@@ -12,6 +12,10 @@ content: |
 ref: _serverStatus-output-changes
 content: |
 
+  - Starting in MongoDB 4.2.1 (and 4.0.13), {{operationName}} includes:
+
+    - :serverstatus:`electionMetrics`
+
   - Starting in MongoDB 4.2, {{operationName}}:
     
     - Returns :serverstatus:`opcounters` and
@@ -29,7 +33,25 @@ content: |
     - Added new user operations counts to
       :serverstatus:`metrics.repl.stepDown`.
 
-    - Added new transaction metrics in :serverstatus:`transactions`.
+    - Added new transaction metrics in :serverstatus:`transactions` for
+      :binary:`~bin.mongod`.
+    
+    - Includes :serverstatus:`transactions` metrics for
+      :binary:`~bin.mongos`.
+
+    - Added
+      :serverstatus:`~logicalSessionRecordCache.sessionCatalogSize`
+      metric to :serverstatus:`logicalSessionRecordCache`.
+      
+    - Added
+      :serverstatus:`~shardingStatistics.countDonorMoveChunkLockTimeout`
+      metric to :serverstatus:`shardingStatistics`.
+
+    - Added ``ReplicationStateTransition`` lock information to 
+      :serverstatus:`locks`.
+    
+    - Reports ``ParallelBatchWriterMode`` lock information separately from
+      ``Global`` lock information.  See :serverstatus:`locks`.
 
   - Starting in MongoDB 4.0.6, {{operationName}} includes:
 

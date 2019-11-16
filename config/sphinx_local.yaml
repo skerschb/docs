@@ -65,6 +65,7 @@ theme:
     - /text-search
     - /tutorial/manage-the-database-profiler
     - /core/index-text
+    - /reference/bson-types
     - /reference/configuration-options
     - /reference/indexes
     - /reference/method
@@ -105,7 +106,12 @@ theme:
     - /tutorial/install-mongodb-on-debian
     - /tutorial/install-mongodb-on-suse
     - /tutorial/install-mongodb-on-amazon
+    - /tutorial/install-mongodb-enterprise-on-ubuntu
     - /tutorial/install-mongodb-enterprise-on-windows
+    - /tutorial/install-mongodb-enterprise-on-red-hat
+    - /tutorial/install-mongodb-enterprise-on-debian
+    - /tutorial/install-mongodb-enterprise-on-suse
+    - /tutorial/install-mongodb-enterprise-on-amazon
     - /tutorial/install-mongodb-on-os-x
 
 sidebars:

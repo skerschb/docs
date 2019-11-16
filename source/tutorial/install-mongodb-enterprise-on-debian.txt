@@ -1,6 +1,6 @@
-====================================
-Install MongoDB Enterprise on Debian
-====================================
+============================================
+Install MongoDB Enterprise Edition on Debian
+============================================
 
 .. default-domain:: mongodb
 
@@ -13,18 +13,20 @@ Install MongoDB Enterprise on Debian
 Overview
 --------
 
-.. include:: /includes/rc-install.rst
-
-Use this tutorial to install :products:`MongoDB Enterprise
+Use this tutorial to install :products:`MongoDB 4.2 Enterprise
 </mongodb-enterprise-advanced?jmp=docs>` from ``.deb`` packages on
 Debian.
 
-.. admonition:: Production Notes
-   :class: note
+.. include:: /includes/extracts/install-past-mongodb-enterprise-debian.rst
 
-   Before deploying MongoDB in a production environment, consider the
-   :doc:`/administration/production-notes` document.
+Considerations
+--------------
 
+Production Notes
+~~~~~~~~~~~~~~~~
+
+Before deploying MongoDB in a production environment, consider the
+:doc:`/administration/production-notes` document.
 
 .. |package-name| replace:: ``mongodb-enterprise``
 .. |distro-name| replace:: Debian
@@ -32,46 +34,36 @@ Debian.
 Platform Support
 ~~~~~~~~~~~~~~~~
 
-MongoDB only provides packages for 64-bit builds of Debian 8 and 9. See
-:ref:`mongodb-supported-platforms` for more information.
+.. topic:: EOL Notice
 
-Packages
---------
+   MongoDB 4.2 removes support for Debian 8 ("Jessie").
 
-.. include:: /includes/important-dont-use-distro-packages.rst
+MongodDB 4.2 supports:
 
-.. include:: /includes/list-mongodb-enterprise-packages.rst
+- Debian 10 "Buster" (Starting in version 4.2.1)
+
+- Debian 9 "Stretch"
+
+MongoDB only provides packages for the 64-bit builds of these releases.
+See :ref:`mongodb-supported-platforms` for more information.
+
+.. _install-enterprise-debian-pkg:
 
 Install MongoDB Enterprise
 --------------------------
 
-.. include:: /includes/extracts/install-past-mongodb-enterprise-debian.rst
-
-.. include:: /includes/fact-installation-64bit.rst
-
-Using ``.deb`` Packages (Recommended)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. include:: /includes/important-dont-use-distro-packages.rst
 
 .. include:: /includes/fact-use-distribution-package.rst
 
 .. include:: /includes/steps/install-mongodb-enterprise-on-debian.rst
 
-.. _install-debian-from-tarball:
+.. seealso::
 
-Using ``.tgz`` Tarballs
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Prerequisites
-`````````````
-
-.. include:: /includes/fact-tarball-dependencies.rst
-
-.. include:: /includes/extracts/install-mongodb-enterprise-manually-debian.rst
-
-Procedure
-`````````
-
-.. include:: /includes/steps/install-mongodb-enterprise-on-linux.rst
+   The recommended procedure to install is through the package manager,
+   as detailed on this page. However, if you choose to install by
+   directly downloading the ``.tgz`` file, see
+   :doc:`/tutorial/install-mongodb-enterprise-on-debian-tarball`.
 
 Run MongoDB Enterprise
 ----------------------
@@ -97,3 +89,21 @@ Uninstall MongoDB
 .. include:: /includes/fact-uninstall.rst
 
 .. include:: /includes/steps/uninstall-mongodb-enterprise-on-debian.rst
+
+
+Additional Information
+----------------------
+
+
+.. _debian-mongodb-enterprise-packages:
+
+Packages
+~~~~~~~~
+
+.. include:: /includes/list-mongodb-enterprise-packages.rst
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+
+   Install using .tgz Tarball </tutorial/install-mongodb-enterprise-on-debian-tarball>

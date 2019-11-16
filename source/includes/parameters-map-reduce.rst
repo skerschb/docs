@@ -29,6 +29,11 @@ The ``map`` function has the following requirements:
 
 - The ``map`` function may optionally call ``emit(key,value)`` any number of
   times to create an output document associating ``key`` with ``value``.
+  
+- Starting in version 4.2.1, MongoDB deprecates the use of JavaScript
+  with scope (i.e. :doc:`BSON type 15 </reference/bson-types/>`) for
+  the ``map`` function. To scope variables, use the ``scope`` parameter
+  instead.
 
 The following ``map`` function will call ``emit(key,value)`` either
 0 or 1 times depending on the value of the input document's
@@ -93,6 +98,11 @@ The ``reduce`` function exhibits the following behaviors:
   requirement may be violated when large documents are returned and then
   joined together in subsequent ``reduce`` steps.
 
+- Starting in version 4.2.1, MongoDB deprecates the use of JavaScript
+  with scope (i.e. :doc:`BSON type 15 </reference/bson-types/>`) for
+  the ``reduce`` function. To scope variables, use the ``scope``
+  parameter instead.
+  
 Because it is possible to invoke the ``reduce`` function
 more than once for the same key, the following
 properties need to be true:
@@ -145,6 +155,10 @@ members of replica sets.
 Output to a Collection with an Action
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   .. include:: /includes/extracts/4.2-changes-map-reduce-deprecation.rst
+
 This option is only available when passing a collection that
 already exists to ``out``. It is not available 
 on secondary members of replica sets.
@@ -189,6 +203,11 @@ following parameters:
 
 - ``sharded``:
 
+  .. note::
+
+     Starting in version 4.2, the use of the ``sharded`` option is
+     deprecated.
+
   Optional. If ``true`` *and* you have enabled sharding on output
   database, the map-reduce operation will shard the output collection
   using the ``_id`` field as the shard key.
@@ -197,6 +216,11 @@ following parameters:
   map-reduce fails.
 
 - ``nonAtomic``:
+
+  .. note::
+  
+     Starting in MongoDB 4.2, explicitly setting ``nonAtomic`` to ``false`` is
+     deprecated.
 
   Optional. Specify output operation as non-atomic. This applies **only**
   to the ``merge`` and ``reduce`` output modes, which may take minutes to
@@ -251,5 +275,10 @@ aware that:
 
 - The ``finalize`` function can access the variables defined in
   the ``scope`` parameter.
+
+- Starting in version 4.2.1, MongoDB deprecates the use of JavaScript
+  with scope (i.e. :doc:`BSON type 15 </reference/bson-types/>`) for
+  the ``finalize`` function. To scope variables, use the ``scope``
+  parameter instead.
 
 .. end-finalize

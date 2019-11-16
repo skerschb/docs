@@ -1,0 +1,98 @@
+=======================================================
+Install MongoDB Enterprise on Debian Using .tgz Tarball
+=======================================================
+
+.. default-domain:: mongodb
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: twocols
+
+Overview
+--------
+
+.. _`MongoDB Download Center`: https://www.mongodb.com/download-center/enterprise?jmp=docs
+
+Although the recommended procedure to install is through the
+:ref:`package manager <install-enterprise-debian-pkg>`, you can also
+install by directly downloading the ``.tgz`` file. The following
+tutorial downloads the ``.tgz`` tarball directly to install MongoDB
+{+version+} Enterprise Edition on Debian Linux systems.
+
+.. include:: /includes/extracts/install-past-mongodb-enterprise-debian.rst
+
+Considerations
+--------------
+
+Production Notes
+~~~~~~~~~~~~~~~~
+
+Before deploying MongoDB in a production environment, consider the
+:doc:`/administration/production-notes` document.
+
+.. |package-name| replace:: ``mongodb-enterprise``
+.. |distro-name| replace:: Debian
+
+Platform Support
+~~~~~~~~~~~~~~~~
+
+.. topic:: EOL Notice
+
+   MongoDB 4.2 removes support for Debian 8 ("Jessie").
+
+MongodDB 4.2 supports:
+
+- Debian 10 "Buster" (Starting in version 4.2.1)
+
+- Debian 9 "Stretch"
+
+MongoDB only provides packages for the 64-bit builds of these releases.
+See :ref:`mongodb-supported-platforms` for more information.
+
+.. _install-debian-from-tarball:
+.. _install-enterprise-debian-from-tarball:
+
+Install MongoDB Enterprise
+--------------------------
+
+Prerequisites
+~~~~~~~~~~~~~
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. tabs::
+
+   .. tab:: Debian 10 "Buster"
+      :tabid: debian-10-buster
+
+      .. include:: /includes/extracts/install-mongodb-enterprise-manually-debian-10.rst
+
+   .. tab:: Debian 9 "Stretch"
+      :tabid: debian-9-stretch
+
+      .. include:: /includes/extracts/install-mongodb-enterprise-manually-debian-9.rst
+
+Procedure
+~~~~~~~~~
+
+.. include:: /includes/steps/install-mongodb-enterprise-on-linux.rst
+
+Run MongoDB Enterprise
+----------------------
+
+.. admonition:: Production Notes
+   :class: note
+
+   Before deploying MongoDB in a production environment, consider the
+   :doc:`/administration/production-notes` document.
+
+.. |mongod-user| replace:: ``mongodb``
+.. |mongod-datadir| replace:: ``/var/lib/mongodb``
+
+.. include:: /includes/fact-installation-directories.rst
+
+.. include:: /includes/fact-installation-ulimit.rst
+
+.. include:: /includes/steps/run-mongodb-on-linux-tarball.rst

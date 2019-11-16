@@ -15,6 +15,8 @@ Definition
 
 .. dbcommand:: planCacheListPlans
 
+   .. deprecated:: 4.2
+
    .. note::
 
       .. include:: /includes/extracts/4.2-changes-planCacheStats.rst
@@ -45,15 +47,50 @@ Definition
 
    The :dbcommand:`planCacheListPlans` command has the following field:
 
-   .. include:: /includes/apiargs/dbcommand-planCacheListPlans-field.rst
 
-   To see the query shapes for which cached query plans exist, use the
-   :dbcommand:`planCacheListQueryShapes` command.
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 20 80
+   
+      * - Field
+   
+        - Type
+   
+        - Description
+   
+      * - ``query``
+   
+        - document
+   
+        - The query predicate of the :term:`query shape`. Only the structure
+          of the predicate, including the field names, are significant to the
+          shape; the values in the query predicate are insignificant.
+          
+          
+   
+      * - ``projection``
+   
+        - document
+   
+        - Optional. The projection associated with the :term:`query shape`.
+          
+          
+   
+      * - ``sort``
+   
+        - document
+   
+        - Optional. The sort associated with the :term:`query shape`.
+          
+          
+   
 
-   .. versionadded:: 3.6
 
-      The :dbcommand:`planCacheListPlans` database command returns the
-      same output as the :method:`PlanCache.getPlansByQuery()` method.
+   To see the query shapes for which cached query plans exist, see
+   :ref:`planCacheStats-list-query-shapes`.
+
+   The :dbcommand:`planCacheListPlans` database command returns the
+   same output as the :method:`PlanCache.getPlansByQuery()` method.
 
 Required Access
 ---------------

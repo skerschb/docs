@@ -1,6 +1,6 @@
-====================================
-Install using .tgz Tarball on Ubuntu
-====================================
+======================================================
+Install MongoDB Community on Ubuntu using .tgz Tarball
+======================================================
 
 .. default-domain:: mongodb
 
@@ -15,8 +15,6 @@ Install using .tgz Tarball on Ubuntu
 
 Overview
 --------
-
-.. include:: /includes/rc-install.rst
 
 .. _`MongoDB Download Center`: https://www.mongodb.com/download-center/community?jmp=docs
 
@@ -39,6 +37,10 @@ corresponding version of the manual.
 
 Platform Support
 ~~~~~~~~~~~~~~~~
+
+.. note::
+
+   MongoDB 4.2 removes support for Ubuntu 14.04.
 
 .. include:: /includes/fact-ubuntu-lts-support.rst
 
@@ -112,11 +114,4 @@ Configuration
    either the command-line options or a :ref:`configuration file
    <conf-file>`.
 
-.. note::
-
-   Although the following procedure uses ``sudo`` to start the MongoDB
-   instance as well as to create the directories used by the MongoDB
-   instance, you may choose to perform the procedure as a different
-   user.
-
-.. include:: /includes/steps/run-mongodb-on-ubuntu-tarball.rst
+.. include:: /includes/steps/run-mongodb-on-linux-tarball.rst

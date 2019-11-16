@@ -39,127 +39,165 @@ Definition
    transformations of the results as the documents pass through the
    pipeline.
 
-   :pipeline:`$currentOp` takes an options document as its operand:
+Syntax
+~~~~~~
 
-   .. versionchanged:: 4.2
+.. versionchanged:: 4.2
 
-   .. code-block:: javascript
+.. code-block:: javascript
 
-      { $currentOp: { allUsers: <boolean>, idleConnections: <boolean>, idleCursors: <boolean>, idleSessions: <boolean>, localOps: <boolean> } }
+   { $currentOp: { allUsers: <boolean>, idleConnections: <boolean>, idleCursors: <boolean>, idleSessions: <boolean>, localOps: <boolean> } }
 
-   .. list-table::
-      :header-rows: 1
-      :widths: 30 70
+:pipeline:`$currentOp` takes an options document as its operand:
 
-      * - Option
-        - Description
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
 
-      * - ``allUsers``
+   * - Option
+     - Description
 
-        - Boolean. If set to ``false``, :pipeline:`$currentOp` will
-          only report on operations/idle connections/idle cursors/idle
-          sessions belonging to the user who ran the command. If set to
-          ``true``, :pipeline:`$currentOp` will report operations
-          belonging to all users.
+   * - :ref:`allUsers <currentOp-stage-allUsers>`
 
-          .. note::
+     - .. _currentOp-stage-allUsers:
+     
+       Boolean. 
+       
+       - If set to ``false``, :pipeline:`$currentOp` will only report
+         on operations/idle connections/idle cursors/idle sessions
+         belonging to the user who ran the command.
 
-             For standalone and replica sets that enforce access control,
-             ``inprog`` privilege is required if ``allUsers: true``.
-   
-             For sharded clusters that enforce access control, the ``inprog``
-             privilege is required to run :pipeline:`$currentOp`.
-             
-          Defaults to ``false``.
+       - If set to ``true``, :pipeline:`$currentOp` will report
+         operations belonging to all users.
 
-      * - ``idleConnections``
-        - Boolean. If set to ``false``, :pipeline:`$currentOp` will
-          only report active operations. If set to ``true``, all
-          operations including idle connections will be returned.
+       .. note::
 
-          Defaults to ``false``.
+          For standalone and replica sets that enforce access control,
+          ``inprog`` privilege is required if ``allUsers: true``.
 
-      * - ``idleCursors``
+          For sharded clusters that enforce access control, the ``inprog``
+          privilege is required to run :pipeline:`$currentOp`.
+          
+       Defaults to ``false``.
 
-        - Boolean. 
+   * - :ref:`idleConnections <currentOp-stage-idleConnections>`
+     - .. _currentOp-stage-idleConnections:
+     
+       Boolean. If set to ``false``, :pipeline:`$currentOp` will
+       only report active operations. If set to ``true``, all
+       operations including idle connections will be returned.
 
-          If set to ``true``, :pipeline:`$currentOp` will report on
-          cursors that are "idle"; i.e. open but not currently active
-          in a :dbcommand:`getMore` operation.
+       Defaults to ``false``.
 
-          Information on idle cursors have the :data:`~$currentOp.type`
-          set to ``"idleCursor"``.
+   * - :ref:`idleCursors <currentOp-stage-idleCursors>`
 
-          Information on cursors currently active in a
-          :dbcommand:`getMore` operation information have the
-          :data:`~$currentOp.type` set to ``"op"`` and
-          :data:`~$currentOp.op` set to ``getmore``.
+     - .. _currentOp-stage-idleCursors:
+     
+       Boolean. 
 
-          Defaults to ``false``.
+       If set to ``true``, :pipeline:`$currentOp` will report on
+       cursors that are "idle"; i.e. open but not currently active
+       in a :dbcommand:`getMore` operation.
 
-          .. versionadded:: 4.2
+       Information on idle cursors have the :data:`~$currentOp.type`
+       set to ``"idleCursor"``.
 
-      * - ``idleSessions``
+       Information on cursors currently active in a
+       :dbcommand:`getMore` operation information have the
+       :data:`~$currentOp.type` set to ``"op"`` and
+       :data:`~$currentOp.op` set to ``getmore``.
 
-        - Boolean. If set to ``true``, then in addition to reporting on
-          the active/dormant operations, :pipeline:`$currentOp` returns
-          information on inactive sessions that are holding locks as part
-          of a transaction. Each inactive session will appear as a
-          separate document in the ``$currentOp`` stream.
+       Defaults to ``false``.
 
-          The document for a session includes information on the
-          session id in the :data:`~$currentOp.lsid` field and the
-          transaction in the :data:`~$currentOp.transaction` field.
+       .. versionadded:: 4.2
 
-          Starting in MongoDB 4.2, information on idle sessions have
-          the :data:`~$currentOp.type` set to ``"idleSession"``.
+   * - :ref:`idleSessions <currentOp-stage-idleSessions>`
 
-          If set to ``false``, :pipeline:`$currentOp` will not report on
-          inactive sessions.
+     - .. _currentOp-stage-idleSessions:
 
-          Defaults to ``true``.
+       Boolean. 
+       
+       - If set to ``true``, in addition to active/dormant operations,
+         :pipeline:`$currentOp` will report on:
 
-          .. versionadded:: 4.0
+         - Inactive sessions that are holding locks as part of a
+           transaction. Each inactive session will appear as a separate
+           document in the ``$currentOp`` stream.
 
-      * - ``localOps``
+           The document for a session includes information on the session
+           id in the :data:`~$currentOp.lsid` field and the transaction
+           in the :data:`~$currentOp.transaction` field.
 
-        - Boolean. If set to ``true`` for an aggregation running on
-          :binary:`~bin.mongos`, :pipeline:`$currentOp` reports only
-          those operations running locally on that
-          :binary:`~bin.mongos`. If ``false``, then the
-          :pipeline:`$currentOp` will instead report operations running
-          on the shards.
+           Starting in MongoDB 4.2, information on idle sessions have the
+           :data:`~$currentOp.type` set to ``"idleSession"``.
 
-          The ``localOps`` parameter has no effect for
-          :pipeline:`$currentOp` aggregations running on
-          :binary:`~bin.mongod`.
+         - :data:`$currentOp.twoPhaseCommitCoordinator` in ``inactive``
+           :data:`~$currentOp.twoPhaseCommitCoordinator.state`
 
-          Defaults to ``false``.
+       - If set to ``false``, :pipeline:`$currentOp` will not report on:
 
-          .. versionadded:: 4.0
+         - Inactive sessions
 
-   Omitting any of the above parameters will cause $currentOp to use
-   that parameter's default value. Specify an empty document, as shown
-   below, to use the default values of all parameters.
+         - :data:`$currentOp.twoPhaseCommitCoordinator` information in
+           ``inactive``
+           :data:`~$currentOp.twoPhaseCommitCoordinator.state`
 
-   .. code-block:: javascript
+       Defaults to ``true``.
 
-      { $currentOp: { } }
+       .. versionadded:: 4.0
+
+   * - :ref:`localOps <currentOp-stage-localOps>`
+
+     - .. _currentOp-stage-localOps:
+
+       Boolean. If set to ``true`` for an aggregation running on
+       :binary:`~bin.mongos`, :pipeline:`$currentOp` reports only
+       those operations running locally on that
+       :binary:`~bin.mongos`. If ``false``, then the
+       :pipeline:`$currentOp` will instead report operations running
+       on the shards.
+
+       The ``localOps`` parameter has no effect for
+       :pipeline:`$currentOp` aggregations running on
+       :binary:`~bin.mongod`.
+
+       Defaults to ``false``.
+
+       .. versionadded:: 4.0
+
+Omitting any of the above parameters will cause $currentOp to use
+that parameter's default value. Specify an empty document, as shown
+below, to use the default values of all parameters.
+
+.. code-block:: javascript
+
+   { $currentOp: { } }
 
 Constraints
 -----------
 
+Pipeline
+~~~~~~~~
+
 - :pipeline:`$currentOp` must be the first stage in the pipeline.
+
 
 - Pipelines that start with :pipeline:`$currentOp` can only be run on
   the ``admin`` database.
 
-- On a standalone or replica set with authentication enabled, the
-  ``inprog`` privilege is required to run :pipeline:`$currentOp` if
-  the ``allUsers`` parameter is set to `true`.
+Access Control
+~~~~~~~~~~~~~~
 
-- On a sharded cluster, the ``inprog`` privilege is required to run
-  all :pipeline:`$currentOp` pipelines.
+- For standalone and replica sets that enforce access control,
+  :authaction:`inprog` privilege is required to run
+  :pipeline:`$currentOp` if :ref:`allUsers: true
+  <currentOp-stage-allUsers>`.
+   
+- For sharded clusters that enforce access control, the :authaction:`inprog`
+  privilege is required to run :pipeline:`$currentOp`.
+
+Transactions
+~~~~~~~~~~~~
 
 - :pipeline:`$currentOp` is not allowed in :doc:`transactions
   </core/transactions>`.
@@ -168,21 +206,14 @@ Constraints
 Example
 -------
 
-The following example runs the :pipeline:`$currentOp` operation in the
-first stage and filters the results of that operation in the second
-stage. Specifically, the first stage returns documents for all active
-operations as well as inactive sessions that are holding locks as part
-of a transaction. The second stage filters for just those documents
-related to inactive sessions that are holding locks as part of a
-transaction.
+The following example returns information on inactive sessions that are
+holding locks as part of a transaction. Specifically:
 
-.. tip::
+- The first stage returns documents for all active operations as well
+  as inactive sessions that are holding locks as part of a transaction.
 
-   For standalone and replica sets that enforce access control,
-   ``inprog`` privilege is required if ``allUsers: true``.
-   
-   For sharded clusters that enforce access control, the ``inprog``
-   privilege is required to run :pipeline:`$currentOp`.
+- The second stage filters for just those documents related to inactive
+  sessions that are holding locks as part of a transaction.
 
 .. code-block:: javascript
 
@@ -196,88 +227,308 @@ an equivalent filter:
 
 .. code-block:: javascript
 
-   use admin
-   db.aggregate( [ 
+   db.getSiblingDB("admin").aggregate( [ 
       { $currentOp : { allUsers: true, idleSessions: true } },
       { $match : { type: "idleSession" } }
    ] )
 
+.. tip::
+
+   For transactions on a sharded cluster, starting in version 4.2.1,
+   include :ref:`localOps:true <currentOp-stage-localOps>` in the
+   aforementioned examples for a composite view of the transactions.
+
 Both operations return documents of the form:
 
-.. code-block:: javascript
+.. tabs::
 
-   {
-      "type" : "idleSession",
-      "host" : "example.mongodb.com:27017",
-      "desc" : "inactive transaction",
-      "client" : "198.51.100.1:53809",
-      "connectionId" : NumberLong(40),
-      "appName" : "",
-      "clientMetadata" : {
-         "driver" : {
-            "name" : "PyMongo",
-            "version" : "3.7.2"
-         },
-         "os" : {
-            "type" : "Darwin",
-            "name" : "Darwin",
-            "architecture" : "x86_64",
-            "version" : "10.14.2"
-         },
-         "platform" : "CPython 3.7.1.final.0"
-      },
-      "lsid" : {
-         "id" : UUID("02039c77-3f05-4dd6-a42d-d2168a73fc95"),
-         "uid" : BinData(0,"47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=")
-      },
-      "transaction" : {
-         "parameters" : {
-            "txnNumber" : NumberLong(1),
-            "autocommit" : false,
-            "readConcern" : {
-               "level" : "snapshot"
+   .. tab:: Replica Set
+      :tabid: currentOp-rs
+
+      When run on a :binary:`~bin.mongod` that is part of a replica set:
+
+      .. code-block:: javascript
+
+         {
+            "type" : "idleSession",
+            "host" : "example.mongodb.com:27017",
+            "desc" : "inactive transaction",
+            "client" : "198.51.100.1:50428",
+            "connectionId" : NumberLong(32),
+            "appName" : "",
+            "clientMetadata" : {
+               "driver" : {
+                  "name" : "PyMongo",
+                  "version" : "3.9.0"
+               },
+               "os" : {
+                  "type" : "Darwin",
+                  "name" : "Darwin",
+                  "architecture" : "x86_64",
+                  "version" : "10.14.5"
+               },
+               "platform" : "CPython 3.7.1.final.0"
+            },
+            "lsid" : {
+               "id" : UUID("ff21e1a9-a130-4fe0-942f-9e6b6c67ea3c"),
+               "uid" : BinData(0,"3pxqkATNUYKV/soT7qqKE0zC0BFb0pBz1pk4xXcSHsI=")
+            },
+            "transaction" : {
+               "parameters" : {
+                  "txnNumber" : NumberLong(4),
+                  "autocommit" : false,
+                  "readConcern" : {
+                     "level" : "snapshot",
+                     "afterClusterTime" : Timestamp(1563892246, 1)
+                  }
+               },
+               "readTimestamp" : Timestamp(0, 0),
+               "startWallClockTime" : "2019-07-23T10:30:49.461-0400",
+               "timeOpenMicros" : NumberLong(1913590),
+               "timeActiveMicros" : NumberLong(55),
+               "timeInactiveMicros" : NumberLong(1913535),
+               "expiryTime" : "2019-07-23T10:31:49.461-0400"
+            },
+            "waitingForLock" : false,
+            "active" : false,
+            "locks" : {
+               "ReplicationStateTransition" : "w",
+               "Global" : "w",
+               "Database" : "w",
+               "Collection" : "w"
+            },
+            "lockStats" : {
+               "ReplicationStateTransition" : {
+                  "acquireCount" : {
+                     "w" : NumberLong(5)
+                  }
+               },
+               "Global" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(3),
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Database" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(2),
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Collection" : {
+                  "acquireCount" : {
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Mutex" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(3)
+                  }
+               },
+               "oplog" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(2)
+                  }
+               }
+            },
+            "waitingForFlowControl" : false,
+            "flowControlStats" : {
+             }
+      
+         }
+
+
+   .. tab:: Sharded Cluster (localOps: true)
+      :tabid: currentOp-mongos-localops
+
+      Starting in version 4.2.1, :pipeline:`$currentOp` run with
+      :ref:`localOps:true <currentOp-stage-localOps>` provides a
+      composite view (rather than per shards information) of the
+      in-progress transactions run on that :binary:`~bin.mongos`.
+
+      .. code-block:: javascript
+
+         db.getSiblingDB("admin").aggregate( [ 
+            { $currentOp : { allUsers: true, idleSessions: true, localOps: true } },
+            { $match : { type: "idleSession" } }
+         ] );
+         
+         // or 
+
+         db.getSiblingDB("admin").aggregate( [
+            { $currentOp : { allUsers: true, idleSessions: true, localOps: true } },
+            { $match : { active: false, transaction : { $exists: true } } }
+         ] )
+      
+      .. code-block:: javascript
+      
+         {
+            "type" : "idleSession",
+            "host" : "example.mongodb.com:27017",
+            "desc" : "inactive transaction",
+            "client" : "198.51.100.1:49618",
+            "connectionId" : NumberLong(48),
+            "appName" : "",
+            "clientMetadata" : {
+               "driver" : {
+                  "name" : "PyMongo",
+                  "version" : "3.9.0"
+               },
+               "os" : {
+                  "type" : "Darwin",
+                  "name" : "Darwin",
+                  "architecture" : "x86_64",
+                  "version" : "10.14.6"
+               },
+               "platform" : "CPython 3.7.1.final.0",
+               "mongos" : {
+                  "host" : "example.mongodb.com:27017",
+                  "client" : "198.51.100.1:53268",
+                  "version" : "4.2.1"
+               }
+            },
+            "lsid" : {
+               "id" : UUID("2c9ce111-133e-45b7-a00f-a7871005cae1"),
+               "uid" : BinData(0,"3pxqkATNUYKV/soT7qqKE0zC0BFb0pBz1pk4xXcSHsI=")
+            },
+            "active" : false,
+            "transaction" : {
+               "parameters" : {
+                  "txnNumber" : NumberLong(2),
+                  "autocommit" : false,
+                  "readConcern" : {
+                     "level" : "snapshot",
+                     "afterClusterTime" : Timestamp(1571869019, 2)
+                  }
+               },
+               "globalReadTimestamp" : Timestamp(1571869019, 2),
+               "startWallClockTime" : "2019-10-23T18:16:59.341-0400",
+               "timeOpenMicros" : NumberLong(169244639),
+               "timeActiveMicros" : NumberLong(535),
+               "timeInactiveMicros" : NumberLong(169244104),
+               "numParticipants" : 2,
+               "participants" : [
+                  {
+                     "name" : "shardB",
+                     "coordinator" : true,
+                     "readOnly" : false
+                  },
+                  {
+                     "name" : "shardA",
+                     "coordinator" : false,
+                     "readOnly" : false
+                  }
+               ],
+               "numReadOnlyParticipants" : 0,
+               "numNonReadOnlyParticipants" : 2
             }
-         },
-         "readTimestamp" : Timestamp(1548869277, 3),
-         "startWallClockTime" : "2019-01-30T12:28:06.979-0500",
-         "timeOpenMicros" : NumberLong(34930476),
-         "timeActiveMicros" : NumberLong(210),
-         "timeInactiveMicros" : NumberLong(34930266),
-         "expiryTime" : "2019-01-30T12:29:06.979-0500"
-      }
-      "waitingForLock" : false,
-      "active" : false,
-      "locks" : {
-         "Global" : "w",
-         "Database" : "w",
-         "Collection" : "w"
-      },
-      "lockStats" : {
-         "Global" : {
-            "acquireCount" : {
-               "r" : NumberLong(2),
-               "w" : NumberLong(1)
-            }
-         },
-         "Database" : {
-            "acquireCount" : {
-               "r" : NumberLong(1),
-               "w" : NumberLong(1)
-            }
-         },
-         "Collection" : {
-            "acquireCount" : {
-               "r" : NumberLong(1),
-               "w" : NumberLong(1)
-            }
-         },
-         "oplog" : {
-               "acquireCount" : {
-                  "r" : NumberLong(2)
+         }
+
+      In 4.2.0, you can only return in-progress transactions
+      information when run without :ref:`localOps:true
+      <currentOp-stage-localOps>` on the :binary:`~bin.mongos`. When
+      run without :ref:`localOps:true <currentOp-stage-localOps>` on
+      the :binary:`~bin.mongos`, the transaction information is per
+      shard.
+
+   .. tab:: Sharded Cluster
+      :tabid: currentOp-mongos
+
+      When run on a :binary:`~bin.mongos` without :ref:`localOps:true
+      <currentOp-stage-localOps>`, the transaction information is per
+      shard.
+
+      .. code-block:: javascript
+
+         {
+            "shard" : "shardB",
+            "type" : "idleSession",
+            "host" : "shardB.mongodb.com:27018",
+            "desc" : "inactive transaction",
+            "client_s" : "198.51.100.1:53961",
+            "connectionId" : NumberLong(63),
+            "appName" : "",
+            "clientMetadata" : {
+               "driver" : {
+                  "name" : "PyMongo",
+                  "version" : "3.9.0"
+               },
+               "os" : {
+                  "type" : "Darwin",
+                  "name" : "Darwin",
+                  "architecture" : "x86_64",
+                  "version" : "10.14.6"
+               },
+               "platform" : "CPython 3.7.1.final.0",
+               "mongos" : {
+                  "host" : "example.mongodb.com:27017",
+                  "client" : "198.51.100.1:53976",
+                  "version" : "4.2.0"
+               }
+            },
+            "lsid" : {
+               "id" : UUID("720d403c-8daf-40bb-b61e-329e20b0493b"),
+               "uid" : BinData(0,"3pxqkATNUYKV/soT7qqKE0zC0BFb0pBz1pk4xXcSHsI=")
+            },
+            "transaction" : {
+               "parameters" : {
+                  "txnNumber" : NumberLong(1),
+                  "autocommit" : false,
+                  "readConcern" : {
+                     "level" : "snapshot"
+                  }
+               },
+               "readTimestamp" : Timestamp(0, 0),
+               "startWallClockTime" : "2019-10-21T18:31:12.192-0400",
+               "timeOpenMicros" : NumberLong(24137008),
+               "timeActiveMicros" : NumberLong(52),
+               "timeInactiveMicros" : NumberLong(24136956),
+               "expiryTime" : "2019-10-21T18:32:12.192-0400"
+            },
+            "waitingForLock" : false,
+            "active" : false,
+            "locks" : {
+               "ReplicationStateTransition" : "w",
+               "Global" : "w",
+               "Database" : "w",
+               "Collection" : "w"
+            },
+            "lockStats" : {
+               "ReplicationStateTransition" : {
+                  "acquireCount" : {
+                     "w" : NumberLong(3)
+                  }
+               },
+               "Global" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(1),
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Database" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(1),
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Collection" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(1),
+                     "w" : NumberLong(1)
+                  }
+               },
+               "Mutex" : {
+                  "acquireCount" : {
+                     "r" : NumberLong(6)
+                  }
                }
             }
-      }
-   }
+         }
+         {
+            "shard" : "shardA",
+            "type" : "idleSession",
+            ...
+         }
 
 .. _currentOp-stage-output-fields:
 
@@ -357,6 +608,265 @@ relevant for the operation:
    an internal thread that is currently idle. An operation can be
    active even if the operation has yielded to another operation.
 
+.. data:: $currentOp.twoPhaseCommitCoordinator
+
+   Information on either:
+
+   - .. _agg-current-op-commit-coord-metrics:
+   
+     The commit coordination metrics for a :doc:`transaction whose
+     write operations span multiple shards </core/transactions>`.
+   
+     Commit coordination is handled by a shard, and
+     :pipeline:`$currentOp` (run either on a :binary:`~bin.mongos` or a
+     shard member) returns a shard's coordination information only for
+     those transactions currently being coordinated by that shard.
+
+     To filter for just the commit coordination metrics:
+
+     .. code-block:: javascript
+
+        db.getSiblingDB("admin").aggregate( [ 
+            { $currentOp: { allUsers: true, idleSessions: true } }, 
+            { $match: { desc: "transaction coordinator" } }
+        ] )
+
+   - .. _agg-current-op-commit-coord-operation:
+
+     A specific commit coordination operation (i.e.
+     :data:`~$currentOp.type` is ``op`` and :data:`~$currentOp.desc` is
+     ``"TransactionCoordinator"``) spawned by the transaction
+     coordinator.
+
+   .. note::
+
+      - If run with :ref:`idleSessions: false
+        <currentOp-stage-idleSessions>`, :pipeline:`$currentOp` does not
+        return the :data:`$currentOp.twoPhaseCommitCoordinator`
+        information in ``inactive``
+        :data:`~$currentOp.twoPhaseCommitCoordinator.state`
+
+      - If access control is enabled and :ref:`allUsers: false
+        <currentOp-stage-allUsers>`, :pipeline:`$currentOp` does not
+        return :data:`$currentOp.twoPhaseCommitCoordinator` information.
+
+   .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.lsid
+
+      The session identifier for the multi-shard transaction.
+      
+      The combination of the
+      :data:`~$currentOp.twoPhaseCommitCoordinator.lsid` and
+      :data:`~$currentOp.twoPhaseCommitCoordinator.txnNumber` identifies
+      the transaction.
+
+      Available for both the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>` and for specific :ref:`coordination
+      operation <agg-current-op-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.txnNumber
+
+      The transaction number for the multi-shard transaction.
+
+      The combination of the
+      :data:`~$currentOp.twoPhaseCommitCoordinator.txnNumber` and
+      :data:`~$currentOp.twoPhaseCommitCoordinator.lsid` identifies the
+      transaction.
+
+      Available for both the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>` and for specific :ref:`coordination
+      operation <agg-current-op-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.action
+
+      The specific commit coordination operation spawned by the
+      transaction coordinator:
+      
+      - ``"sendingPrepare"``
+      - ``"sendingCommit"``
+      - ``"sendingAbort"``
+      - ``"writingParticipantList"``
+      - ``"writingDecision"``
+      - ``"deletingCoordinatorDoc"``
+
+      Only available for specific :ref:`coordination operation
+      <agg-current-op-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.startTime
+
+      The start date and time of the
+      :data:`~$currentOp.twoPhaseCommitCoordinator.action`.
+
+      Only available for specific :ref:`coordination operation
+      <agg-current-op-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.numParticipants
+
+      Number of shards participating in this commit.
+      
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.state
+
+      The current step/state of the commit coordination process.
+
+      .. list-table::
+         :widths: 20 80
+         :header-rows: 1
+         
+         * - Step/stage
+           - Description
+         
+         * - ``inactive``
+           - Not actively part of a commit.
+
+         * - ``writingParticipantList``
+         
+           - Writing a local record of the list of shards that are part
+             of this multi-shard transaction.
+
+         * - ``waitingForVotes``
+         
+           - Waiting for the participants to respond with vote to commit or abort.
+
+         * - ``writingDecision``
+         
+           - Writing a local record of the coordinator's decision to commit or
+             abort based on votes.
+
+         * - ``waitingForDecisionAck``
+ 
+           - Waiting for participants to acknowledge the coordinator's
+             decision to commit or abort.
+
+         * - ``deletingCoordinatorDoc``
+         
+           - Deleting the local record of commit decision.
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      See also
+      :data:`$currentOp.twoPhaseCommitCoordinator.stepDurations`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.commitStartTime
+
+      The date and time when the commit started.
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover
+
+      A boolean that indicates whether the commit coordination was
+      restarted due to failover on the shard that is coordinating the
+      commit.
+      
+      If
+      :data:`~$currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover`
+      is true, then the times specified in
+      :data:`$currentOp.twoPhaseCommitCoordinator.stepDurations` may
+      not be accurate for all steps.
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.stepDurations
+
+      A document that contains the duration, in microseconds, of the
+      completed or in-progress :data:`steps/state
+      <$currentOp.twoPhaseCommitCoordinator.state>` of the active
+      process as well as the cumulative total duration; for example:
+      
+      .. code-block:: javascript
+
+         "stepDurations" : {
+            "writingParticipantListMicros" : NumberLong(17801),
+            "totalCommitDurationMicros" : NumberLong(42488463),
+            "waitingForVotesMicros" : NumberLong(30378502),
+            "writingDecisionMicros" : NumberLong(15015),
+            "waitingForDecisionAcksMicros" : NumberLong(12077145),
+            "deletingCoordinatorDocMicros" : NumberLong(6009)
+         },
+
+      If
+      :data:`$currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover`
+      is true, then the times specified in
+      :data:`~$currentOp.twoPhaseCommitCoordinator.stepDurations` may
+      not be accurate for all steps.
+
+      For a coordinator in an ``inactive`` state, the document is empty:
+      
+      .. code-block:: javascript
+      
+         "stepDurations" : {
+         }
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      See :data:`$currentOp.twoPhaseCommitCoordinator.state`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.decision
+
+      A document that contains the commit/abort decision, for example:
+
+      - For a commmit decision:
+
+        .. code-block:: javascript
+
+           "decision" : {
+              "decision" : "commit",
+              "commitTimestamp" : Timestamp(1572034669, 3)
+           }
+
+      - For an abort decision:
+
+        .. code-block:: javascript
+
+           "decision" : {
+              "decision" : "abort",
+              "abortStatus" : {
+                 "code" : 282,
+                 "codeName" : "TransactionCoordinatorReachedAbortDecision",
+                 "errmsg" : "Transaction exceeded deadline"
+              }
+           }
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: $currentOp.twoPhaseCommitCoordinator.deadline
+
+      The date and time by which the commit must finish.
+
+      Only available for the :ref:`commit coordination metrics
+      <agg-current-op-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
 .. data:: $currentOp.currentOpTime
 
    The start time of the operation.
@@ -369,21 +879,21 @@ relevant for the operation:
    operation. Each user document contains the ``user`` name and the
    authentication ``db``.
 
-   .. seealso:: :data:`$currentOp.userImpersonators`
+   .. seealso:: :data:`$currentOp.runBy`
 
    .. versionadded:: 4.2
 
-.. data:: $currentOp.userImpersonators
+.. data:: $currentOp.runBy
 
    An array that contains a document for each user who is impersonating
    the :data:`effectiveUser(s)<$currentOp.effectiveUsers>` for the
-   operation. The user impersonator document contains the ``user`` name
+   operation. The runBy document contains the ``user`` name
    and the authentication ``db``. In general, the impersonating user is
    the ``__system`` user; e.g.
    
    .. code-block:: javascript
    
-      "userImpersonators" : [
+      "runBy" : [
          {
             "user" : "__system",
             "db" : "local"
@@ -432,9 +942,18 @@ relevant for the operation:
    A document that contains :doc:`multi-document transaction
    </core/transactions>` information.
 
-   Only present if the operation is part of a transaction.
+   Only present if the operation is part of a transaction:
 
-   .. versionadded:: 4.0
+   - Present starting in 4.0 for transactions on a replica set.
+
+   - Present starting in 4.2 for transactions on a sharded cluster if
+     :pipeline:`$currentOp` is run *without* :ref:`localOps: true
+     <currentOp-stage-localOps>`. The transaction information is per shard.
+
+   - Present starting in 4.2.1 for transactions on a sharded cluster if
+     :pipeline:`$currentOp` is run with :ref:`localOps: true
+     <currentOp-stage-localOps>`. The transaction information is a
+     composite view rather than per shard.
 
    .. data:: $currentOp.transaction.parameters
 
@@ -479,13 +998,38 @@ relevant for the operation:
 
          .. versionadded:: 4.0.2
 
+      .. data:: $currentOp.transaction.globalReadTimestamp
+
+         The timestamp of the snapshot read by the operations in the
+         sharded cluster transaction that uses :ref:`"snapshot" read
+         concern <transactions-read-concern-snapshot>`. For
+         transactions on sharded clusters, the read concern
+         :readconcern:`snapshot` of the data is synchronized across
+         shards; i.e. other read concerns cannot guarantee that the
+         data is from the same snapshot view across the shards.
+
+         Only present when run with :ref:`localOps: true
+         <currentOp-stage-localOps>` for sharded cluster transactions.
+
+         .. versionadded:: 4.2.1 
+
       .. data:: $currentOp.transaction.readTimestamp
 
          The timestamp of the snapshot being read by the operations in
-         the transaction.
+         this transaction
 
          Only present if the operation is part of a multi-document
-         transaction.
+         transaction. However, the field is not returned if:
+         
+         - the transaction is on a sharded cluster and uses
+           :ref:`"snapshot" read concern
+           <transactions-read-concern-snapshot>`, and
+   
+         - :pipeline:`$currentOp` is run with :ref:`localOps: true
+           <currentOp-stage-localOps>`. 
+           
+         Instead, :data:`$currentOp.transaction.globalReadTimestamp` is
+         returned.
 
          .. versionadded:: 4.0.2
 
@@ -545,6 +1089,61 @@ relevant for the operation:
          Only present if the operation is part of a multi-document
          transaction.
 
+      .. data:: $currentOp.transaction.numParticipants
+       
+         Number of shards participating in this transaction.
+       
+         Only present if the operation is part of a transaction on a
+         sharded cluster and :pipeline:`$currentOp` is run with
+         :ref:`localOps: true <currentOp-stage-localOps>`
+
+          .. versionadded:: 4.2.1
+
+      .. data:: $currentOp.transaction.participants
+      
+         An array of documents detailing the participating shardas in
+         this transaction. Each document contains the name, a flag
+         indicating if the shard acts as the commit coordinator, and a
+         flag indicating if the shard is only involved in read
+         operations for the transaction.
+         
+         .. code-block:: javascript
+            :copyable: false
+         
+            {
+               "name" : "shardA",
+               "coordinator" : false,
+               "readOnly" : false
+            }
+
+         Only present if the operation is part of a transaction on a
+         sharded cluster and :pipeline:`$currentOp` is run with
+         :ref:`localOps: true <currentOp-stage-localOps>`
+         
+         .. versionadded:: 4.2.1
+
+      .. data:: $currentOp.transaction.numReadOnlyParticipants
+      
+         Number of shards only affected by read operations in this
+         transaction.
+
+         Only present if the operation is part of a transaction on a
+         sharded cluster and :pipeline:`$currentOp` is run with
+         :ref:`localOps: true <currentOp-stage-localOps>`
+         
+         .. versionadded:: 4.2.1
+
+      .. data:: $currentOp.transaction.numNonReadOnlyParticipants
+      
+         Number of shards affected by operations other than reads in
+         this transaction.
+
+         Only present if the operation is part of a transaction on a
+         sharded cluster and :pipeline:`$currentOp` is run with
+         :ref:`localOps: true <currentOp-stage-localOps>`
+
+         .. versionadded:: 4.2.1
+
       .. data:: $currentOp.transaction.expiryTime
 
          The date and time (with time zone) when the transaction will
@@ -561,6 +1160,8 @@ relevant for the operation:
          transaction.
 
          .. versionadded:: 4.0.2
+
+      
 .. data:: $currentOp.op
 
    A string that identifies the specific operation type. Only present if
@@ -772,6 +1373,39 @@ relevant for the operation:
 
    .. include:: /includes/fact-lock-modes.rst
 
+.. data:: $currentOp.lockStats
+
+   For each lock type and mode (see :data:`~$currentOp.locks` for
+   descriptions of lock types and modes), returns the following
+   information:
+
+   .. data:: $currentOp.lockStats.acquireCount
+
+      Number of times the operation acquired the lock in the specified
+      mode.
+
+   .. data:: $currentOp.lockStats.acquireWaitCount
+
+      Number of times the operation had to wait for the
+      :data:`~$currentOp.lockStats.acquireCount` lock acquisitions
+      because the locks were held in a conflicting mode.
+      :data:`~$currentOp.lockStats.acquireWaitCount` is less than or
+      equal to :data:`~$currentOp.lockStats.acquireCount`.
+
+   .. data:: $currentOp.lockStats.timeAcquiringMicros
+
+      Cumulative time in microseconds that the operation had to wait to
+      acquire the locks.
+
+      :data:`~$currentOp.lockStats.timeAcquiringMicros` divided by
+      :data:`~$currentOp.lockStats.acquireWaitCount` gives an
+      approximate average wait time for the particular lock mode.
+
+   .. data:: $currentOp.lockStats.deadlockCount
+
+      Number of times the operation encountered deadlocks while waiting
+      for lock acquisitions.
+
 .. data:: $currentOp.waitingForLock
 
    Returns a boolean value. :data:`~$currentOp.waitingForLock` is ``true`` if the
@@ -805,36 +1439,34 @@ relevant for the operation:
    termination.  When the operation encounters its next safe termination point, the
    operation will terminate.
 
-.. data:: $currentOp.lockStats
 
-   For each lock type and mode (see :data:`$currentOp.locks` for
-   descriptions of lock types and modes), returns the following
-   information:
+.. data:: $currentOp.waitingForFlowControl
 
-   .. data:: $currentOp.lockStats.acquireCount
+   A boolean that indicates if the operation had to wait because
+   of :ref:`flow control <replication-flow-control>`.
 
-      Number of times the operation acquired the lock in the specified
-      mode.
+   .. versionadded:: 4.2
 
-   .. data:: $currentOp.lockStats.acquireWaitCount
+.. data:: $currentOp.flowControlStats
 
-      Number of times the operation had to wait for the
-      :data:`~$currentOp.lockStats.acquireCount` lock acquisitions
-      because the locks were held in a conflicting mode.
-      :data:`~$currentOp.lockStats.acquireWaitCount` is less than or
-      equal to :data:`~$currentOp.lockStats.acquireCount`.
+   The flow control statistics for this operation.
 
-   .. data:: $currentOp.lockStats.timeAcquiringMicros
+   .. versionadded:: 4.2
 
-      Cumulative time in microseconds that the operation had to wait to
-      acquire the locks.
+   .. data:: $currentOp.flowControlStats.acquireCount
+   
+      The number of times this operation acquired a ticket.
 
-      :data:`~$currentOp.lockStats.timeAcquiringMicros` divided by
-      :data:`~$currentOp.lockStats.acquireWaitCount` gives an
-      approximate average wait time for the particular lock mode.
+      .. versionadded:: 4.2
 
-   .. data:: $currentOp.lockStats.deadlockCount
+   .. data:: $currentOp.flowControlStats.acquireWaitCount
 
-      Number of times the operation encountered deadlocks while waiting
-      for lock acquisitions.
+      The number of times this operation waited to aqcuire a ticket.
 
+      .. versionadded:: 4.2
+
+   .. data:: $currentOp.flowControlStats.timeAcquiringMicros
+
+      The total time this operation has waited to acquire a ticket.
+
+      .. versionadded:: 4.2

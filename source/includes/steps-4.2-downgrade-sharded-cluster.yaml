@@ -36,9 +36,11 @@ content: |
 
      sh.getBalancerState()
 
+  .. include:: /includes/extracts/4.2-changes-stop-balancer-autosplit.rst
+ 
   For more information on disabling the balancer, see
   :ref:`sharding-balancing-disable-temporarily`.
-
+  
 ---
 title: "Downgrade the ``mongos`` instances."
 level: 4
@@ -79,6 +81,37 @@ content: |
          and run :method:`rs.status()` method.
 
          Repeat to downgrade for each secondary member.
+
+   #. Downgrade the shard :ref:`arbiter <replica-set-arbiter-configuration>`. if any.
+
+      Skip this step if the replica set does not include an arbiter.
+
+      a. Shut down the :binary:`~bin.mongod`. See
+         :ref:`terminate-mongod-processes` for additional ways to safely
+         terminate :binary:`~bin.mongod` processes.
+
+         .. code-block:: javascript
+
+            db.adminCommand( { shutdown: 1 } )
+
+      #. Delete the arbiter data directory. The 
+         :setting:`storage.dbPath` configuration setting or 
+         :option:`--dbpath <mongod --dbpath>` command line option specify the
+         data directory of the arbiter :binary:`~bin.mongod`.
+
+         .. code-block:: shell
+
+            rm -rf /path/to/mongodb/datafiles
+
+      #. Replace the |newversion| binary with the |oldversion| binary and restart.
+
+         .. note::
+
+            .. include:: /includes/extracts/4.2-changes-downgrade-command-line-options.rst
+
+      #. Wait for the member to recover to ``ARBITER`` state. To check
+         the member's state, connect a :binary:`~bin.mongo` shell to the
+         member and run :method:`rs.status()` method.
 
    #. Downgrade the shard's primary.
 
@@ -184,5 +217,22 @@ content: |
      sh.getBalancerState()
   
   If the balancer is enabled, the method returns true.
-       
+  
+---
+title: "Re-enable autosplit."
+level: 4
+ref: reenable-autosplit
+content: |
+
+   When stopping the balancer as part of the downgrade process, the
+   :method:`sh.stopBalancer()` method also disabled auto-splitting.
+   
+   Once downgraded to MongoDB 4.0, :method:`sh.startBalancer()` does
+   not re-enable auto-splitting. If you wish to re-enable
+   auto-splitting, run :method:`sh.enableAutoSplit()`:
+
+   .. code-block:: sh
+
+      sh.enableAutoSplit()
+
 ...

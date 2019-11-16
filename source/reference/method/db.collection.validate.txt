@@ -15,6 +15,10 @@ Description
 
 .. method:: db.collection.validate(<option>)
 
+
+   .. include:: /includes/fact-mongo-shell-method.rst
+
+
    Validates a collection. The method scans a collection data and
    indexes for correctness and returns the result. For details of the
    output, see :ref:`validate-output`.
@@ -52,7 +56,7 @@ Description
 
           - If ``true``, performs a more thorough check.
 
-          - If ``false``, omits some checks for a fater but less
+          - If ``false``, omits some checks for a faster but less
             thorough check.
 
           The default is ``false``.

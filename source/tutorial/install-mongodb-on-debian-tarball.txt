@@ -1,0 +1,109 @@
+======================================================
+Install MongoDB Community on Debian Using .tgz Tarball
+======================================================
+
+.. default-domain:: mongodb
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: twocols
+
+Overview
+--------
+
+.. _`MongoDB Download Center`: https://www.mongodb.com/download-center/community?jmp=docs
+
+Although the recommended procedure to install is through the
+:ref:`package manager <install-community-debian-pkg>`, you can also
+install by directly downloading the ``.tgz`` file. The following
+tutorial downloads the ``.tgz`` tarball directly to install MongoDB
+{+version+} Community Edition on Debian Linux systems.
+
+.. include:: /includes/extracts/install-past-mongodb-enterprise-debian.rst
+
+.. |package-name| replace:: ``{+package-name-org+}``
+.. |distro-name| replace:: Debian
+
+Considerations
+--------------
+
+Production Notes
+~~~~~~~~~~~~~~~~
+
+Before deploying MongoDB in a production environment, consider the
+:doc:`/administration/production-notes` document.
+
+Platform Support
+~~~~~~~~~~~~~~~~
+
+.. topic:: EOL Notice
+
+   MongoDB 4.2 removes support for Debian 8 ("Jessie").
+
+MongodDB 4.2 supports:
+
+- Debian 10 "Buster" (Starting in version 4.2.1)
+
+- Debian 9 "Stretch"
+
+MongoDB only provides packages for the 64-bit builds of these releases.
+See :ref:`mongodb-supported-platforms` for more information.
+
+.. include:: /includes/admonition-wsl.rst
+
+.. _install-community-debian-from-tarball:
+
+Install MongoDB Community Edition
+---------------------------------
+
+.. note::
+
+   The recommended procedure to install is through the :ref:`package
+   manager <install-community-debian-pkg>`. However, as an alternative,
+   you can install by downloading the ``.tgz`` tarballs directly.
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. tabs::
+
+   .. tab:: Debian 10 "Buster"
+      :tabid: debian-10-buster
+
+      .. include:: /includes/extracts/install-mongodb-community-manually-debian-10.rst
+
+   .. tab:: Debian 9 "Stretch"
+      :tabid: debian-9-stretch
+
+      .. include:: /includes/extracts/install-mongodb-community-manually-debian-9.rst
+
+Procedure
+~~~~~~~~~
+
+.. include:: /includes/steps/install-mongodb-on-linux.rst
+
+Run MongoDB Community Edition
+-----------------------------
+
+Production Notes
+   Before deploying MongoDB in a production environment, consider the
+   :doc:`/administration/production-notes` document.
+
+ulimit Considerations
+   .. include:: /includes/fact-installation-ulimit.rst
+
+.. |mongod-user| replace:: ``mongodb``
+.. |mongod-datadir| replace:: ``/var/lib/mongodb``
+
+Directories
+   .. include:: /includes/fact-installation-directories.rst
+
+.. note::
+
+   The following instructions assume that you have downloaded the
+   official MongoDB |package-name| packages, and not the unofficial
+   ``mongodb`` package provided by |distro-name|, and are using the default
+   settings.
+
+.. include:: /includes/steps/run-mongodb-on-linux-tarball.rst

@@ -7,20 +7,13 @@ Replication
 .. default-domain:: mongodb
 
 .. meta::
-   :keywords: replica set
+   :keywords: Replica sets provide redundancy and high availability.
 
 .. contents:: On this page
    :local:
    :backlinks: none
    :depth: 1
    :class: singlecol
-
-.. note::
-
-   All databases hosted on MongoDB Atlas are configured as replica sets. Atlas
-   makes it easy to add and remove replica set members in any region of your
-   preferred cloud provider. `Sign up for MongoDB Atlas
-   <https://www.mongodb.com/cloud/atlas?utm_source=replication&utm_campaign=20-docs-in-20-days&utm_medium=docs>`_.
 
 A *replica set* in MongoDB is a group of :binary:`~bin.mongod` processes
 that maintain the same data set. Replica sets provide redundancy and
@@ -85,9 +78,10 @@ replica set members. Because they do not store a data set, arbiters can
 be a good way to provide replica set quorum functionality with a
 cheaper resource cost than a fully functional replica set member with a
 data set. If your replica set has an even number of members, add an
-arbiter to obtain a majority of votes in an election for primary.
-Arbiters do not require dedicated hardware. For more information on
-arbiters, see :doc:`/core/replica-set-arbiter`.
+arbiter to obtain a :data:`majority
+<replSetGetStatus.majorityVoteCount>` of votes in an election for
+primary. Arbiters do not require dedicated hardware. For more
+information on arbiters, see :doc:`/core/replica-set-arbiter`.
 
 .. include:: /images/replica-set-primary-with-secondary-and-arbiter.rst
 
@@ -102,13 +96,37 @@ during an election.
 Asynchronous Replication
 ------------------------
 
-Secondaries apply operations from the primary asynchronously. By
-applying operations after the primary, sets can continue to function
-despite the failure of one or more members. For more information on
-replication mechanics, see :ref:`replica-set-oplog` and
-:ref:`replica-set-sync`.
+Secondaries replicate the primary's oplog and apply the operations to
+their data sets asynchronously. By having the secondaries' data sets
+reflect the primary's data set, the replica set can continue to
+function despite the failure of one or more members.
+
+For more information on replication mechanics, see
+:ref:`replica-set-oplog` and :ref:`replica-set-sync`.
+
+
+Slow Operations
+~~~~~~~~~~~~~~~
 
 .. include:: /includes/extracts/4.2-changes-slow-oplog-log-message-footnote.rst
+
+.. _replication-flow-control:
+
+Replication Lag and Flow Control
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:term:`Replication lag <replication lag>` refers to the amount of time
+that it takes to copy (i.e. replicate) a write operation on the
+:term:`primary` to a :term:`secondary`. Some small delay period may be
+acceptable, but significant problems emerge as replication lag grows,
+including building cache pressure on the primary.
+
+.. include:: /includes/extracts/4.2-changes-flow-control-general-desc.rst
+
+.. include:: /includes/extracts/4.2-changes-flow-control-specific-desc.rst
+ 
+For more information, see :ref:`replica-set-replication-lag` and
+:ref:`flow-control`.
 
 .. _replication-auto-failover:
 

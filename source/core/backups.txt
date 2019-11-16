@@ -4,6 +4,9 @@ MongoDB Backup Methods
 
 .. default-domain:: mongodb
 
+.. role:: red(strong)
+   :class: text-danger
+
 .. contents:: On this page
    :local:
    :backlinks: none
@@ -30,12 +33,6 @@ methods for backups:
 #. :atlas:`Cloud Provider Snapshots </backup/cloud-provider-snapshots>`, which
    provide localized backup storage using the native snapshot functionality of
    the cluster's cloud service provider.
-
-.. note::
-
-   If you are not currently using MongoDB Atlas, you can learn how to migrate
-   your deployment into Atlas with minimal downtime. `Learn more
-   <https://www.mongodb.com/cloud/atlas/migrate?utm_source=backups&utm_campaign=20-docs-in-20-days-migrations&utm_medium=docs>`_.
 
 Back Up with |MMS| or Ops Manager
 ---------------------------------
@@ -87,6 +84,10 @@ and the :opsmgr:`Ops Manager Manual </>`.
 
 Back Up by Copying Underlying Data Files
 ----------------------------------------
+
+.. topic:: Considerations for Encrypted Storage Engines using AES256-GCM 
+
+   .. include:: /includes/fact-aes256-backups.rst
 
 Back Up with Filesystem Snapshots
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,6 +177,10 @@ with the :option:`--oplogReplay <mongorestore --oplogReplay>` option.
 
 However, for replica sets, consider :ref:`backup-with-mms` or
 :ref:`backup-with-mms-onprem`.
+
+.. note::
+
+   .. include:: /includes/extracts/sharded-clusters-backup-restore-mongodump-mongorestore-restriction.rst
 
 See :doc:`/tutorial/backup-and-restore-tools`
 and :doc:`/tutorial/backup-sharded-cluster-with-database-dumps`

@@ -4,12 +4,6 @@ Security
 
 .. default-domain:: mongodb
 
-.. note::
-   Databases hosted on MongoDB Atlas are secure by default. Atlas encrypts your
-   data, both in-transit and at-rest, and makes it easy to control access with
-   role-based user management. `Set up a free cluster now
-   <https://www.mongodb.com/cloud/atlas/lp/security?utm_source=security&utm_campaign=20-docs-in-20-days&utm_medium=docs>`_.
-
 MongoDB provides various features, such as authentication, access
 control, encryption, to secure your MongoDB deployments. Some key
 security features include:
@@ -40,12 +34,15 @@ security features include:
 
        :doc:`/tutorial/configure-ssl-clients`
 
+.. the blank column is required to keep everything lined up. 
+
 .. list-table::
    :header-rows: 1
    :class: index-table index-table-less-padding
 
    * - Enterprise Only
      - Encryption
+     - 
 
    * - :doc:`/core/kerberos`
 
@@ -56,6 +53,8 @@ security features include:
        :doc:`/core/auditing`
 
      - :doc:`/core/security-client-side-encryption`
+   
+     - 
 
 Security Checklist
 ------------------

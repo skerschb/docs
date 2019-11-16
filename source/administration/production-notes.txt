@@ -80,12 +80,12 @@ Recommended Platforms
 While MongoDB supports a variety of platforms, the following operating
 systems are recommended for production use:
 
-- Amazon Linux
-- Debian 8
-- RHEL / CentOS 6.2+
+- Amazon Linux 2
+- Debian 9 and 10
+- RHEL / CentOS 6, 7, and 8
 - SLES 12
-- Ubuntu LTS 16.04
-- Windows Server 2012 R2
+- Ubuntu LTS 16.04 and 18.04
+- Windows Server 2016
 
 .. seealso:: :ref:`prod-notes-platform-considerations`
 
@@ -94,13 +94,15 @@ Use the Latest Stable Packages
 
 Be sure you have the latest stable release.
 
-All MongoDB releases are available on the `MongoDB Download Center
-<https://www.mongodb.com/download-center?jmp=docs#production>`_ page. The `MongoDB Download Center
-<https://www.mongodb.com/download-center?jmp=docs#production>`_ page is a good place to verify the
+All MongoDB releases are available on the `MongoDB Download Center`_
+page. The `MongoDB Download Center`_ page is a good place to verify the
 current stable release, even if you are installing via a package
 manager.
 
-.. include:: /includes/list-table-products-supported-architecture.rst
+For other MongoDB products, refer either to the `MongoDB Download Center`_
+page or their `respective documentation <https://docs.mongodb.com/?jmp=docs>`_.
+
+.. _`MongoDB Download Center`: https://www.mongodb.com/download-center/community?jmp=docs
 
 MongoDB ``dbPath``
 ------------------
@@ -476,20 +478,51 @@ WiredTiger uses :term:`prefix compression` on all indexes by default.
 Clock Synchronization
 ---------------------
 
-Use `NTP <http://www.ntp.org/>`_ to synchronize the clocks on all
-components of your MongoDB deployment. :term:`Replica sets <replica
-set>` and :term:`sharded clusters <sharded cluster>` running MongoDB
-3.4.5 or earlier with the :doc:`WiredTiger </core/wiredtiger>` storage
-engine may experience :ref:`checkpoint
-<storage-wiredtiger-checkpoints>` hangs on systems with unreliable
-clocks.
+MongoDB :doc:`components </reference/program>` keep logical clocks for
+supporting time-dependent operations. Using `NTP <http://www.ntp.org/>`_
+to synchronize host machine clocks mitigates the risk of clock drift
+between components. Clock drift between components increases the
+likelihood of incorrect or abnormal behavior of time-dependent
+operations like the following:
+
+- If the underlying system clock of any given MongoDB
+  component drifts a year or more from other components in the same
+  deployment, communication between those members may become unreliable
+  or halt altogether.
+
+  The :parameter:`maxAcceptableLogicalClockDriftSecs` parameter controls
+  the amount of acceptable clock drift between components. Clusters with
+  a lower value of ``maxAcceptableLogicalClockDriftSecs`` have a
+  correspondingly lower tolerance for clock drift.
+
+- Two cluster members with different system clocks may return 
+  different values for operations that return the current 
+  cluster or system time, such as :method:`Date()`, 
+  :variable:`NOW`, and :variable:`CLUSTER_TIME`.
+
+- Features which rely on timekeeping may have inconsistent or
+  unpredictable behavior in clusters with clock drift between MongoDB
+  components. 
+  
+  For example, :ref:`TTL indexes <index-feature-ttl>` rely
+  on the system clock to calculate when to delete a given document. If
+  two members have different system clock times, each member could
+  delete a given document covered by the TTL index at a different
+  time. Since :ref:`sessions` use TTL indexes to control their
+  lifespan, clock drift could result in inconsistent or unpredictable
+  session timeout behavior.
+
+NTP synchronization is required for deployments running MongoDB lower
+than ``3.4.6`` or ``3.2.17`` with the Wired Tiger storage engine, where
+clock drift could lead to :issue:`checkpoint hangs <WT-3227>`. The issue
+was fixed in MongoDB :ref:`3.4.6+ <3.4.6-changelog>` and MongoDB
+:ref:`3.2.17+ <3.2.17-release-notes>`, and is resolved in all point
+release of MongoDB 3.6, 4.0, and 4.2.
 
 .. _prod-notes-platform-considerations:
 
 Platform Specific Considerations
 --------------------------------
-
-.. include:: /includes/note-minimum-glibc.rst
 
 MongoDB on Linux
 ~~~~~~~~~~~~~~~~
@@ -517,6 +550,30 @@ performance issues that may occur when using EXT4 with WiredTiger.
 
 - On Red Hat Enterprise Linux and CentOS, use at least version
   ``2.6.18-194`` of the Linux kernel.
+
+System C Library
+````````````````
+
+MongoDB uses the `GNU C Library <http://www.gnu.org/software/libc/>`_
+(glibc) on Linux. Generally, each Linux distro provides its own
+vetted version of this library. For best results, use the latest update
+available for this system-provided version. You can check whether you have
+the latest version installed by using your system's package manager. For
+example:
+
+- On :abbr:`RHEL (Red Hat Enterprise Linux)` / CentOS, the following
+  command updates the system-provided GNU C Library:
+
+  .. code-block:: sh
+
+     sudo yum update glibc
+
+- On Ubuntu / Debian, the following command updates the system-provided
+  GNU C Library:
+
+  .. code-block:: sh
+
+     sudo apt-get install libc6
 
 ``fsync()`` on Directories
 ``````````````````````````
@@ -547,15 +604,13 @@ To see what the current swappiness level is, run:
 
 .. code-block:: sh
 
-   example@example:$ cat /proc/sys/vm/swappiness
-
-   60
+   cat /proc/sys/vm/swappiness
 
 To change swappiness while the system is running, run:
 
 .. code-block:: sh
 
-   example@example:$ sysctl vm.swappiness=1
+   sysctl vm.swappiness=1
 
 To change swappiness permanently, edit the ``/etc/sysctl.conf`` file in
 your preferred text editor and change this value:
@@ -608,20 +663,18 @@ consider the following recommendations:
 
 For the **WiredTiger** storage engine:
 
-- Set the readahead setting to 0 regardless of storage media type (spinning,
-  SSD, etc.).
+- Set the readahead setting between 8 and 32 regardless of storage
+  media type (spinning disk, SSD, etc.).
 
-  Setting a higher readahead benefits sequential I/O operations. However,
-  since MongoDB disk access patterns are generally random, setting a higher
-  readahead provides limited benefit or performance degradation. As such, for
-  most workloads, a readahead of 0 provides optimal MongoDB performance.
-
-  In general, set the readahead setting to 0 unless testing shows a
-  measurable, repeatable, and reliable benefit in a higher readahead value.
-  `MongoDB Professional Support
-  <https://www.mongodb.com/products/enterprise-grade-support>`_ can provide
-  advice and guidance on non-zero readahead configurations.
-
+  Higher readahead commonly benefits sequential I/O operations.
+  Since MongoDB disk access patterns are generally random, using higher
+  readahead settings provides limited benefit or potential performance
+  degradation. As such, for optimal MongoDB performance, set
+  readahead between 8 and 32, unless testing shows a measurable,
+  repeatable, and reliable benefit in a higher readahead value.
+  `MongoDB commercial support 
+  <https://support.mongodb.com/welcome?jmp=docs>`_ can
+  provide advice and guidance on alternate readahead configurations.
 
 MongoDB and TLS/SSL Libraries
 `````````````````````````````

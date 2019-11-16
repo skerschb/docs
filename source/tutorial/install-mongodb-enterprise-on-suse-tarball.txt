@@ -1,0 +1,83 @@
+=====================================================
+Install MongoDB Enterprise on SUSE Using .tgz Tarball
+=====================================================
+
+.. default-domain:: mongodb
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: twocols
+
+Overview
+--------
+
+Although the recommended procedure to install is through the
+:ref:`package manager <install-enterprise-suse-pkg>`, you can also
+install by directly downloading the ``.tgz`` file. The following
+tutorial downloads the ``.tgz`` tarball directly to install MongoDB
+{+version+} Enterprise Edition on SUSE Linux Enterprise Server
+12. MongoDB Enterprise is available on select platforms and contains
+support for several features related to security and monitoring.
+
+.. admonition:: Production Notes
+   :class: note
+
+   Before deploying MongoDB in a production environment, consider the
+   :doc:`/administration/production-notes` document.
+
+Platform Support
+----------------
+
+MongoDB only provides Enterprise packages for 64-bit builds of SUSE
+Enterprise Linux version 12.
+
+.. include:: /includes/fact-installation-64bit.rst
+
+Considerations
+--------------
+
+
+.. include:: /includes/fact-use-distribution-package.rst
+
+.. note::
+
+   .. include:: /includes/note-suse-ulimit.rst
+
+.. _install-enterprise-suse-from-tarball:
+
+Install MongoDB Enterprise
+--------------------------
+
+.. include:: /includes/extracts/install-past-mongodb-enterprise-suse.rst
+
+Prerequisites
+~~~~~~~~~~~~~
+
+.. include:: /includes/fact-tarball-dependencies.rst
+
+.. include:: /includes/extracts/install-mongodb-enterprise-manually-suse.rst
+
+Procedure
+~~~~~~~~~
+
+.. include:: /includes/steps/install-mongodb-enterprise-on-linux.rst
+
+Run MongoDB Enterprise
+----------------------
+
+.. |mongod-user| replace:: ``mongod``
+.. |mongod-datadir| replace:: ``/var/lib/mongo``
+
+Prerequisites
+~~~~~~~~~~~~~
+
+.. include:: /includes/fact-installation-directories.rst
+
+.. include:: /includes/fact-installation-ulimit.rst
+
+Procedure
+~~~~~~~~~
+
+.. include:: /includes/steps/run-mongodb-on-linux-tarball.rst

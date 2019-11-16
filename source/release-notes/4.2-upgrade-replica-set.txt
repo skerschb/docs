@@ -12,8 +12,6 @@ Upgrade a Replica Set to 4.2
    :depth: 1
    :class: singlecol
 
-.. include:: /includes/in-dev.rst
-
 .. include:: /includes/4.2-upgrade-replacements.rst
 
 .. include:: /includes/upgrade-copy.rst
@@ -79,8 +77,17 @@ MMAPv1 to WiredTiger Storage Engine
 MongoDB 4.2 removes support for the deprecated MMAPv1 storage engine.
 
 If your 4.0 deployment uses MMAPv1, you must change the 4.0 deployment
-to :doc:`/core/wiredtiger` before upgrading to MongoDB 4.2. For
-details, see :doc:`/tutorial/change-replica-set-wiredtiger`.
+to :doc:`/core/wiredtiger` before upgrading to MongoDB 4.2. For details,
+see :doc:`/tutorial/change-replica-set-wiredtiger`.
+
+Review Current Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With MongoDB 4.2, the :binary:`mongod <bin.mongod>` and
+:binary:`mongos <bin.mongos>` processes will not start with
+:ref:`4.2-mmapv1-conf-options`. Previous versions of MongoDB running
+WiredTiger ignored MMAPv1 configurations options if they were specified.
+With MongoDB 4.2, you must remove these from your configuration.
 
 Feature Compatibility Version
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,7 +142,7 @@ If you have not installed MongoDB using a package manager, you can
 manually download the MongoDB binaries from the `MongoDB Download
 Center <https://www.mongodb.com/download-center?jmp=docs>`_.
 
-See :doc:`/installation` for more information.
+See |installationdoc| for more information.
 
 Upgrade Process
 ---------------
@@ -149,7 +156,11 @@ individually while the other members are available.
 Post Upgrade
 ------------
 
-.. include:: /includes/extracts/4.2-changes-options-tls-ssl-upgrade.rst
+``TLS`` Options Replace Deprecated ``SSL`` Options
+  .. include:: /includes/extracts/4.2-changes-options-tls-ssl-upgrade.rst
+
+4.2-Compatible Drivers Retry Writes by Default
+  .. include:: /includes/extracts/4.2-changes-drivers-retryWrites-default.rst
 
 Additional Upgrade Procedures
 -----------------------------

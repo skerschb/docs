@@ -11,8 +11,6 @@ Downgrade |newversion| Replica Set to |oldversion|
    :depth: 1
    :class: singlecol
 
-.. include:: /includes/in-dev.rst
-
 Before you attempt any downgrade, familiarize yourself with the content
 of this document.
 
@@ -22,6 +20,9 @@ Downgrade Path
 --------------
 
 .. include:: /includes/downgrade-path.rst
+
+If you downgrade, you can only downgrade to a 4.0.12 or later version.
+You cannot downgrade to a 4.0.11 or earlier version.
 
 Considerations
 --------------
@@ -137,6 +138,21 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
    Script
       .. include:: /includes/extracts/4.2-downgrade-fcv-unique-index-script.rst
 
+2d. Remove Wildcard Indexes
+````````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
+
+
+2e. View Definitions/Collection Validation Definitions that Include 4.2 Operators
+`````````````````````````````````````````````````````````````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
+
 
 3. Update ``tls``-Prefixed Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -209,6 +225,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
          - Comment out the :ref:`replication <replication-options>` settings
            for your deployment.
 
+         - Set parameter ``disableLogicalSessionCacheRefresh`` to
+           ``true`` in the :setting:`setParameter` section.
+
          For example:
 
          .. code-block:: none
@@ -218,7 +237,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
                   enabled: false
             #replication:
             #   replSetName: replA
-      
+            setParameter:
+                disableLogicalSessionCacheRefresh: true
+
          If you use command-line options instead of a configuration file, you
          will have to update the command-line option during the restart.
       
@@ -231,14 +252,22 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
               mongod -f <path/to/myconfig.conf>
 
          - If you are using command-line options instead of a
-           configuration file, include the :option:`--nojournal <mongod
-           --nojournal>` option and remove any :ref:`replication
-           command-line options <cli-mongod-replica-set>` (such as
-           :option:`--replSet <mongod --replSet>`):
+           configuration file, 
 
+           - Include the :option:`--nojournal <mongod
+             --nojournal>` option
+           
+           - Remove any :ref:`replication command-line options
+             <cli-mongod-replica-set>` (such as :option:`--replSet
+             <mongod --replSet>`):
+           
+           - Set parameter ``disableLogicalSessionCacheRefresh``
+             to ``true`` in the :option:`--setParameter <mongod
+             --setParameter>` option.
+                  
            .. code-block:: sh
 
-              mongod --nojournal  ...
+              mongod --nojournal --setParameter disableLogicalSessionCacheRefresh=true  ...
 
       #. Perform a clean shutdown of the :binary:`~bin.mongod` instance:
 
@@ -255,7 +284,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
 
          - Uncomment the :ref:`replication <replication-options>`
            settings for your deployment.
-     
+
+         - Remove the ``disableLogicalSessionCacheRefresh`` parameter.
+
          - Remove
            :setting:`storage.wiredTiger.engineConfig.journalCompressor` setting
            to use the default journal compressor or specify a  new value.
@@ -292,10 +323,12 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
            - Remove the :option:`--wiredTigerJournalCompressor <mongod
              --wiredTigerJournalCompressor>` command-line option to use
              the default journal compressor or update to a new value.
-   
+
            - Include your :ref:`replication command-line options
              <cli-mongod-replica-set>` as well as any additional
              options for your replica set member.
+
+           - Remove the ``disableLogicalSessionCacheRefresh`` parameter.
 
            .. code-block:: sh
 
@@ -321,19 +354,6 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
 
 .. |binary| replace:: any replica set member
 
-5. Update View Definitions that Include 4.2 Operators
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
-
-6. Remove all Wildcard Indexes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
 
 Procedure
 ---------

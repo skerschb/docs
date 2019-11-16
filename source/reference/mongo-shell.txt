@@ -491,7 +491,8 @@ administration:
    * - :method:`db.fromColl.renameCollection(\<toColl\>)
        <db.collection.renameCollection()>`
 
-     - Rename collection from ``fromColl`` to ``<toColl>``.
+     - Rename collection from ``fromColl`` to ``<toColl>``. See
+       :ref:`restrictions-on-db-names`.
 
    * - :method:`db.getCollectionNames()`
 
@@ -549,10 +550,6 @@ The following table displays some miscellaneous methods:
 
    * - ``Object.bsonsize(<document>)``
      - Prints the :term:`BSON` size of a <document> in bytes
-
-See the `MongoDB JavaScript API Documentation
-<http://api.mongodb.org/js/index.html>`_ for a full list of JavaScript
-methods .
 
 Additional Resources
 --------------------

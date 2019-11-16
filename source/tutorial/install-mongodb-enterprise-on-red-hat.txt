@@ -1,6 +1,6 @@
-==========================================================
-Install MongoDB Enterprise on Red Hat Enterprise or CentOS
-==========================================================
+=======================================================
+Install MongoDB Enterprise Edition on Red Hat or CentOS
+=======================================================
 
 .. default-domain:: mongodb
 
@@ -13,12 +13,10 @@ Install MongoDB Enterprise on Red Hat Enterprise or CentOS
 Overview
 --------
 
-.. include:: /includes/rc-install.rst
-
 Use this tutorial to install :products:`MongoDB Enterprise
 </mongodb-enterprise-advanced?jmp=docs>` on Red Hat Enterprise Linux, 
-CentOS Linux, or Oracle Linux [#oracle-linux]_ versions 6 and 7 from 
-``.rpm`` packages.
+CentOS Linux, or Oracle Linux [#oracle-linux]_ versions 6, 7, and 8
+from ``.rpm`` packages via the ``yum`` package manager.
 
 .. include:: /includes/fact-installation-64bit.rst
 
@@ -37,12 +35,7 @@ CentOS Linux, or Oracle Linux [#oracle-linux]_ versions 6 and 7 from
    Kernel (RHCK). MongoDB does **not** support the Unbreakable
    Enterprise Kernel (UEK).
 
-Packages
----------
-
-.. include:: /includes/list-mongodb-enterprise-packages.rst
-
-.. include:: /includes/fact-installation-bind-ip-default-in-config.rst
+.. _install-enterprise-redhat-pkg:
 
 Install MongoDB Enterprise
 --------------------------
@@ -56,26 +49,12 @@ Using ``.rpm`` Packages (Recommended)
 
 .. include:: /includes/steps/install-mongodb-enterprise-on-red-hat.rst
 
-.. _install-redhat-from-tarball:
+.. seealso::
 
-Using ``.tgz`` Tarballs
-~~~~~~~~~~~~~~~~~~~~~~~
-
-Prerequisites
-`````````````
-
-.. include:: /includes/fact-tarball-dependencies.rst
-
-Red Hat Enterprise Linux 6
-  .. include:: /includes/extracts/install-mongodb-enterprise-manually-redhat-6.rst
-
-Red Hat Enterprise Linux 7
-  .. include:: /includes/extracts/install-mongodb-enterprise-manually-redhat-7.rst
-
-Procedure
-`````````
-
-.. include:: /includes/steps/install-mongodb-enterprise-on-linux.rst
+   The recommended procedure to install is through the package manager,
+   as detailed on this page. However, if you choose to install by
+   directly downloading the ``.tgz`` file, see
+   :doc:`/tutorial/install-mongodb-enterprise-on-red-hat-tarball`.
 
 Run MongoDB Enterprise
 ----------------------
@@ -193,3 +172,16 @@ Uninstall MongoDB
 .. include:: /includes/fact-uninstall.rst
 
 .. include:: /includes/steps/uninstall-mongodb-enterprise-on-redhat.rst
+   
+Packages
+---------
+
+.. include:: /includes/list-mongodb-enterprise-packages.rst
+
+.. include:: /includes/fact-installation-bind-ip-default-in-config.rst
+
+.. toctree::
+   :hidden:
+   :titlesonly:
+
+   Install using .tgz Tarball </tutorial/install-mongodb-enterprise-on-red-hat-tarball>

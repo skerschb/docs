@@ -18,7 +18,11 @@ content: |
       <data-modeling-embedding>` will continue to be optimal for your
       data and use cases. That is, for many scenarios, modeling your data
       appropriately will minimize the need for multi-document
-      transactions.
+      transactions. 
+      
+      For additional transactions usage considerations
+      (such as runtime limit and oplog size limit), see also
+      :doc:`/core/transactions-production-consideration`.
 
 ---
 ref: transactions-intro
@@ -101,14 +105,6 @@ content: |
    the first operation in the transaction.
 
 ---
-ref: transactions-operations-retry
-content: |
-   The commit and abort transaction operations are :doc:`retryable write
-   operations </core/retryable-writes>`. If the commit operation or the
-   abort operation encounters an error, MongoDB drivers retry the
-   operation a single time regardless of whether :urioption:`retryWrites` is
-   set to ``true``.
----
 ref: transactions-operations-crud
 content: |
 
@@ -116,7 +112,7 @@ content: |
      collections. The collections can be in different databases. For a
      list of CRUD operations, see :ref:`transactions-operations-crud`.
 
-   - You cannot read/write to :doc:`capped </core/capped-collections>`
+   - You cannot write to :doc:`capped </core/capped-collections>`
      collections. (Starting in MongoDB 4.2)
 
    - You cannot read/write to collections in the ``config``, ``admin``,
@@ -156,7 +152,7 @@ content: |
 ref: transactions-supported-operation
 content: |
 
-   |operation| supports :doc:`multi-document transactions
+   |operation| can be used inside :doc:`multi-document transactions
    </core/transactions>`.
 
 ---
@@ -236,15 +232,6 @@ content: |
 
    - If the employee document has not changed, the transaction returns
      the document and locks the document.
----
-ref: transactions-beta
-content: |
-   .. admonition:: Distributed Transactions (Beta)
-      :class: note
-
-      To join the beta program for distributed transactions, sign
-      up at `Distributed Transactions Beta Sign-Up <https://www.mongodb.com/transactions/globalbeta?jmp=docs>`_.
-
 ---
 ref: transactions-read-concern-majority
 content: |
@@ -413,16 +400,19 @@ content: |
 ref: transactions-capped-collection-change
 content: |
 
-   Starting in MongoDB 4.2, you cannot read/write to :doc:`capped
+   Starting in MongoDB 4.2, you cannot write to :doc:`capped
    </core/capped-collections>` collections in :doc:`transactions
-   </core/transactions>`.
+   </core/transactions>`.  Reads from :doc:`capped
+   </core/capped-collections>` collections are still supported
+   in :doc:`transactions </core/transactions>`.
+
 ---
 ref: transactions-arbiters
 content: |
 
    Transactions whose write operations span multiple shards will error
    and abort if any transaction operation reads from or writes to a
-   shard contains an arbiter.
+   shard that contains an arbiter.
 
    See also |disabledrcmaj| for transaction restrictions on shards that
    have disabled read concern majority.

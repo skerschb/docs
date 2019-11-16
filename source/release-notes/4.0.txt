@@ -9,15 +9,84 @@ Release Notes for MongoDB 4.0
    :backlinks: none
    :depth: 1
    :class: twocols
-
-.. note::
-   Database clusters hosted on MongoDB Atlas can be automatically upgraded to
-   the latest versions of MongoDB with no downtime using automated rolling
-   upgrades. `Create a free cluster
-   <https://www.mongodb.com/cloud/atlas?utm_source=40-release-notes&utm_campaign=20-docs-in-20-days&utm_medium=docs>`_.
    
 Minor Releases
 --------------
+
+.. _4.0.13-release-notes:
+
+4.0.13 - Oct 19, 2019
+~~~~~~~~~~~~~~~~~~~~~
+
+Issues fixed:
+
+- :issue:`SERVER-37690`: countDocuments throws an error when matching 0 document
+
+- :issue:`SERVER-41939`: Connect to fastest LDAP server first
+
+- :issue:`WT-4869`: Stop adding cache pressure when eviction is falling behind
+
+- :issue:`WT-4882`: Improve checkpoint performance when there are large metadata pages
+
+- :issue:`WT-4898`: Don't allow the eviction server to reconcile if it's busy
+ 
+- `All JIRA issues closed in 4.0.13
+  <https://jira.mongodb.org/issues/?jql=project%20in%20(SERVER%2CTOOLS%2CWT)%20AND%20resolution%3D%27Fixed%27%20and%20fixversion%3D%274.0.13%27>`_
+
+- :ref:`4.0.13-changelog`
+
+.. _4.0.12-release-notes:
+
+4.0.12 - Aug 12, 2019
+~~~~~~~~~~~~~~~~~~~~~
+
+Issues fixed:
+
+- :issue:`SERVER-41829`: findAndModify ignores filter expressions that are not objects.
+
+- :issue:`SERVER-42603`: Recent service file change may cause cyclic dependencies.
+
+- `All JIRA issues closed in 4.0.12
+  <https://jira.mongodb.org/issues/?jql=project%20in%20(SERVER%2CTOOLS%2CWT)%20AND%20resolution%3D%27Fixed%27%20and%20fixversion%3D%274.0.12%27>`_
+
+- :ref:`4.0.12-changelog`
+
+
+.. _4.0.11-release-notes:
+
+4.0.11 - Jul 26, 2019
+~~~~~~~~~~~~~~~~~~~~~
+
+Issues fixed:
+
+- :issue:`SERVER-39756`: Sharding a very large collection can result in
+  a long stall of writes against this collection
+
+- :issue:`SERVER-40134`: Distinct command against a view can return
+  incorrect results when the distinct path is multikey
+
+- :issue:`SERVER-40535`: Possibility to get a non-existent key if using
+  ReadConcern level:local when reading signing keys in ReplicaSet
+
+- :issue:`SERVER-41361`:  Do not read at lastApplied while already holding the PBWM lock on secondaries
+- :issue:`SERVER-41869`:  Reverse mutex acquisition order in CatalogCache::_scheduleCollectionRefresh
+- :issue:`SERVER-42055`:  Only acquire a collection IX lock to write the lastVote document
+
+- :issue:`SERVER-42232`: Adding a new shard renders all preceding
+  resume tokens invalid
+
+- `All JIRA issues closed in 4.0.11
+  <https://jira.mongodb.org/issues/?jql=project%20in%20(SERVER%2CTOOLS%2CWT)%20AND%20resolution%3D%27Fixed%27%20and%20fixversion%3D%274.0.11%27>`_
+
+- :ref:`4.0.11-changelog`
+
+.. note::
+
+   Fixed issues include those that resolve the following Common
+   Vulnerabilities and Exposures (CVEs):
+
+   - CVE-2019-2389 (See :issue:`SERVER-40563`)
+   - CVE-2019-2390 (See :issue:`SERVER-42233`)
 
 .. _4.0.10-release-notes:
 
@@ -32,7 +101,7 @@ Issues fixed:
 
 - :issue:`SERVER-38867`: Refine handling of system.* collections in listCollections/show collections
 
-- :issue:`SERVER-39672`: Default to local read concern if unspecified for multi-document transactions
+- :issue:`SERVER-39672`: Default to :readconcern:`"local"` read concern if unspecified for multi-document transactions
 
 - :issue:`WT-4769`: Don't discard active history for empty pages
 
@@ -58,6 +127,12 @@ Issues fixed:
 
 - :ref:`4.0.9-changelog`
 
+.. note::
+
+   Fixed issues include those that resolve the following Common
+   Vulnerabilities and Exposures (CVEs):
+
+   - CVE-2019-2386 (See :issue:`SERVER-38984`)
 
 .. _4.0.8-release-notes:
 
@@ -67,7 +142,7 @@ Issues fixed:
 Issues fixed:
 
 - :issue:`SERVER-40355`:  rs.config that contains an ``_id`` greater than the number of nodes will crash
-- :issue:`SERVER-38994`:  Step down on SIGTERM
+- :issue:`SERVER-38994`:  Step down on SIGTERM.  See :ref:`kill-sigterm`.
 - :issue:`SERVER-37722`:  Quiet mode does not suppress connection end events
 - :issue:`SERVER-37389`:  Give different messages for different connection failure reasons
 
@@ -1195,7 +1270,7 @@ Download
 --------
 
 To download MongoDB 4.0, go to the `MongoDB Download Center
-<https://www.mongodb.com/download-center?jmp=docs#production>`_
+<https://www.mongodb.com/download-center/community?jmp=docs>`_
 
 .. seealso::
 

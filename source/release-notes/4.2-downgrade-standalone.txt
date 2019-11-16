@@ -12,8 +12,6 @@ Downgrade |newversion| Standalone to |oldversion|
    :depth: 1
    :class: singlecol
 
-.. include:: /includes/in-dev.rst
-
 Before you attempt any downgrade, familiarize yourself with the content
 of this document.
 
@@ -21,6 +19,9 @@ Downgrade Path
 --------------
 
 .. include:: /includes/downgrade-path.rst
+
+If you downgrade, you can only downgrade to a 4.0.12 or later version.
+You cannot downgrade to a 4.0.11 or earlier version.
 
 .. |downgrading| replace:: downgrading
 
@@ -100,6 +101,19 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
    Script
       .. include:: /includes/extracts/4.2-downgrade-fcv-unique-index-script.rst
 
+2d. Remove Wildcard Indexes
+```````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
+
+2e. View Definitions/Collection Validation Definitions that Include 4.2 Operators
+`````````````````````````````````````````````````````````````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
 
 3. Update ``tls``-Prefixed Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,7 +150,7 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
 
       .. code-block:: sh
 
-         mongodump --host <myhost> --port <port> --out mystandalone.uncompressed.fcv4.0
+         mongodump --host=<myhost> --port=<port> --out=mystandalone.uncompressed.fcv4.0
 
       Include any other options, such as :option:`--username <mongodump
       --username>`, :option:`--password <mongodump --password>`, and
@@ -201,20 +215,6 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
    .. include:: /includes/extracts/4.2-changes-zstd-network-compression.rst
 
 .. |binary| replace:: the :binary:`~bin.mongod` instance
-
-5. Update View Definitions that Include 4.2 Operators
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
-
-6. Remove all Wildcard Indexes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
 
 Procedure
 ---------

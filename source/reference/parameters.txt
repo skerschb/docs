@@ -127,12 +127,15 @@ Authentication Parameters
 
 .. parameter:: ldapUserCacheInvalidationInterval
 
-   For use with MongoDB servers using :ref:`security-ldap-external`.
+   For use with MongoDB deployments using
+   :ref:`security-ldap-external`. Available for :binary:`~bin.mongod`
+   instances only.
 
-   The interval (in seconds) MongoDB waits
-   between external user cache flushes. After MongoDB flushes the external
-   user cache, the next operation an LDAP-authorized user, MongoDB
-   reacquires authorization data from the LDAP server.
+   The interval (in seconds) that the :binary:`~bin.mongod` instance
+   waits between external user cache flushes. After MongoDB flushes the
+   external user cache, MongoDB
+   reacquires authorization data from the LDAP server the
+   next time an LDAP-authorized user issues an operation.
 
    Increasing the value specified increases the amount of time
    MongoDB and the LDAP server can be out of sync, but reduces the load on
@@ -141,6 +144,115 @@ Authentication Parameters
    increasing the load on the LDAP server.
 
    Defaults to 30 seconds.
+
+.. parameter:: ldapUseConnectionPool
+
+   .. versionadded:: 4.0.9
+
+   Specifies whether MongoDB should use connection pooling when
+   connecting to the LDAP server for authentication/authorization.
+
+   **Starting in version 4.2**, MongoDB uses the following default values:
+
+   - true on Windows.
+
+   - true on Linux where MongoDB Enterprise binaries are linked against
+     ``libldap_r``.
+
+   - false on Linux where MongoDB Enterprise binaries are linked against
+     ``libldap``.
+     
+     .. tip::
+
+        To allow concurrent authentication commands for LDAP users, you
+        may wish to link to ``libldap_r``. For assistance, contact
+        :doc:`support </support>`.
+
+   **In earlier versions (versions 4.0.9+)**, the default value is
+   ``false``.
+
+   You can only set :parameter:`ldapUseConnectionPool` during
+   start-up, and cannot change this setting with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter:: ldapConnectionPoolUseLatencyForHostPriority
+
+   *New in version 4.2.1 and 4.0.13*
+
+   *Default*: true
+
+   A boolean that determines whether the LDAP connection pool (see
+   :parameter:`ldapUseConnectionPool`) should use latency of the LDAP
+   servers to determine the connection order (from lowest latency to
+   highest).
+
+   You can only set
+   :parameter:`ldapConnectionPoolUseLatencyForHostPriority` during
+   start-up, and cannot change this setting during runtime with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter:: ldapConnectionPoolMinimumConnectionsPerHost
+
+   *New in version 4.2.1 and 4.0.13*
+
+   *Default*: 1
+
+   The minimum number of connections to keep open to each LDAP server.
+
+   You can only set
+   :parameter:`ldapConnectionPoolMinimumConnectionsPerHost` during
+   start-up, and cannot change this setting during runtime with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter::   ldapConnectionPoolMaximumConnectionsPerHost
+
+   *New in version 4.2.1 and 4.0.13*
+
+   The maximum number of connections to keep open to each LDAP server.
+
+   You can only set
+   :parameter:`ldapConnectionPoolMaximumConnectionsPerHost` during
+   start-up, and cannot change this setting during runtime with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter:: ldapConnectionPoolMaximumConnectionsInProgressPerHost
+
+   *New in version 4.2.1 and 4.0.13*
+
+   The maximum number of in-progress connect operations to each LDAP server.
+
+   You can only set
+   :parameter:`ldapConnectionPoolMaximumConnectionsInProgressPerHost`
+   during start-up, and cannot change this setting with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter:: ldapConnectionPoolHostRefreshIntervalMillis
+
+   *New in version 4.2.1 and 4.0.13*
+
+   *Default*: 60000
+
+   The number of milliseconds in-between health checks of the pooled
+   LDAP connections.
+
+   You can only set
+   :parameter:`ldapConnectionPoolHostRefreshIntervalMillis` during
+   start-up, and cannot change this setting with the
+   :dbcommand:`setParameter` database command.
+
+.. parameter:: ldapConnectionPoolIdleHostTimeoutSecs
+
+   *New in version 4.2.1 and 4.0.13*
+
+   *Default*: 300
+
+   The maximum number of seconds that the pooled connections to an LDAP
+   server can remain idle before being closed.
+
+   You can only set
+   :parameter:`ldapConnectionPoolIdleHostTimeoutSecs` during
+   start-up, and cannot change this setting with the
+   :dbcommand:`setParameter` database command.
 
 .. parameter:: opensslCipherConfig
 
@@ -167,13 +279,54 @@ Authentication Parameters
 
    .. code-block:: sh
 
-      mongod --setParameter opensslCipherConfig=HIGH:!EXPORT:!aNULL@STRENGTH --tlsMode requireTLS --tlsCertificateKeyFile Certs/server.pem
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL@STRENGTH' --tlsMode requireTLS --tlsCertificateKeyFile Certs/server.pem
 
    For versions 4.0 and earlier:
 
    .. code-block:: sh
 
-      mongod --setParameter opensslCipherConfig=HIGH:!EXPORT:!aNULL@STRENGTH --sslMode requireSSL --sslPEMKeyFile Certs/server.pem
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL@STRENGTH' --sslMode requireSSL --sslPEMKeyFile Certs/server.pem
+
+.. parameter:: opensslDiffieHellmanParameters
+
+   .. versionadded:: 3.6
+
+   *Available on Linux only*
+
+   Specify the path to the PEM file that contains the OpenSSL
+   Diffie-Hellman parameters. Specifying the OpenSSL Diffie-Hellman
+   parameters enables support for :ref:`dhe` cipher suites during
+   TLS/SSL encryption.
+   
+   Ephemeral Diffie-Hellman (DHE) cipher suites (and Ephemeral Elliptic
+   Curve Diffie-Hellman (ECDHE) cipher suites) provide
+   :ref:`tls-forward-secrecy`. :ref:`tls-forward-secrecy` cipher suites
+   create an ephemeral session key that is protected by the server's
+   private key but never transmitted. This ensures that even if a
+   server's private key is compromised, you cannot decrypt past
+   sessions with the compromised key.
+
+   .. note::
+   
+      Starting in MongoDB 4.2, if
+      :parameter:`opensslDiffieHellmanParameters` is unset but
+      :ref:`ECDHE is enabled <ecdhe>`, MongoDB enables DHE using
+      ``ffdhe3072`` Diffie-Hellman parameter, as defined in
+      :rfc:`7919#appendix-A.2`. The ``ffdhe3072`` is a strong parameter
+      (i.e. size is greater than 1024). Strong parameters are not
+      supported with Java 6 and 7 unless extended support has been
+      purchased from Oracle.
+
+   You can only set :parameter:`opensslDiffieHellmanParameters` during
+   startup, and cannot change this setting using the
+   :dbcommand:`setParameter` database command.
+
+   If for performance reasons, you need to disable support for DHE
+   cipher suites, use the :parameter:`opensslCipherConfig` parameter:
+
+   .. code-block:: sh
+
+      mongod --setParameter opensslCipherConfig='HIGH:!EXPORT:!aNULL:!DHE:!kDHE@STRENGTH' ...
 
 .. parameter:: saslauthdPath
 
@@ -336,11 +489,11 @@ Authentication Parameters
    |both|
 
    Set to either:
-   
+
    - ``preferTLS``
-   
+
    - ``requireTLS``
-   
+
    The :parameter:`tlsMode` parameter is useful during :doc:`rolling
    upgrade to TLS/SSL </tutorial/upgrade-cluster-to-ssl>` to minimize
    downtime.
@@ -356,7 +509,7 @@ Authentication Parameters
 .. parameter:: tlsWithholdClientCertificate
 
    *Default*: false
- 
+
    .. versionadded:: 4.2
 
    |both|
@@ -377,14 +530,55 @@ Authentication Parameters
    deployment. ``tlsWithholdClientCertificate`` is mutually exclusive with
    :option:`--clusterAuthMode x509 <mongod --clusterAuthMode>`.
 
+.. parameter:: tlsX509ClusterAuthDNOverride
+
+   .. versionadded:: 4.2
+
+   |both|
+
+   An alternative Distinguished Name (DN) that the instance can also
+   use to identify members of the deployment.
+
+   For a MongoDB deployment that uses x.509 certificates for
+   :setting:`~security.clusterAuthMode`, deployment members identify
+   each other using x.509 certificates (
+   :setting:`net.tls.clusterFile`, if specified, and
+   :setting:`net.tls.certificateKeyFile`) during intra-cluster
+   communications. For members of the same deployment, the ``DN`` from
+   their certificates must have the same Organization attributes
+   (``O``\'s), the Organizational Unit attributes (``OU``\'s), and the
+   Domain Components (``DC``\'s).
+
+   If :parameter:`tlsX509ClusterAuthDNOverride` is set for a member,
+   the member can also use the override value when comparing the ``DN``
+   components (``O``\'s, ``OU``\'s, and ``DC``\'s) of the presented
+   certificates. That is the member checks the presented certificates
+   against its
+   :setting:`net.tls.clusterFile`/:setting:`net.tls.certificateKeyFile`.
+   If the DN does not match, the member checks the presented
+   certifcate against the :parameter:`tlsX509ClusterAuthDNOverride`
+   value.
+
+   .. note::
+
+      If set, you must set this parameter on all members of the
+      deployment.
+
+   You can use this parameter for a rolling update of certificates to
+   new certificates that contain a new ``DN`` value. See
+   :doc:`/tutorial/rotate-x509-membership-certificates`.
+
+   For more information about membership certificate requirements, see
+   :ref:`x509-member-certificate-requirements` for details.
+
 .. parameter:: sslWithholdClientCertificate
 
    *Default*: false
- 
+
    .. deprecated:: 4.2 Use :parameter:`tlsWithholdClientCertificate` instead.
 
    |both|
-  
+
    A TLS certificate is set for a :binary:`mongod <bin.mongod>` or
    :binary:`mongos <bin.mongos>` either by the
    :option:`--tlsClusterFile <mongod --tlsClusterFile>` option or by the
@@ -442,6 +636,20 @@ Authentication Parameters
    MongoDB server still consume server resources, and this may adversely
    impact benign login attempts if the server is denying access to many
    other clients simultaneously.
+
+.. parameter:: allowRolesFromX509Certificates
+
+   *Default*: true
+
+   |both|
+
+   *Available starting in MongoDB 4.0.11 (and 3.6.14 and 3.4.22)*
+
+   A boolean flag that allows or disallows the retrieval of
+   authorization roles from client x.509 certificates.
+
+   You can only set :parameter:`allowRolesFromX509Certificates` during
+   startup in the config file or on the command line.
 
 General Parameters
 ~~~~~~~~~~~~~~~~~~
@@ -619,7 +827,7 @@ General Parameters
    Generally, the timeout value should be greater than the average amount of
    time for a query to return results. Use tools like the :method:`cursor.explain()`
    cursor modifier to analyze the average query time and select an appropriate
-   timeout period. 
+   timeout period.
 
 .. parameter:: failIndexKeyTooLong
 
@@ -767,7 +975,10 @@ General Parameters
 
    Limits the amount of memory that simultaneous index
    builds on one collection may consume for the duration of the
-   builds.
+   builds. The specified amount of memory is shared between all
+   indexes built using a single
+   :dbcommand:`createIndexes` command or its shell helper
+   :method:`db.collection.createIndexes()`.
 
    The memory consumed by an index build is separate from the
    WiredTiger cache memory (see
@@ -775,6 +986,7 @@ General Parameters
 
    .. include:: /includes/fact-index-build-memory-limit.rst
 
+   .. include:: /includes/extracts/4.2-index-limit.rst
 
 .. parameter:: reportOpWriteConcernCountersInServerStatus
 
@@ -784,7 +996,7 @@ General Parameters
 
    A boolean flag that determines whether the
    :method:`db.serverStatus()` method and :dbcommand:`serverStatus`
-   command return :serverstatus:`opWriteConcernCounters` information. [#perf]_ 
+   command return :serverstatus:`opWriteConcernCounters` information. [#perf]_
 
    You can only set
    :parameter:`reportOpWriteConcernCountersInServerStatus` during
@@ -802,58 +1014,83 @@ General Parameters
 
 .. parameter:: watchdogPeriodSeconds
 
-   .. versionadded:: 3.6
-
    |mongod-only|
 
    *Type*: integer
 
    *Default*: -1 (disabled)
 
-   .. note:: Available only in MongoDB Enterprise. Not available on macOS.
+   .. note::
 
-   Determines how often the
-   :ref:`Storage Node Watchdog <storage-node-watchdog>` checks the status of
-   the monitored filesystems.
+      - Starting in MongoDB 4.2, the :ref:`Storage Node Watchdog
+        <storage-node-watchdog>` is available in both the Community and
+        MongoDB Enterprise editions.
+
+      - In earlier versions (3.2.16+, 3.4.7+, 3.6.0+, 4.0.0+), the
+        :ref:`Storage Node Watchdog <storage-node-watchdog>` is only
+        available in MongoDB Enterprise edition.
+
+   Determines how frequent the :ref:`Storage Node Watchdog
+   <storage-node-watchdog>` checks the status of the monitored
+   filesystems:
+
+   * The :option:`--dbpath <mongod --dbpath>` directory
+   * The ``journal`` directory inside the :option:`--dbpath <mongod --dbpath>` directory if
+     :option:`journaling <mongod --journal>` is enabled
+   * The directory of :option:`--logpath <mongod --logpath>` file
+   * The directory of :option:`--auditPath <mongod --auditPath>` file
+
+   Valid values for :parameter:`watchdogPeriodSeconds` are:
+
+   - ``-1`` (the default), to disable/pause :ref:`Storage Node Watchdog
+     <storage-node-watchdog>`, or
+
+   - An integer greater than or equal to 60.
 
    .. note::
 
-      If a filesystem on a monitored directory becomes unresponsive, it can
-      take a maximum of nearly *twice* the value of
-      :parameter:`watchdogPeriodSeconds` to terminate the :binary:`~bin.mongod`.
+      - If a filesystem on a monitored directory becomes unresponsive,
+        it can take a maximum of nearly *twice* the value of
+        :parameter:`watchdogPeriodSeconds` to terminate the
+        :binary:`~bin.mongod`.
+      
+      - If any of its monitored directory is a symlink to other
+        volumes, the Storage Node Watchdog does not monitor the symlink
+        target. For example, if the :binary:`~bin.mongod` uses
+        :setting:`storage.directoryPerDB: true
+        <storage.directoryPerDB>` (or :option:`--directoryperdb <mongod
+        --directoryperdb>`) and symlinks a database directory to
+        another volume, the Storage Node Watchdog does not follow the
+        symlink to monitor the target.
 
-   Valid values are -1, meaning the
-   :ref:`Storage Node Watchdog <storage-node-watchdog>` is disabled, or an
-   integer greater than or equal to 60.
-
-   By default the :ref:`Storage Node Watchdog <storage-node-watchdog>` is
-   disabled. To enable it, :parameter:`watchdogPeriodSeconds` must be set at
-   startup time.
+   To enable :ref:`Storage Node Watchdog <storage-node-watchdog>`,
+   :parameter:`watchdogPeriodSeconds` must be set during startup.
 
    .. code-block:: sh
 
       mongod --setParameter watchdogPeriodSeconds=60
 
-   You can only enable the :ref:`Storage Node Watchdog <storage-node-watchdog>`
-   at startup.
+   You can only enable the :ref:`Storage Node Watchdog
+   <storage-node-watchdog>` at startup. However, once enabled, you can
+   pause the :ref:`Storage Node Watchdog <storage-node-watchdog>` or
+   change the :parameter:`watchdogPeriodSeconds` during runtime.
 
-   However, once enabled, you can pause the :ref:`Storage Node Watchdog
-   <storage-node-watchdog>` or change the :parameter:`watchdogPeriodSeconds`
-   during runtime.
+   Once enabled,
 
-   To pause the :ref:`Storage Node Watchdog <storage-node-watchdog>` during
-   runtime, set :parameter:`watchdogPeriodSeconds` to -1.
+   - To pause the :ref:`Storage Node Watchdog <storage-node-watchdog>`
+     during runtime, set :parameter:`watchdogPeriodSeconds` to -1.
 
-   .. code-block:: javascript
+     .. code-block:: javascript
 
-      db.adminCommand( { setParameter: 1, watchdogPeriodSeconds: -1 } )
+        db.adminCommand( { setParameter: 1, watchdogPeriodSeconds: -1 } )
 
-   To resume or change the period during runtime, set
-   :parameter:`watchdogPeriodSeconds` to a number greater than or equal to 60.
+   - To resume or change the period during runtime, set
+     :parameter:`watchdogPeriodSeconds` to a number greater than or
+     equal to 60.
 
-   .. code-block:: javascript
+     .. code-block:: javascript
 
-      db.adminCommand( { setParameter: 1, watchdogPeriodSeconds: 120 } )
+        db.adminCommand( { setParameter: 1, watchdogPeriodSeconds: 120 } )
 
    .. note ::
 
@@ -862,45 +1099,6 @@ General Parameters
       startup time.
 
    .. seealso: :ref:`storage-node-watchdog`
-
-Traffic Recorder Parameters
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. parameter:: trafficRecordingDirectory
-
-   .. versionadded:: 4.2
-
-   |both|
-
-   Specifies the directory to be used by the :ref:`traffic recorder
-   <4.2-traffic-recorder>`. The specified directory must exist and be
-   accessible by the user running
-   :binary:`~bin.mongod`/:binary:`~bin.mongos` instance.
-
-   .. warning::
-   
-      The traffic recorder outputs the recording file to this
-      directory. The file contains **unencrypted** user traffic
-      information. If possible:
-      
-      - Use an encrypted filesystem volume, ideally on a separate
-        partition.
-
-      - Limit access to a small subset of the operating system users.
-
-      - Limit the retention of the recording file.
-
-   You must set the :parameter:`trafficRecordingDirectory` in order to
-   run the traffic recorder. That is,
-   :dbcommand:`startRecordingTraffic` will fail if the directory is not
-   set.
-
-   You can only set the parameter at start up. For example:
-
-   .. code-block:: sh
-
-      mongod --setParameter trafficRecordingDirectory="<path/to/some/encrypted/trafficDir/>"
-
 
 Logging Parameters
 ~~~~~~~~~~~~~~~~~~
@@ -992,7 +1190,7 @@ Logging Parameters
    ``storage.journal``. That is, if you specify a :setting:`storage
    <systemLog.component.storage.verbosity>` verbosity level, this level
    also applies to:
-   
+
    - :setting:`storage.journal
      <systemLog.component.storage.journal.verbosity>` components
      *unless* you specify the verbosity level for
@@ -1094,6 +1292,37 @@ Logging Parameters
       db.adminCommand( { setParameter: 1, quiet: 1 } )
 
    .. seealso:: :setting:`~systemLog.quiet`
+
+.. parameter:: redactClientLogData
+
+   .. versionadded:: 3.4
+
+   |both|
+
+   *Type*: boolean
+
+   .. include:: /includes/fact-enterprise-only-admonition.rst
+
+   Configure the :binary:`~bin.mongod` or :binary:`~bin.mongos` to
+   redact any message accompanying a given log event before logging.
+   This prevents the program from writing potentially sensitive data
+   stored on the database to the diagnostic log. Metadata such as error
+   or operation codes, line numbers, and source file names are still
+   visible in the logs.
+
+   Use :parameter:`redactClientLogData` in conjunction with
+   :doc:`/core/security-encryption-at-rest` and
+   :doc:`/core/security-transport-encryption` to assist compliance with
+   regulatory requirements.
+
+   To enable log redaction on a running ``mongod`` or
+   ``mongos``, use the following command:
+
+   .. code-block:: javascript
+
+      db.adminCommand( { setParameter: 1, redactClientLogData : true } )
+
+   .. seealso:: :setting:`security.redactClientLogData`
 
 .. parameter:: traceExceptions
 
@@ -1460,6 +1689,60 @@ Logical Session Parameters
 Replication Parameters
 ~~~~~~~~~~~~~~~~~~~~~~
 
+.. parameter:: enableFlowControl
+
+   .. versionadded:: 4.2
+
+   *Type*: boolean
+
+   *Default*: true
+   
+   Enables or disables the mechanism that controls the rate at which the
+   primary applies its writes with the goal of keeping the secondary members'
+   :data:`majority committed
+   <replSetGetStatus.optimes.lastCommittedOpTime>` lag under a
+   configurable maximum value.
+
+   .. note::
+
+      .. include:: /includes/extracts/4.2-changes-flow-control-requirements.rst
+
+.. parameter:: flowControlTargetLagSeconds
+
+   .. versionadded:: 4.2
+
+   *Type*: integer
+
+   *Default*: 10
+   
+   The target maximum :data:`majority committed
+   <replSetGetStatus.optimes.lastCommittedOpTime>` lag when running
+   with flow control. When flow control is enabled, the mechanism
+   attempts to keep the :data:`majority committed
+   <replSetGetStatus.optimes.lastCommittedOpTime>` lag under
+   the specified seconds. The parameter has no effect if flow control
+   is disabled.
+
+   The specified value must be greater than 0.
+
+   In general, the default settings should suffice; however, if
+   modifying from the default value, decreasing, rather than
+   increasing, the value may prove to be more useful.
+
+.. parameter:: flowControlWarnThresholdSeconds
+
+   .. versionadded:: 4.2
+
+   *Type*: integer
+ 
+   *Default*: 10
+
+   The amount of time to wait to log a warning once the flow control
+   mechanism detects the majority commit point has not moved.
+
+   The specified value must be greater than or equal to 0, with 0 to
+   disable warnings. 
+   
 .. parameter:: oplogInitialFindMaxSeconds
 
    .. versionadded:: 3.6
@@ -1491,22 +1774,29 @@ Replication Parameters
 
 .. parameter:: rollbackTimeLimitSecs
 
-   .. versionadded:: 4.0
-
    *Type*: 64-bit integer
 
    *Default*: 86400  (1 day)
 
-   Maximum age of data that will be rolled back in the event of a
-   replication operations failure. If the time between the end of the
-   rolled back instance oplog and the common point (the last point where
-   the source node and the rolled back node had the same data) exceeds
-   this value, the rollback will fail. Note that negative values for
+   Maximum age of data that can be rolled back. Negative values for
    this parameter are not valid.
 
-   To set an effectively unlimited rollback period, set the value to
+   Starting in MongoDB 4.2+ and 4.0.13+, if the time between the end
+   of the to-be-rolledback instance's oplog and the first operation
+   after the common point (the last point where the source node and the
+   to-be-rolledback node had the same data) exceeds this value, the
+   rollback will fail.
+   
+   In MongoDB 4.0.0-4.0.12, if the time between the end of the to-be-rolledback
+   instance's oplog and the common point (the last point where the
+   source node and the to-be-rolledback node had the same data) exceeds
+   this value, the rollback will fail.
+
+   To effectively have an unlimited rollback period, set the value to
    ``2147483647`` which is the maximum value allowed and equivalent to
    roughly 68 years.
+
+   .. versionadded:: 4.0
 
 .. parameter:: waitForSecondaryBeforeNoopWriteMS
 
@@ -1656,8 +1946,9 @@ Sharding Parameters
 
    - For MongoDB 3.2.0-3.2.9, the monitoring :binary:`~bin.mongod` or
      :binary:`~bin.mongos` instance will become unusable and needs to be
-     restarted. See the :ref:`troubleshooting guide
-     <sharded-clusters-3.2-config-server-avail>` for more details.
+     restarted. See the :v3.2:`v3.2 troubleshooting guide
+     </tutorial/troubleshoot-sharded-clusters/#a-config-server-replica-set-member-become-unavailable>` 
+     for more details.
 
    - For MongoDB 3.2.10 and later 3.2-series, see also
      :parameter:`timeOutMonitoringReplicaSets`.
@@ -1680,8 +1971,9 @@ Sharding Parameters
    must restart :binary:`~bin.mongod` or :binary:`~bin.mongos` if the
    :binary:`~bin.mongod` or :binary:`~bin.mongos` instance cannot reach any of
    the config servers for the specified number of times. See the
-   :ref:`troubleshooting guide
-   <sharded-clusters-3.2-config-server-avail>` for more details.
+   :v3.2:`v3.2 troubleshooting guide
+   </tutorial/troubleshoot-sharded-clusters/#a-config-server-replica-set-member-become-unavailable>`
+   for more details.
 
 .. parameter:: ShardingTaskExecutorPoolHostTimeoutMS
 
@@ -1845,6 +2137,79 @@ Sharding Parameters
 
       mongos --setParameter ShardingTaskExecutorPoolRefreshTimeoutMS=30000
 
+.. parameter:: ShardingTaskExecutorPoolReplicaSetMatching
+
+   .. versionadded:: 4.2
+
+   Type: string
+
+   Default: "matchPrimaryNode"
+
+   |mongos-only|
+   
+   The policy that determines the minimum size limit of the
+   :binary:`~bin.mongos` instance's connection pools to the sharded
+   cluster's replica set secondaries.
+
+   Available values are:
+   
+   .. list-table::
+      :header-rows: 1
+      :widths: 15 85
+      
+      * - Matching Policy
+        - Description
+
+      * - ``"matchPrimaryNode"`` (Default)
+      
+        - For each replica set in the sharded cluster (i.e. shard
+          replica set and config servers), the minimum size limit of
+          the :binary:`~bin.mongos` instance's connection pool to each
+          secondary of that replica set is equal to the size of its
+          connection pool to the primary.
+
+          In case of primary stepdown, ``matchPrimaryNode`` ensures
+          that any secondary that becomes the primary can handle the
+          current level of primary reads and writes.
+
+      * - ``"matchBusiestNode"``
+
+        - For each replica set in the sharded cluster (i.e. shard
+          replica set and config servers), the minimum size limit of
+          the :binary:`~bin.mongos` instance's connection pool to each
+          member of that replica set is equal to the largest among
+          the active connections counts to the primary and each
+          secondary members.
+
+          With ``"matchBusiestNode"``, :binary:`~bin.mongos` maintains
+          enough connections to each secondary to handle the current
+          level of primary and secondary reads and writes. The number
+          of connections to maintain in the pool decreases as the
+          number of active connections decreases.
+
+      * - ``"disabled"``
+
+        - For each replica set in the sharded cluster (i.e. shard
+          replica set and config servers), the minimum number of
+          connections in the :binary:`~bin.mongos` instance's
+          connection pool to each secondary is equal to the
+          :parameter:`ShardingTaskExecutorPoolMinSize`.
+
+   The following example sets the
+   :parameter:`ShardingTaskExecutorPoolReplicaSetMatching` to
+   ``"matchBusiestNode"`` during startup:
+
+   .. code-block:: sh
+
+      mongod --setParameter ShardingTaskExecutorPoolReplicaSetMatching="matchBusiestNode"
+
+   During runtime, you can also set the parameter with the
+   :dbcommand:`setParameter` command:
+
+   .. code-block:: javascript
+
+      db.adminCommand( { setParameter: 1,  ShardingTaskExecutorPoolReplicaSetMatching: "matchBusiestNode" } )
+
 .. parameter:: taskExecutorPoolSize
 
    .. versionchanged:: 4.0
@@ -1871,7 +2236,7 @@ Sharding Parameters
 
    Starting in MongoDB 4.0, the default value of
    :parameter:`taskExecutorPoolSize` is ``1``:
-   
+
    - In MongoDB 4.0 deployment, you can set
      :parameter:`taskExecutorPoolSize` to ``0`` and, on Linux, set
      :v4.0:`AsyncRequestsSenderUseBaton
@@ -2101,7 +2466,7 @@ Sharding Parameters
       mongod --setParameter skipShardingConfigurationChecks=true
 
    .. important::
-   
+
       Once maintenance has completed, remove the
       :parameter:`skipShardingConfigurationChecks` parameter when
       restarting the :binary:`~bin.mongod`.
@@ -2180,6 +2545,49 @@ Storage Parameters
 WiredTiger Parameters
 ~~~~~~~~~~~~~~~~~~~~~
 
+.. parameter:: wiredTigerMaxCacheOverflowSizeGB
+
+   *Available starting in MongoDB 4.2.1 (and 4.0.12)*
+
+   *Default*: 0 (No specified maximum)
+
+   |mongod-only|
+
+   Specify the maximum size (in GB) for the "lookaside (or cache
+   overflow) table" file :file:`WiredTigerLAS.wt`.
+
+   The parameter can accept the following values:
+
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
+
+      * - Value
+        - Description
+
+      * - ``0``
+
+        - The default value. If set to ``0``, the file size is
+          unbounded.
+
+      * - number >= 0.1
+
+        - The maximum size (in GB). If the :file:`WiredTigerLAS.wt`
+          file exceeds this size, :binary:`~bin.mongod` exits with a
+          fatal assertion. You can clear the :file:`WiredTigerLAS.wt`
+          file and restart :binary:`~bin.mongod`.
+
+   You can only set this parameter during runtime using the
+   :dbcommand:`setParameter` database command:
+   
+   .. code-block:: javascript
+
+      db.adminCommand( { setParameter: 1, wiredTigerMaxCacheOverflowSizeGB: 100 } )
+
+   To set the maximum size during start up, use the
+   :setting:`storage.wiredTiger.engineConfig.maxCacheOverflowFileSizeGB`
+   instead.
+   
 .. parameter:: wiredTigerConcurrentReadTransactions
 
    .. versionadded:: 3.0.0
@@ -2283,6 +2691,8 @@ Transaction Parameters
 
    .. versionadded:: 4.0
 
+   |mongod-only|
+
    *Default*: 60
 
    Specifies the lifetime of :doc:`multi-document transactions
@@ -2311,6 +2721,9 @@ Transaction Parameters
    .. code-block:: sh
 
       mongod --setParameter "transactionLifetimeLimitSeconds=30"
+
+   To set the parameter for a sharded cluster, the parameter must be
+   modified for all shard replica set members.
 
 .. parameter:: maxTransactionLockRequestTimeoutMillis
 

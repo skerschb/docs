@@ -16,6 +16,10 @@ Definition
 
 .. method:: db.collection.dropIndexes()
 
+
+   .. include:: /includes/fact-mongo-shell-method.rst
+
+
    Drops the specified index or indexes (except the index on the
    ``_id`` field) from a collection.
 
@@ -66,7 +70,7 @@ Definition
         To get the names of the indexes, use the
         :method:`db.collection.getIndexes()` method.
 
-   The :method:`db.collection.getIndexes()` method takes the following
+   The :method:`db.collection.dropIndexes()` method takes the following
    optional parameter:
 
    .. list-table::
@@ -98,7 +102,7 @@ Definition
           **To drop multiple indexes** (Available starting in MongoDB
           4.2), specify an array of the index names.
 
-   The :method:`db.collection.getIndexes()` is a wrapper around the
+   The :method:`db.collection.dropIndexes()` is a wrapper around the
    :dbcommand:`dropIndexes` command.
    
 Behavior
@@ -109,13 +113,12 @@ Kill related queries only
 
 .. include:: /includes/extracts/fact-method-dropIndexes-query-behavior.rst
 
-Locks
-~~~~~
+Resource Locking
+~~~~~~~~~~~~~~~~
 
-.. warning::
+.. versionchanged:: 4.2
 
-   The operation obtains a write lock on the affected database and will
-   block other operations until it has completed.
+.. include:: /includes/extracts/dropIndexes-method-resource-lock.rst
 
 Index Names
 ~~~~~~~~~~~

@@ -32,6 +32,10 @@
                             }
                          ],
                          "opid" : <number>,
+                         "lsid" : {
+                            "id" : <UUID>,
+                            "uid" : <BinData>
+                         },
                          "secs_running" : <NumberLong()>,
                          "microsecs_running" : <number>,
                          "op" : <string>,
@@ -59,6 +63,8 @@
                          "killPending" : <boolean>,
                          "numYields" : <number>,
                          "locks" : {
+                             "ParallelBatchWriterMode" : <string>,
+                             "ReplicationStateTransition" : <string>,
                              "Global" : <string>,
                              "Database" : <string>,
                              "Collection" : <string>,
@@ -67,7 +73,7 @@
                          },
                          "waitingForLock" : <boolean>,
                          "lockStats" : {
-                             "Global": {
+                             "ParallelBatchWriterMode" : {
                                 "acquireCount": {
                                    "r": <NumberLong>,
                                    "w": <NumberLong>,
@@ -92,6 +98,12 @@
                                    "R" : NumberLong(0),
                                    "W" : NumberLong(0)
                                 }
+                             },
+                             "ReplicationStateTransition" : {
+                                ...
+                             },
+                             "Global": {
+                                ...
                              },
                              "Database" : {
                                 ...
@@ -184,6 +196,8 @@
                         "killPending" : <boolean>,
                         "numYields" : <number>,
                         "locks" : {
+                            "ParallelBatchWriterMode" : <string>,
+                            "ReplicationStateTransition" : <string>,
                             "Global" : <string>,
                             "Database" : <string>,
                             "Collection" : <string>,
@@ -192,7 +206,7 @@
                         },
                         "waitingForLock" : <boolean>,
                         "lockStats" : {
-                            "Global": {
+                            "ParallelBatchWriterMode" : {
                                "acquireCount": {
                                   "r": <NumberLong>,
                                   "w": <NumberLong>,
@@ -218,6 +232,12 @@
                                   "W" : NumberLong(0)
                                }
                             },
+                            "ReplicationStateTransition" : { 
+                               ...
+                            },
+                            "Global" : {
+                               ...
+                            },
                             "Database" : {
                                ...
                             },
@@ -237,9 +257,10 @@
         name: Sharded Cluster (mongos)
         content: |
 
-            The following is a prototype of the :dbcommand:`currentOp`
+            The following is an example of the :dbcommand:`currentOp`
             output when run on a :binary:`~bin.mongos` of a sharded
-            cluster:
+            cluster (Fields may vary depending on the operation being
+            reported):
 
             .. versionchanged:: 4.2
 
@@ -256,6 +277,25 @@
                          "client_s" : <string>,
                          "appName" : <string>,
                          "clientMetadata" : <document>,
+                         "lsid" : {
+                            "id" : <UUID>,
+                            "uid" : <BinData>
+                         },
+                         "transaction" : {
+                            "parameters" : {
+                               "txnNumber" : <NumberLong()>,
+                               "autocommit" : <boolean>,
+                               "readConcern" : {
+                                  "level" : <string>
+                               }
+                            },
+                            "readTimestamp" : <Timestamp>,
+                            "startWallClockTime" : <string>,
+                            "timeOpenMicros" : <NumberLong()>,
+                            "timeActiveMicros" : <NumberLong()>,
+                            "timeInactiveMicros" : <NumberLong()>,
+                            "expiryTime" : <string>,
+                         },
                          "active" : <boolean>,
                          "currentOpTime" : <string>,
                          "effectiveUsers" : [
@@ -264,12 +304,26 @@
                                "db" : <string>
                             }
                          ],
-                         "userImpersonators" : [
+                         "runBy" : [
                             {
                                "user" : <string>,
                                "db" : <string>
                             }
                          ],
+                         "twoPhaseCommitCoordinator" : {           // Starting in 4.2.1
+                            "lsid" : {
+                               "id" : <UUID>,
+                               "uid" : <BinData>
+                            },
+                            "txnNumber" : <NumberLong>,
+                            "numParticipants" : <NumberLong>,
+                            "state" : <string>,
+                            "commitStartTime" : <ISODate>,
+                            "hasRecoveredFromFailover" : <boolean>,
+                            "stepDurations" : <document>,
+                            "decision" : <document>,
+                            "deadline" : <ISODate>
+                         }
                          "opid" : <string>,
                          "secs_running" : <NumberLong()>,
                          "microsecs_running" : <number>,
@@ -300,6 +354,8 @@
                          "killPending" : <boolean>,
                          "numYields" : <number>,
                          "locks" : {
+                             "ParallelBatchWriterMode" : <string>,
+                             "ReplicationStateTransition" : <string>,
                              "Global" : <string>,
                              "Database" : <string>,
                              "Collection" : <string>,
@@ -308,7 +364,7 @@
                          },
                          "waitingForLock" : <boolean>,
                          "lockStats" : {
-                             "Global": {
+                             "ParallelBatchWriterMode": {
                                 "acquireCount": {
                                    "r": <NumberLong>,
                                    "w": <NumberLong>,
@@ -333,6 +389,12 @@
                                    "R" : NumberLong(0),
                                    "W" : NumberLong(0)
                                 }
+                             },
+                             "ReplicationStateTransition" : {
+                                ...
+                             },
+                             "Global" : {
+                                ...
                              },
                              "Database" : {
                                 ...

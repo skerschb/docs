@@ -1,8 +1,7 @@
 define: base https://docs.mongodb.com
 define: versions v2.2 v2.4 v2.6 v3.0 v3.2 v3.4 v3.6 v4.0 v4.2 master
-symlink: manual -> v4.0
+symlink: manual -> v4.2
 symlink: v4.2 -> master
-symlink: upcoming -> master
 
 [v2.2]: /${version}/core/read-operations-introduction -> ${base}/${version}/core/read-operations
 [v2.2]: /${version}/core/write-operations-introduction -> ${base}/${version}/core/write-operations
@@ -1364,6 +1363,8 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [*-v3.4]: /${version}/reference/change-events -> ${base}/${version}/replication
 [*-v3.2]: /${version}/tutorial/convert-shard-standalone-to-shard-replica-set -> ${base}/${version}/tutorial/convert-standalone-to-replica-set
 
+[v3.0-v3.2]: /${version}/reference/versioning -> ${base}/${version}/release-notes
+
 [v3.6-*]: /${version}/reference/operator/aggregation-arithmetic -> ${base}/${version}/reference/operator/aggregation
 [v3.6-*]: /${version}/reference/operator/aggregation-array -> ${base}/${version}/reference/operator/aggregation
 [v3.6-*]: /${version}/reference/operator/aggregation-boolean -> ${base}/${version}/reference/operator/aggregation
@@ -1408,6 +1409,57 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [v4.0-*]: /${version}/tutorial/install-mongodb-on-linux -> ${base}/${version}/administration/install-on-linux
 
 
+# Redirects for 4.2 and greater
+
+[v4.2-*]: /${version}/reference/command/copydb  -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-copydb-and-clone-commands
+[v4.2-*]: /${version}/reference/command/clone  -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-copydb-and-clone-commands
+[v4.2-*]: /${version}/reference/command/eval -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-eval-command
+[v4.2-*]: /${version}/reference/command/parallelCollectionScan -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-parallelcollectionscan-command
+[v4.2-*]: /${version}/reference/command/group -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-group-command
+[v4.2-*]: /${version}/reference/method/db.collection.group -> ${base}/${version}/4.2-compatibility/#remove-support-for-the-group-command
+[v4.2-*]: /${version}/reference/operator/meta/maxScan -> ${base}/${version}/release-notes/4.2-compatibility/#remove-maxscan
+[v4.2-*]: /${version}/reference/method/cursor.maxScan -> ${base}/${version}/release-notes/4.2-compatibility/#remove-maxscan
+[v4.2-*]: /${version}/reference/command/geoNear -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-geonear-command
+[v4.2-*]: /${version}/reference/command/repairDatabase -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-repairdatabase-command
+[v4.2-*]: /${version}/reference/method/db.collection.repairDatabase -> ${base}/${version}/release-notes/4.2-compatibility/#remove-support-for-the-repairdatabase-command
+[v4.2-*]: /${version}/core/mmapv1 -> ${base}/${version}/storage
+
+
+# Redirects for 4.0 or earlier (i.e. before 4.2), stopping a v3.0 since otherwise to help slow the growth in the number of our redirects 
+
+[v3.0-v4.0]: /${version}/release-notes/4.2 -> ${base}/${version}/release-notes
+[v3.0-v4.0]: /${version}/release-notes/4.2-compatibility -> ${base}/${version}/release-notes
+[v3.0-v4.0]: /${version}/reference/method/passwordPrompt -> ${base}/${version}/reference/method/js-user-management
+[v3.0-v4.0]: /${version}/reference/expansion-directives -> ${base}/${version}/reference/configuration-options
+[v3.0-v4.0]: /${version}/reference/operator/aggregation/planCacheStats -> ${base}/${version}/reference/command/planCacheListPlans
+[v3.0-v4.0]: /${version}/tutorial/convert-command-line-options-to-yaml -> ${base}/${version}/reference/configuration-file-settings-command-line-options-mapping
+[v3.0-v4.0]: /${version}/reference/method/isInteractive -> ${base}/${version}/reference/method
+[v3.0-v4.0]: /${version}/reference/method/Bulk.find.hint -> ${base}/${version}/reference/method/Bulk.find
+
+
+# Redirects for 4.0 or earlier (i.e. before 4.2), stopping a v3.0 since otherwise to help slow the growth in the number of our redirects 
+
+[v3.0-v4.0]: /${version}/tutorial/install-mongodb-enterprise-on-ubuntu-tarball -> ${base}/${version}/tutorial/install-mongodb-enterprise-on-ubuntu
+[v3.0-v3.6]: /${version}/tutorial/install-mongodb-on-suse-tarball -> ${base}/${version}/tutorial/install-mongodb-on-suse
+[v3.0-v3.6]: /${version}/tutorial/install-mongodb-enterprise-on-amazon-tarball -> ${base}/${version}/tutorial/install-mongodb-enterprise-on-amazon
+[v3.0-v3.6]: /${version}/tutorial/install-mongodb-on-amazon-tarball -> ${base}/${version}/tutorial/install-mongodb-on-amazon
+
+
+# Redirects for trig functions DOCS-12338
+[*-v4.0]: /${version}/reference/operator/aggregation/sin -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/cos -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/tan -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/asin -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/acos -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/atan -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/atan2 -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/asinh -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/acosh -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/atanh -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/degreesToRadians -> ${base}/${version}/reference/operator/aggregation
+[*-v4.0]: /${version}/reference/operator/aggregation/radiansToDegrees -> ${base}/${version}/reference/operator/aggregation
+
+
 # Redirects for 3.6 or earlier (i.e. before 4.0)
 
 [v3.0-v3.6]: /${version}/appendix/security -> ${base}/${version}/security
@@ -1444,6 +1496,8 @@ raw: /master/release-notes/3.0-general-improvements -> ${base}/release-notes/3.0
 [*-v3.6]: /${version}/reference/read-concern-snapshot -> ${base}/${version}/reference/read-concern
 [*-v3.6]: /${version}/core/transactions -> ${base}/${version}/core/write-operations-atomicity
 [*-v3.6]: /${version}/core/transactions-operation -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/core/transactions-operations -> ${base}/${version}/core/write-operations-atomicity
+[*-v3.6]: /${version}/core/transactions-production-consideration -> ${base}/${version}/core/write-operations-atomicity
 [*-v3.6]: /${version}/reference/method/Session.abortTransaction -> ${base}/${version}/core/write-operations-atomicity
 [*-v3.6]: /${version}/reference/method/Session.commitTransaction -> ${base}/${version}/core/write-operations-atomicity
 [*-v3.6]: /${version}/reference/method/Session.startTransaction -> ${base}/${version}/core/write-operations-atomicity
@@ -1545,8 +1599,6 @@ raw: /v2.8/release-notes/2.8-changes -> ${base}/v3.0/release-notes/3.0
 [v3.0-v4.0]: /${version}/reference/method/passwordPrompt -> ${base}/${version}/reference/method/js-user-management
 [v3.0-v4.0]: /${version}/reference/expansion-directives -> ${base}/${version}/reference/configuration-options
 [v3.0-v4.0]: /${version}/reference/operator/aggregation/planCacheStats -> ${base}/${version}/reference/command/planCacheListPlans
-[v3.0-v4.0]: /${version}/reference/command/startRecordingTraffic -> ${base}/${version}/reference/program/mongoreplay
-[v3.0-v4.0]: /${version}/reference/command/stopRecordingTraffic -> ${base}/${version}/reference/program/mongoreplay
 [v3.0-v4.0]: /${version}/reference/command/dropConnections -> ${base}/${version}/reference/command/
 [v3.0-v4.0]: /${version}/tutorial/rotate-key-replica-set -> ${base}/${version}/tutorial/deploy-replica-set-with-keyfile-access-control
 [v3.0-v4.0]: /${version}/tutorial/rotate-key-sharded-cluster -> ${base}/${version}/tutorial/deploy-sharded-cluster-with-keyfile-access-control
@@ -1558,7 +1610,8 @@ raw: /v2.8/release-notes/2.8-changes -> ${base}/v3.0/release-notes/3.0
 [v3.0-v4.0]: /${version}/reference/operator/aggregation/replaceWith -> ${base}/${version}/reference/operator/aggregation/replaceRoot
 
 [v3.0-v4.0]: /${version}/reference/operator/aggregation/unset -> ${base}/${version}/reference/operator/aggregation/project
-
+[v3.0-v4.0]: /${version}/tutorial/rotate-x509-membership-certificates -> ${base}/${version}/tutorial/configure-x509-member-authentication
+[v3.0-v4.0]: /${version}/reference/mongodb-extended-json-v1 -> ${base}/${version}/reference/mongodb-extended-json
 
 
 [v4.0-*]: /${version}/core/security-built-in-roles -> ${base}/${version}/reference/built-in-roles
@@ -1578,3 +1631,8 @@ raw: /v2.8/release-notes/2.8-changes -> ${base}/v3.0/release-notes/3.0
 [v3.0-v4.0]: /${version}/reference/operator/aggregation/degreesToRadians -> ${base}/${version}/reference/operator/aggregation
 [v3.0-v4.0]: /${version}/reference/operator/aggregation/radiansToDegrees -> ${base}/${version}/reference/operator/aggregation
 
+# Redirect manual's Atlas tutorial to Atlas docs DOCSP-5703
+[v3.4-*]: /${version}/tutorial/atlas-free-tier-setup/ -> https://docs.atlas.mongodb.com/getting-started/
+
+# Redirect strange link in compass
+raw: /manual/core/wildcard -> ${base}/manual/core/index-wildcard

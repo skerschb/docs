@@ -262,21 +262,21 @@ Output Fields
    operation. Each user document contains the ``user`` name and the
    authentication ``db``.
 
-   .. seealso:: :data:`currentOp.impersonatedUsers`
+   .. seealso:: :data:`currentOp.runBy`
 
    .. versionadded:: 4.2
 
-.. data:: currentOp.userImpersonators
+.. data:: currentOp.runBy
 
    An array that contains a document for each user who is impersonating
    the :data:`effectiveUser(s)<currentOp.effectiveUsers>` for the
-   operation. The user impersonator document contains the ``user`` name
-   and the authentication ``db``. In general, the impersonating user is
+   operation. The runBy document contains the ``user`` name
+   and the authentication ``db``. In general, the runBy user is
    the ``__system`` user; e.g.
    
    .. code-block:: javascript
    
-      "userImpersonators" : [
+      "runBy" : [
          {
             "user" : "__system",
             "db" : "local"
@@ -421,6 +421,250 @@ Output Fields
          Only present if the operation is part of a multi-document transaction.
 
          .. versionadded:: 4.0.2
+
+.. data:: currentOp.twoPhaseCommitCoordinator
+
+   Information on either:
+
+   - .. _current-op-cmd-commit-coord-metrics:
+   
+     The commit coordination metrics for a :doc:`transaction whose
+     write operations span multiple shards </core/transactions>`.
+   
+     Commit coordination is handled by a shard, and
+     :dbcommand:`currentOp` (run either on a :binary:`~bin.mongos` or a
+     shard member) returns a shard's coordination information only for
+     those transactions currently being coordinated by that shard.
+
+     To filter for just the commit coordination metrics:
+
+     .. code-block:: javascript
+
+         db.currentOp( { desc:  "transaction coordinator" })
+
+   - .. _current-op-cmd-commit-coord-operation:
+
+     A specific commit coordination operation (i.e.
+     :data:`currentOp.type` is ``op`` and :data:`currentOp.desc` is
+     ``"TransactionCoordinator"``) spawned by the transaction
+     coordinator.
+
+   .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.lsid
+
+      The session identifier for the multi-shard transaction.
+      
+      The combination of the
+      :data:`~currentOp.twoPhaseCommitCoordinator.lsid` and
+      :data:`~currentOp.twoPhaseCommitCoordinator.txnNumber` identifies
+      the transaction.
+
+      Available for both the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>` and for specific
+      :ref:`coordination operation
+      <current-op-cmd-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.txnNumber
+
+      The transaction number for the multi-shard transaction.
+
+      The combination of the
+      :data:`~currentOp.twoPhaseCommitCoordinator.txnNumber` and
+      :data:`~currentOp.twoPhaseCommitCoordinator.lsid` identifies the
+      transaction.
+
+      Available for both the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>` and for specific
+      :ref:`coordination operation
+      <current-op-cmd-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.action
+
+      The specific commit coordination operation spawned by the
+      transaction coordinator:
+      
+      - ``"sendingPrepare"``
+      - ``"sendingCommit"``
+      - ``"sendingAbort"``
+      - ``"writingParticipantList"``
+      - ``"writingDecision"``
+      - ``"deletingCoordinatorDoc"``
+
+      Only available for specific :ref:`coordination operation
+      <current-op-cmd-commit-coord-operation>`.
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.startTime
+
+      The start date and time of the
+      :data:`~currentOp.twoPhaseCommitCoordinator.action`.
+
+      Only available for specific :ref:`coordination operation
+      <current-op-cmd-commit-coord-operation>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.numParticipants
+
+      Number of shards participating in this commit.
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.state
+
+      The current step/state of the commit coordination process.
+
+      .. list-table::
+         :widths: 20 80
+         :header-rows: 1
+         
+         * - Step/stage
+           - Description
+         
+         * - ``inactive``
+           - Not actively part of a commit.
+
+         * - ``writingParticipantList``
+         
+           - Writing a local record of the list of shards that are part
+             of this multi-shard transaction.
+
+         * - ``waitingForVotes``
+         
+           - Waiting for the participants to respond with vote to commit or abort.
+
+         * - ``writingDecision``
+         
+           - Writing a local record of the coordinator's decision to commit or
+             abort based on votes.
+
+         * - ``waitingForDecisionAck``
+ 
+           - Waiting for participants to acknowledge the coordinator's
+             decision to commit or abort.
+
+         * - ``deletingCoordinatorDoc``
+         
+           - Deleting the local record of commit decision.
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      See also
+      :data:`currentOp.twoPhaseCommitCoordinator.stepDurations`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.commitStartTime
+
+      The date and time when the commit started.
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover
+
+      A boolean that indicates whether the commit coordination was
+      restarted due to failover on the shard that is coordinating the
+      commit.
+
+      If
+      :data:`~currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover`
+      is true, then the times specified in
+      :data:`currentOp.twoPhaseCommitCoordinator.stepDurations` may not
+      be accurate for all steps.
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.stepDurations
+
+      A document that contains the duration, in microseconds, of the
+      commit coordination :data:`steps/state
+      <currentOp.twoPhaseCommitCoordinator.state>` completed or in
+      progress:
+      
+      .. code-block:: javascript
+
+         "stepDurations" : {
+            "writingParticipantListMicros" : NumberLong(17801),
+            "totalCommitDurationMicros" : NumberLong(42488463),
+            "waitingForVotesMicros" : NumberLong(30378502),
+            "writingDecisionMicros" : NumberLong(15015),
+            "waitingForDecisionAcksMicros" : NumberLong(12077145),
+            "deletingCoordinatorDocMicros" : NumberLong(6009)
+         },
+
+      If
+      :data:`currentOp.twoPhaseCommitCoordinator.hasRecoveredFromFailover`
+      is true, then the times specified in
+      :data:`~currentOp.twoPhaseCommitCoordinator.stepDurations` may not
+      be accurate for all steps.
+      
+      For a coordinator in an ``inactive`` state, the document is empty:
+      
+      .. code-block:: javascript
+      
+         "stepDurations" : {
+         }
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      See :data:`currentOp.twoPhaseCommitCoordinator.state`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.decision
+   
+      A document that contains the commit/abort decision, for example:
+
+      - For a commmit decision:
+
+        .. code-block:: javascript
+   
+           "decision" : {
+              "decision" : "commit",
+              "commitTimestamp" : Timestamp(1572034669, 3)
+           }
+
+      - For an abort decision:
+
+        .. code-block:: javascript
+
+           "decision" : {
+              "decision" : "abort",
+              "abortStatus" : {
+                 "code" : 282,
+                 "codeName" : "TransactionCoordinatorReachedAbortDecision",
+                 "errmsg" : "Transaction exceeded deadline"
+              }
+           }
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
+
+   .. data:: currentOp.twoPhaseCommitCoordinator.deadline
+
+      The date and time by which the commit must finish.
+
+      Only available for the :ref:`commit coordination metrics
+      <current-op-cmd-commit-coord-metrics>`.
+
+      .. versionadded:: 4.2.1
 
 .. data:: currentOp.opid
 
@@ -774,3 +1018,35 @@ Output Fields
 
       Number of times the operation encountered deadlocks while waiting
       for lock acquisitions.
+
+.. data:: currentOp.waitingForFlowControl
+
+   A boolean that indicates if the operation is in the process of waiting for
+   :ref:`flow control <replication-flow-control>`.
+
+   .. versionadded:: 4.2
+
+.. data:: currentOp.flowControlStats
+
+   The flow control statistics for this operation.
+
+   .. versionadded:: 4.2
+
+   .. data:: currentOp.flowControlStats.acquireCount
+   
+      The number of times this operation acquired a ticket.
+
+      .. versionadded:: 4.2
+
+   .. data:: currentOp.flowControlStats.acquireWaitCount
+
+      The number of times this operation waited to aqcuire a ticket.
+
+      .. versionadded:: 4.2
+
+   .. data:: currentOp.flowControlStats.timeAcquiringMicros
+
+      The total time this operation has waited to acquire a ticket.
+
+      .. versionadded:: 4.2
+

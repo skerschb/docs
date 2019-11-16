@@ -25,25 +25,6 @@ stores data used in the replication process, and other
 instance-specific data. The ``local`` database is invisible to
 replication: collections in the ``local`` database are not replicated.
 
-In replication, the ``local`` database store stores internal replication
-data for each member of a :term:`replica set`. The ``local`` stores the
-following collections:
-
-When running with authentication (i.e.
-:setting:`~security.authorization`), authenticating to the ``local``
-database is **not** equivalent to authenticating to the ``admin``
-database. In previous versions, authenticating to the ``local``
-database provided access to all databases.
-
-Restrictions
-------------
-
-.. note::
-
-   You cannot perform read/write operations to the collections in the
-   ``local`` database inside a :doc:`multi-document transaction
-   </core/transactions>`.
-
 
 Collection on all ``mongod`` Instances
 --------------------------------------
@@ -151,3 +132,26 @@ Collections on Replica Set Members
    This contains an object used internally by replica sets to track replication
    status.
 
+
+Restrictions
+------------
+
+Multi-Document Transactions on ``local``
+  You cannot perform read/write operations to the collections in the
+  ``local`` database inside a 
+  :doc:`multi-document transaction </core/transactions>`.
+
+Retryable Writes against ``local``
+  You cannot perform write operations to collections in the ``local``
+  database with :ref:`retryable writes <retryable-writes>` enabled.
+
+  .. important::
+
+     The official MongoDB 4.2-series drivers enable retryable writes by
+     default. Applications which write to the ``local`` database
+     will encounter write errors upon upgrading to 4.2-series
+     drivers *unless* retryable writes are explicitly disabled.
+
+     To disable retryable writes, specify
+     :urioption:`retryWrites=false <retryWrites>` in the 
+     :ref:`connection string <mongodb-uri>` for the MongoDB cluster.

@@ -13,15 +13,17 @@ Install MongoDB Community Edition on macOS
 Overview
 --------
 
-.. include:: /includes/rc-install.rst
-
 .. _`MongoDB Download Center`: https://www.mongodb.com/download-center/community?jmp=docs
 
 
 The following tutorial uses 
 `Homebrew <https://brew.sh/?jmp=mongodb-docs>`_ to install MongoDB 
 {+version+} Community Edition on macOS systems. To install a different 
-version of MongoDB, please refer to that version’s documentation.
+version of MongoDB, please refer to that version's documentation.  For example:
+
+- :v4.0:`https://docs.mongodb.com/v4.0 </tutorial/install-mongodb-on-os-x>`
+- :v3.6:`https://docs.mongodb.com/v3.6 </tutorial/install-mongodb-on-os-x>`
+- :v3.4:`https://docs.mongodb.com/v3.4 </tutorial/install-mongodb-on-os-x>`
 
 Platform Support
 ----------------
@@ -43,7 +45,15 @@ Prerequisites
 If you have the Homebrew ``brew`` package installed on your OSX host 
 *and* you have previously tapped the official 
 `MongoDB Homebrew Tap <https://github.com/mongodb/homebrew-brew>`_, 
-skip to the prerequisites and go to the :ref:`install` step.
+skip the prerequisites and go to the :ref:`install` step.
+
+Install XCode
+`````````````
+.. container::
+
+   Apple's XCode includes command-line tools that are required
+   by ``brew``, and is available for free on the App Store. Make sure
+   you are running the latest version.
 
 Install Homebrew
 ````````````````
@@ -58,7 +68,7 @@ Tap the MongoDB Homebrew Tap
 ````````````````````````````
 
 .. container::
-   
+
    Issue the following from the terminal to
    tap the official 
    `MongoDB Homebrew Tap <https://github.com/mongodb/homebrew-brew>`_:
@@ -80,13 +90,19 @@ Install MongoDB
 
       brew install mongodb-community@{+version+}
 
+   .. tip::
+   
+      If you have previously installed an older version of the formula,
+      you may encounter a ChecksumMismatchError. To resolve, see
+      :ref:`troubleshooting-checksumerror`.
+
    In addition to the :doc:`binaries </reference/program>`, the install
    creates:
 
    - the :doc:`configuration file </reference/configuration-options>`
      (:file:`/usr/local/etc/mongod.conf`)
 
-   - the  :setting:`log directory path <systemLog.path>` (``/usr/local/var/log/mongodb``)
+   - the :setting:`log directory path <systemLog.path>` (``/usr/local/var/log/mongodb``)
 
    - the :setting:`data directory path <storage.dbPath>` (``/usr/local/var/mongodb``)
 
@@ -95,20 +111,40 @@ Run MongoDB
 
 .. container::
 
-   From a terminal, issue the following to run MongoDB (i.e.
-   the :binary:`~bin.mongod` process) in the foreground.
+   You can run MongoDB as a macOS service using ``brew``, or you can run
+   MongoDB manually as a background process. It is recommended to run
+   MongoDB as a macOS service, as doing so sets the correct system
+   ``ulimit`` values automatically (see
+   :ref:`ulimit settings <ulimit-settings>` for more information).
+
+   - To run MongoDB (i.e. the :binary:`~bin.mongod` process) **as a
+     macOS service**, issue the following:
+
+     .. code-block:: sh
+
+        brew services start mongodb-community
+
+   - To run MongoDB **manually as a background process**, issue the
+     following:
+
+     .. code-block:: sh
+
+        mongod --config /usr/local/etc/mongod.conf --fork
+
+   Both methods use the :file:`/usr/local/etc/mongod.conf` file created
+   during the install. You can add your own MongoDB
+   :doc:`configuration options </reference/configuration-options>` to
+   this file as well.
+
+   To verify that MongoDB is running, search for ``mongod`` in your
+   running processes:
 
    .. code-block:: sh
 
-      mongod --config /usr/local/etc/mongod.conf
+      ps aux | grep -v grep | grep mongod
 
-   Alternatively, to run MongoDB as a macOS service, issue the
-   following (the process uses the :file:`/usr/local/etc/mongod.conf`
-   file created during the install):
-
-   .. code-block:: sh
-
-      brew services start mongodb-community@{+version+}
+   You can also view the log file to see the current status of your
+   ``mongod`` process: ``/usr/local/var/log/mongodb/mongo.log``.
 
 Connect and Use MongoDB
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -131,6 +167,45 @@ Connect and Use MongoDB
 
 Additional Considerations
 -------------------------
+
+.. _troubleshooting-checksumerror:
+
+Troubleshooting ChecksumMismatchError
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you have previously installed an older version of the formula,
+you may encounter a ChecksumMismatchError, as in the following
+example:
+
+.. code-block:: sh
+
+   Error: An exception occurred within a child process:
+
+     ChecksumMismatchError: SHA256 mismatch
+
+   Expected: c7214ee7bda3cf9566e8776a8978706d9827c1b09017e17b66a5a4e0c0731e1f
+
+     Actual: 6aa2e0c348e8abeec7931dced1f85d4bb161ef209c6af317fe530ea11bbac8f0
+
+    Archive: /Users/kay/Library/Caches/Homebrew/downloads/a6696157a9852f392ec6323b4bb697b86312f0c345d390111bd51bb1cbd7e219--mongodb-macos-x86_64-4.2.0.tgz
+
+   To retry an incomplete download, remove the file above.
+
+To fix:
+
+#. Remove the downloaded :file:`.tgz` archive.
+
+#. Retap the formula.
+
+   .. code-block:: sh
+
+      brew untap mongodb/brew && brew tap mongodb/brew
+
+#. Retry the install.
+
+   .. code-block:: sh
+
+      brew install mongodb-community@{+version+}
 
 Localhost Binding
 ~~~~~~~~~~~~~~~~~

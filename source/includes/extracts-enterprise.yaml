@@ -19,8 +19,8 @@ content: |
 
    Do not use these instructions to upgrade to another release version.
    To upgrade release versions, refer to the appropriate release
-   upgrade instructions, such as :ref:`Upgrade to MongoDB 4.0
-   <4.0-upgrade>`.
+   upgrade instructions, such as :ref:`Upgrade to MongoDB 4.2
+   <4.2-upgrade>`.
 ---
 ref: enterprise-install-binaries
 content: |
@@ -65,7 +65,7 @@ content: |
               If you have not installed MongoDB using a package manager,
               you can manually download the MongoDB binaries from the
               `MongoDB Download Center
-              <https://www.mongodb.com/download-center?jmp=docs#enterprise>`__. Follow
+              <https://www.mongodb.com/download-center/enterprise?jmp=docs>`__. Follow
               the manual instructions, including specific prerequisites
               for MongoDB Enterprise, for your operating system:
 
@@ -80,7 +80,7 @@ content: |
 
               - :ref:`Red Hat Enterprise or CentOS <install-redhat-from-tarball>`
 
-              - :ref:`Ubuntu <install-ubuntu-from-tarball>`
+              - :ref:`Ubuntu <install-enterprise-ubuntu-from-tarball>`
 
               - :ref:`Debian <install-debian-from-tarball>`
 
@@ -107,7 +107,7 @@ content: |
 
               1. Manually download the archive file from the `MongoDB
                  Download Center
-                 <https://www.mongodb.com/download-center?jmp=docs#enterprise>`__.
+                 <https://www.mongodb.com/download-center/enterprise?jmp=docs>`__.
 
               #. | To install, extract/unzip the file to a location
                    different from that of your current Community
@@ -127,7 +127,7 @@ content: |
 
               1. Manually download the  archive file from the `MongoDB
                  Download Center
-                 <https://www.mongodb.com/download-center?jmp=docs#enterprise>`__.
+                 <https://www.mongodb.com/download-center/enterprise?jmp=docs>`__.
 
               #. | Extract the files to a location different
                    from that of your current Community edition. For

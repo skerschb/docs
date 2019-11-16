@@ -15,6 +15,10 @@ Definition
 
 .. method:: db.collection.dropIndex(index)
 
+
+   .. include:: /includes/fact-mongo-shell-method.rst
+
+
    Drops or removes the specified index from a collection. The
    :method:`db.collection.dropIndex()` method provides a wrapper around
    the :dbcommand:`dropIndexes` command.
@@ -60,15 +64,17 @@ Definition
    :method:`db.collection.dropIndex()` method, use the
    :method:`db.collection.getIndexes()` method.
 
-   .. warning::
-
-      This command obtains a write lock on the affected database and
-      will block other operations until it has completed.
-
 Behavior
 --------
 
 .. include:: /includes/extracts/fact-method-dropIndex-query-behavior.rst
+
+Resource Locking
+~~~~~~~~~~~~~~~~
+
+.. versionchanged:: 4.2
+
+.. include:: /includes/extracts/dropIndex-method-resource-lock.rst
 
 Example
 -------

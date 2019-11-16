@@ -447,11 +447,30 @@ name: pidfilepath
 args: <path>
 directive: option
 description: |
-  {{intro}} file location to hold the process ID of the {{program}}
-  process where {{program}} will write its PID. This is useful for
-  tracking the {{program}} process in combination with
-  {{option}}. Without a specified {{role}} option, the
-  process creates no PID file.
+  {{intro}} file location to store the process ID (PID) of the {{program}}
+  process . The user running the the ``mongod`` or ``mongos``
+  process must be able to write to this path. If the {{role}} option is not
+  specified, the process does not create a PID file. This option is generally
+  only useful in combination with the {{option}}.
+
+  .. admonition:: Linux
+     :class: note
+  
+     On Linux, PID file management is generally the responsibility of
+     your distro's init system: usually a service file in the ``/etc/init.d``
+     directory, or a systemd unit file registered with ``systemctl``. Only
+     use the {{role}} option if you are not using one of these init
+     systems. For more information, please see the respective
+     :doc:`Installation Guide </installation>` for your operating system.
+
+  .. admonition:: macOS
+     :class: note
+
+     On macOS, PID file management is generally handled by ``brew``. Only use
+     the {{role}} option if you are not using ``brew`` on your macOS system. 
+     For more information, please see the respective
+     :doc:`Installation Guide </installation>` for your operating system.
+
 optional: true
 replacement:
   intro: "Specifies a"
@@ -544,6 +563,8 @@ description: |
   typically you will run {{program}} as a daemon, either by using
   {{role}} or by using a controlling process that handles the
   daemonization process (e.g. as with ``upstart`` and ``systemd``).
+
+  The {{role}} option is not supported on Windows.
 optional: true
 replacement:
   verb: "Enables"
@@ -651,40 +672,35 @@ post: |
   .. include:: /includes/not-available-for-inmemory-storage-engine.rst
 
   .. include:: /includes/extracts/no-journaling-writeConcernMajorityJournalDefault-false.rst
+  
+  .. include:: /includes/extracts/4.2-changes-inmem-startup-warning.rst
 
----
-program: mongod
-name: journalOptions
-args: <arguments>
-directive: option
-description: |
-  Provides functionality for testing. Not for general use, and will affect data
-  file integrity in the case of abnormal system shutdown.
-post: |
-  .. include:: /includes/not-available-for-inmemory-storage-engine.rst
-
-optional: true
 ---
 program: mongod
 name: journalCommitInterval
 args: <value>
-default: 100 or 30
+default: 100
 directive: option
 description: |
-
-  {{versiondirective}}
 
   The maximum amount of time in milliseconds that
   the {{program}} process allows between
   journal operations. Values can range from 1 to 500 milliseconds. Lower
   values increase the durability of the journal, at the expense of disk
-  performance. The default journal commit interval is 100 milliseconds.
+  performance.
 
-  On WiredTiger, the default journal commit interval is 100 milliseconds. Additionally,
-  a write with ``j:true`` will cause an immediate sync of the journal.
+  On WiredTiger, the default journal commit interval is 100
+  milliseconds. Additionally, a write that includes or implies
+  ``j:true`` will cause an immediate sync of the journal. For details
+  or additional conditions that affect the frequency of the sync, see
+  :ref:`journal-process`.
 
 post: |
   .. include:: /includes/not-available-for-inmemory-storage-engine.rst
+  
+  .. note:: 
+
+     Known Issue in 4.2.0: The {{role}} is missing in 4.2.0.
 
 replacement:
    versiondirective: ".. versionchanged:: 3.2"
@@ -798,50 +814,6 @@ description: |
 optional: true
 ---
 program: mongod
-name: nssize
-args: <value>
-default: 16
-directive: option
-description: |
-  {{verb}} default size for namespace files, which are files that end
-  in ``.ns``. Each collection and index counts as a namespace.
-
-  Use this setting to control size for newly created namespace files. This
-  option has no impact on existing files. The maximum size for a namespace
-  file is 2047 megabytes. The default value of 16 megabytes provides for
-  approximately 24,000 namespaces.
-optional: true
-replacement:
-  verb: "Specifies the"
----
-program: mongod
-name: quota
-args: null
-directive: option
-description: |
-  {{verb}} a maximum limit for the number data files each database can
-  have. When running with the {{role}} option, MongoDB has a maximum of 8
-  data files per database. Adjust the quota with
-  {{quota_files}}.
-optional: true
-replacement:
-  quota_files: :option:`--quotaFiles`
-  verb: "Enables"
----
-program: mongod
-name: quotaFiles
-args: <number>
-default: 8
-directive: option
-description: |
-  {{verb}} limit on the number of data files per database. {{role}}
-  option requires that you set {{quota_flag}}.
-optional: true
-replacement:
-  quota_flag: :option:`--quota`
-  verb: "Modifies the"
----
-program: mongod
 name: repair
 args: null
 directive: option
@@ -923,23 +895,6 @@ post: |
   diagnostic log and, if enabled, the profiler.
 
 optional: true
----
-program: mongod
-name: smallfiles
-args: null
-directive: option
-description: |
-  {{intro}} a smaller default file size. The {{role}} option
-  reduces the initial size for data files and limits the maximum size to
-  512 megabytes. {{role}} also reduces the size of each :term:`journal`
-  file from 1 gigabyte to 128 megabytes. Use {{role}} if you have a large
-  number of databases that each holds a small quantity of data.
-
-  The {{role}} option can lead the {{program}} instance to create a large
-  number of files, which can affect performance for larger databases.
-optional: true
-replacement:
-  intro: "Sets MongoDB to use"
 ---
 program: mongod
 name: shutdown
@@ -2449,11 +2404,8 @@ description: |
    Defines the maximum size of the internal cache that WiredTiger will
    use for all data. The memory consumed by an index build (see
    :parameter:`maxIndexBuildMemoryUsageMegabytes`) is separate from the
-   WiredTiger cache memory.
-
-
-   Starting in MongoDB 3.4, {{role}} values can range from 0.25 GB  to
-   10000 GB and can be a float.
+   WiredTiger cache memory. Starting in MongoDB 3.4, the values can range
+   from 0.25 GB  to 10000 GB and can be a float.
 
    .. include:: /includes/extracts/wt-cache-default-setting.rst
 
@@ -2467,6 +2419,42 @@ description: |
 
 post: |
   .. include:: /includes/extracts/wt-cache-additional-constraints-mongod-cmdline-option.rst
+---
+program: mongod
+name: wiredTigerMaxCacheOverflowFileSizeGB
+directive: option
+optional: true
+args: "<float>"
+description: |
+
+   Specifies the maximum size (in GB) for the "lookaside (or cache
+   overflow) table" file :file:`WiredTigerLAS.wt`.
+
+   The setting can accept the following values:
+
+   .. list-table::
+      :header-rows: 1
+      :widths: 20 80
+
+      * - Value
+        - Description
+
+      * - ``0``
+
+        - The default value. If set to ``0``, the file size is
+          unbounded.
+
+      * - number >= 0.1
+
+        - The maximum size (in GB). If the :file:`WiredTigerLAS.wt`
+          file exceeds this size, :binary:`~bin.mongod` exits with a
+          fatal assertion. You can clear the :file:`WiredTigerLAS.wt`
+          file and restart :binary:`~bin.mongod`.
+   
+   To change the maximum size during runtime, use the
+   :parameter:`wiredTigerMaxCacheOverflowSizeGB` parameter.
+
+   *Available starting in MongoDB 4.2.1 (and 4.0.12)*
 ---
 program: mongod
 name: wiredTigerJournalCompressor
@@ -2670,6 +2658,8 @@ description: |
    present, :binary:`~bin.mongod` does not match against the ``CN``. If
    the hostname does not match the ``SAN`` (or ``CN``), the
    :binary:`~bin.mongod` will fail to connect.
+
+   .. include:: /includes/extracts/4.2-changes-SAN-matching.rst
 
    .. include:: /includes/fact-enterprise-only-admonition.rst
 ---
@@ -2924,14 +2914,8 @@ description: |
   :ref:`process logging <monitoring-log-redaction>` manual page for an
   example of the effect of {{role}} on log output.
 
-  You can enable or disable log redaction on a running {{program}}
-  using the :dbcommand:`setParameter` database command.
-
-  .. code-block:: javascript
-
-     db.adminCommand(
-       { setParameter: 1, redactClientLogData : true | false }
-     )
+  On a running {{program}}, use :dbcommand:`setParameter` with the
+  :parameter:`redactClientLogData` parameter to configure this setting.
 ---
 program: mongod
 name: ldapServers
@@ -2941,14 +2925,14 @@ optional: true
 description: |
   .. versionadded:: 3.4 Available in MongoDB Enterprise only.
 
-  The LDAP server against which the {{program}} executes LDAP operations
-  against to authenticate users or determine what actions a user is authorized
-  to perform on a given database. If the LDAP server specified has any
-  replicated instances, you may specify the host and port of each replicated
-  server in a comma-delimited list.
+  The LDAP server against which the {{program}} authenticates users or
+  determines what actions a user is authorized to perform on a given
+  database. If the LDAP server specified has any replicated instances,
+  you may specify the host and port of each replicated server in a
+  comma-delimited list.
 
-  If your LDAP infrastrucure partitions the LDAP directory over multiple LDAP
-  servers, specify *one* LDAP server any of its replicated instances to
+  If your LDAP infrastructure partitions the LDAP directory over multiple LDAP
+  servers, specify *one* LDAP server or any of its replicated instances to
   {{role}}. MongoDB supports following LDAP referrals as defined in `RFC 4511
   4.1.10 <https://www.rfc-editor.org/rfc/rfc4511.txt>`_. Do not use {{role}}
   for listing every LDAP server in your infrastructure.
@@ -3362,8 +3346,28 @@ description: |
   the LDAP groups to which the authenticated user belongs to. The query is
   relative to the host or hosts specified in {{ldapServers}}.
 
-  Use the ``{USER}`` placeholder in the URL to substitute the authenticated
-  username, or the transformed username if a {{mapping}} is specified.
+  In the URL, you can use the following substituion tokens:
+
+  .. list-table::
+     :header-rows: 1
+     :widths: 20 80
+     
+     * - Substitution Token
+       - Description
+
+     * - ``{USER}`` 
+     
+       - Substitutes the authenticated username, or the
+         :setting:`transformed <security.ldap.userToDNMapping>`
+         username if a {{mapping}} is specified.
+
+     * - ``{PROVIDED_USER}``
+
+       - Substitutes the supplied username, i.e. before either
+         authentication or :setting:`LDAP transformation
+         <security.ldap.userToDNMapping>`.
+         
+         .. versionadded:: 4.2
 
   When constructing the query URL, ensure that the order of LDAP parameters
   respects RFC4516:
@@ -3486,12 +3490,21 @@ description: |
 
    .. versionadded:: 4.2
 
-   Outputs the resolved YAML configuration document for the {{program}}
-   to ``stdout`` and halts the {{program}} instance. For configuration
-   options using :ref:`externally-sourced-values`, {{role}} returns the
-   resolved value for those options. This may include any configured
-   passwords or secrets previously obfuscated through the external
-   source.
+   Outputs the {{program}} instance's configuration options, formatted
+   in YAML, to ``stdout`` and exits the {{program}} instance. For
+   configuration options that uses :ref:`externally-sourced-values`,
+   {{role}} returns the resolved value for those options.
+   
+   .. warning::
+      
+      This may include any configured passwords or secrets previously
+      obfuscated through the external source.
+   
+   For usage examples, see:
+      
+   - :ref:`expansion-directive-output`
+   
+   - :doc:`/tutorial/convert-command-line-options-to-yaml`
 
 optional: true
 ---
@@ -3597,4 +3610,43 @@ description: |
 optional: true
 replacement:
    file: ":option:`--kmipClientCertificateFile`"
+---
+program: mongod
+name: clusterIpSourceWhitelist
+args: <string>
+directive: option
+optional: true
+pre: |
+
+  .. versionadded:: 3.6
+
+  A list of IP addresses/CIDR (`Classless Inter-Domain Routing
+  <https://tools.ietf.org/html/rfc4632>`__) ranges against which the
+  :binary:`~bin.mongod` validates authentication requests from other members of
+  the replica set and, if part of a sharded cluster, the :binary:`~bin.mongos`
+  instances. The :binary:`~bin.mongod` verifies that the originating IP is
+  either explicitly in the list or belongs to a CIDR range in the list. If the
+  IP address is not present, the server does not authenticate the
+  :binary:`~bin.mongod` or :binary:`~bin.mongos`.
+
+  {{role}} has no effect on a :binary:`~bin.mongod` started without
+  :ref:`authentication <authentication>`.
+
+description: |
+
+  {{role}} accepts multiple comma-separated IPv4/6 addresses or Classless
+  Inter-Domain Routing (`CIDR <https://tools.ietf.org/html/rfc4632>`_) ranges:
+
+  .. code-block:: shell
+
+     mongod --clusterIpSourceWhitelist 192.0.2.0/24,127.0.0.1,::1
+
+post: |
+
+  .. important::
+
+     Ensure {{role}} includes the IP address *or* CIDR ranges that include the
+     IP address of each replica set member or :binary:`~bin.mongos` in the
+     deployment to ensure healthy communication between cluster components.
+
 ...

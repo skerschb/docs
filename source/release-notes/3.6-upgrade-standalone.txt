@@ -90,16 +90,10 @@ If you have not installed MongoDB using a package manager, you can
 manually download the MongoDB binaries from the `MongoDB Download
 Center <https://www.mongodb.com/download-center?jmp=docs>`_.
 
-See :doc:`/installation` for more information.
+See |installationdoc| for more information.
 
 Upgrade Process
 ---------------
-
-.. note::
-   Database clusters hosted on MongoDB Atlas can be automatically upgraded to
-   the latest versions of MongoDB with no downtime using automated rolling
-   upgrades. `Create a free cluster
-   <https://www.mongodb.com/cloud/atlas?utm_source=36-upgrade-standalone&utm_campaign=20-docs-in-20-days&utm_medium=docs>`_.
 
 .. include:: /includes/steps/3.6-upgrade-mongod.rst
 

@@ -185,11 +185,17 @@ content: |
 ---
 ref: 4.2-changes-planCacheStats-pref
 content: |
+
    The :pipeline:`$planCacheStats` aggregation stage is preferred over
-   the :method:`PlanCache.getPlansByQuery()`
-   method/:dbcommand:`planCacheListPlans` command and
-   :method:`PlanCache.listQueryShapes()`
-   method/:dbcommand:`planCacheListQueryShapes` command.
+   the following methods and commands, which have been deprecated in 4.2:
+      
+   - :method:`PlanCache.getPlansByQuery()`
+     method/:dbcommand:`planCacheListPlans` command, and
+
+
+   - :method:`PlanCache.listQueryShapes()`
+     method/:dbcommand:`planCacheListQueryShapes` command.
+
 ---
 ref: 4.2-changes-options-tls-ssl
 content: |
@@ -440,8 +446,11 @@ content: |
 ---
 ref: 4.2-downgrade-view-definitions
 content: |
+
    Before downgrading the binaries, modify :doc:`read-only view
-   </core/views>` definitions that include the :ref:`4.2 operators <4.2-agg>`, such as
+   </core/views>` definitions and :ref:`collection validation
+   <schema-validation-query-expression>` definitions
+   that include the :ref:`4.2 operators <4.2-agg>`, such as
    :pipeline:`$set`, :pipeline:`$unset`, :pipeline:`$replaceWith`.
    
    - For the :pipeline:`$set` stage, use the :pipeline:`$addFields`
@@ -459,13 +468,364 @@ content: |
      recreating the view (:method:`db.createView()` method) or
 
    - using the :dbcommand:`collMod` command.
+
+   You can modify the colleciton validation expressions by:
+      
+   - using the :dbcommand:`collMod` command.
 ---
 ref: 4.2-changes-change-stream-modification-error
 content: |
 
    Starting in MongoDB 4.2, change streams will throw an exception if
-   the ref:`change stream aggregation pipeline
+   the :ref:`change stream aggregation pipeline
    <change-stream-modify-output>` modifies an event's :ref:`_id
    <change-stream-event-id>` field.
+---
+ref: 4.2-changes-inmem-startup-warning
+content: |
+   Starting in version 4.2 (and 4.0.13 and 3.6.14 ), if a replica set
+   member uses the :doc:`in-memory storage engine </core/inmemory>`
+   (voting or non-voting) but the replica set has
+   :rsconf:`writeConcernMajorityJournalDefault` set to true, the
+   replica set member logs a startup warning.
+---
+ref: 4.2-changes-SAN-matching
+content: |
+   Starting in MongoDB 4.2, when performing comparison of SAN, MongoDB
+   supports comparison of DNS names or IP addresses. In previous versions,
+   MongoDB only supports comparisons of DNS names.
+---
+ref: 4.2-changes-disconnect
+content: |
+
+   Starting in MongoDB 4.2, if the client that issued the |operation|
+   disconnects before the operation completes, MongoDB marks
+   the |operation| for termination (i.e. :dbcommand:`killOp` on the
+   operation).
+---
+ref: 4.2-changes-map-reduce-deprecation
+content: |
+   Starting in version 4.2, MongoDB deprecates:
+   
+   - The map-reduce option to *create* a new sharded collection as well
+     as the use of the :ref:`sharded <mapreduce-out-cmd>` option for
+     map-reduce. To output to a sharded collection, create the sharded
+     collection first. MongoDB 4.2 also deprecates the replacement of
+     an existing sharded collection.
+
+   - The explicit specification of :ref:`nonAtomic: false
+     <mapreduce-out-cmd>` option.
+---
+ref: 4.2-changes-balancer-autosplit
+content: |
+   Starting in MongoDB 4.2:
+
+   - The :dbcommand:`balancerStart` command and the
+     :binary:`~bin.mongo` shell helper methods
+     :method:`sh.startBalancer()` and
+     :method:`sh.setBalancerState(true) <sh.setBalancerState>` also
+     enable auto-splitting for the sharded cluster.
+     
+     | To disable auto-splitting when the balancer is enabled, you can
+       use :method:`sh.disableAutoSplit()`.
+
+   - The :dbcommand:`balancerStop` command and the :binary:`~bin.mongo`
+     shell helper methods :method:`sh.stopBalancer()` and
+     :method:`sh.setBalancerState(false) <sh.setBalancerState>` also
+     disable auto-splitting for the sharded cluster. 
+     
+     | To enable auto-splitting when the balancer is disabled, you can
+       use :method:`sh.enableAutoSplit()`.
+
+   The :binary:`~bin.mongo` methods
+   :method:`sh.enableBalancing(namespace) <sh.enableBalancing>` and
+   :method:`sh.disableBalancing(namespace) <sh.disableBalancing>` have no affect on the
+   auto-splitting.
+---
+ref: 4.2-changes-start-balancer-autosplit
+content: |
+   Starting in MongoDB 4.2, :method:`sh.startBalancer()` also enables
+   auto-splitting for the sharded cluster.
+---
+ref: 4.2-changes-stop-balancer-autosplit
+content: |
+   Starting in MongoDB 4.2, :method:`sh.stopBalancer()` also disables
+   auto-splitting for the sharded cluster.
+---
+ref: 4.2-changes-global-lock-reporting
+content: |
+
+   Starting in version 4.2, MongoDB reports on
+   ``ReplicationStateTransition`` lock information.
+   
+   In addition, MongoDB 4.2 separates ``ParallelBatchWriterMode`` lock
+   information from ``Global`` lock information. Earlier MongoDB versions
+   report ``ParallelBatchWriterMode`` lock information as part
+   of ``Global`` locks.
+   
+   For operations that report on lock information, see:
+   
+   - :dbcommand:`serverStatus` command and :method:`db.serverStatus()` method.
+   
+   - :pipeline:`$currentOp` aggregation pipeline stage, :dbcommand:`currentOp` command, and :method:`db.currentOp()` method.
+---
+ref: 4.2-changes-findAndX-parameter-validation
+content: |
+   
+   Starting in MongoDB 4.2 (and 4.0.12+ and 3.6.14+), the
+   :dbcommand:`findAndModify` command and its associated
+   :binary:`~bin.mongo` shell methods error if the specified query,
+   sort, or projection argument is not a document.
+   
+   In earlier versions, the operation treated non-document query or
+   sort argument as an empty document ``{}``.
+
+   See:
+      
+   - :dbcommand:`findAndModify`
+   - :method:`db.collection.findOneAndDelete()`
+   - :method:`db.collection.findOneAndReplace()`
+   - :method:`db.collection.findOneAndUpdate()`
+   - :method:`db.collection.findAndModify()`
+---
+ref: 4.2-changes-flow-control-general-desc
+content: |
+   Starting in MongoDB 4.2, administrators can limit the rate at which
+   the primary applies its writes with the goal of keeping the :data:`majority
+   committed <replSetGetStatus.optimes.lastCommittedOpTime>` lag under
+   a configurable maximum value :parameter:`flowControlTargetLagSeconds`.
+   
+   By default, flow control is :parameter:`enabled <enableFlowControl>`.
+
+   .. note::
+
+      .. include:: /includes/extracts/4.2-changes-flow-control-requirements.rst
+
+---
+ref: 4.2-changes-flow-control-requirements
+content: |
+
+   For flow control to engage, the replica set/sharded cluster must
+   have: :ref:`featureCompatibilityVersion (FCV)<view-fcv>` of
+   ``4.2`` and read concern :setting:`majority enabled
+   <replication.enableMajorityReadConcern>`. That is, enabled flow
+   control has no effect if FCV is not ``4.2`` or if read concern
+   majority is disabled.
+
+---
+ref: 4.2-changes-flow-control-specific-desc
+content: |
+   With flow control enabled, as the lag grows close to the
+   :parameter:`flowControlTargetLagSeconds`, writes on the primary must obtain
+   tickets before taking locks to apply writes. By limiting the number of
+   tickets issued per second, the flow control mechanism attempts to keep the 
+   the lag under the target.
+---
+ref: 4.2-changes-extended-json-v2
+content: |
+   Starting in version 4.2:
+
+   .. list-table::
+      :widths: 20 80
+   
+      * - :binary:`~bin.bsondump`
+
+        - Uses Extended JSON v2.0 (Canonical
+          mode) format.
+
+      * - :binary:`~bin.mongodump`
+
+        - Use Extended JSON v2.0 (Canonical mode) format for the
+          metadata. Requires :binary:`~bin.mongorestore` version 4.2+
+          that supports Extended JSON v2.0 (Canonical mode or
+          Relaxed) format.
+          
+          .. tip::
+
+             In general, use corresponding versions of
+             :binary:`~bin.mongodump` and :binary:`~bin.mongorestore`.
+             That is, to restore data files created with a specific
+             version of :binary:`~bin.mongodump`, use the corresponding
+             version of :binary:`~bin.mongorestore`.
+
+      * - :binary:`~bin.mongoexport`
+
+        - | Creates output data in Extended JSON v2.0 (Relaxed mode) by
+            default.
+
+          | Creates output data in Extended JSON v2.0 (Canonical mode) if
+            used with :option:`--jsonFormat canonical <mongoexport --jsonFormat>`.
+
+
+      * - :binary:`~bin.mongoimport`
+   
+        - | Expects import data to be in Extended JSON v2.0 (either
+            Relaxed or Canonical mode) by default.
+
+          | Can recognize data that is in Extended JSON v1.0 format if the option
+            :option:`--legacy <mongoimport --legacy>` is specified.
+
+          .. tip::
+
+             In general, the versions of :binary:`~bin.mongoexport` and
+             :binary:`~bin.mongoimport` should match. That is, to import
+             data created from :binary:`~bin.mongoexport`, you should use
+             the corresponding version of :binary:`~bin.mongoimport`.
+---
+ref: 4.2-changes-extended-json-v2-query
+content: |
+   Starting in version 4.2, the query option for :option:`mongodump
+   <mongodump --query>` and :option:`mongoexport <mongoexport --query>`
+   must be in :doc:`Extended JSON v2 format (relaxed or canonical/strict
+   mode) </reference/mongodb-extended-json>`, including enclosing the
+   field names and the operators in quotes, as in the following:
+
+   .. code-block:: sh
+
+      mongoexport -d=test -c=records -q='{ "a": { "$gte": 3 }, "date": { "$lt": { "$date": "2016-01-01T00:00:00.000Z" } } }' --out=exportdir/myRecords.json
+
+   In earlier versions, the query options uses the :doc:`Extended JSON v1
+   format </reference/mongodb-extended-json-v1>` and the field names and
+   the operators do not need to be in quotes:
+
+   .. code-block:: sh
+
+      mongoexport -d=test -c=records -q='{ a: { $gte: 3 }, date: { $lt: { "$date": "2016-01-01T00:00:00.000Z" } } }' --out=exportdir/myRecords.json
+   
+---
+ref: 4.2-changes-mongoshell-emulation
+content: |
+   
+   Starting in MongoDB 4.2 (and 4.0.13), the :binary:`~bin.mongo` shell displays a
+   warning message when connected to non-genuine MongoDB instances as
+   these instances may behave differently from the official MongoDB
+   instances; e.g. missing or incomplete features, different feature
+   behaviors, etc.
+---
+ref: 4.2-changes-drivers-retryWrites-default
+content: |
+   The official MongoDB 3.6 and 4.0-compatible drivers required including the
+   :urioption:`retryWrites=true <retryWrites>` option in the :ref:`connection
+   string <mongodb-uri>` to enable retryable writes for that connection. 
+
+   The official MongoDB 4.2-compatible drivers enable :ref:`retryable-writes` by
+   default. Applications upgrading to the 4.2-compatible drivers that require
+   retryable writes may omit the :urioption:`retryWrites=true <retryWrites>`
+   option. Applications upgrading to the 4.2-compatible drivers that require
+   *disabling* retryable writes must include 
+   :urioption:`retryWrites=false <retryWrites>` in the connection string. 
+---
+ref: 4.2-changes-libldap
+content: |
+
+   For MongoDB 4.2 (and 4.0.9) Enterprise binaries linked against
+   ``libldap`` (such as when running on RHEL), access to the
+   ``libldap`` is synchronized, incurring some performance/latency
+   costs.
+
+   For MongoDB 4.2 (and 4.0.9) Enterprise binaries linked against
+   ``libldap_r``, there is no change in behavior from earlier MongoDB
+   versions.
+
+   To avoid the automatic synchronization with ``libldap``, you may
+   wish to link to ``libldap_r``. Contact :doc:`support </support>` for
+   assistance.
+---
+ref: 4.2-changes-expansion-configuration-file-permission-rest
+content: |
+   
+   If the configuration file includes the :configexpansion:`__rest`
+   expansion, on Linux/macOS, the read access to the configuration file must be limited
+   to the user running the :binary:`~bin.mongod`/:binary:`~bin.mongos`
+   process only.
+---
+ref: 4.2-changes-expansion-configuration-file-permission-exec
+content: |
+   If the configuration file includes the :configexpansion:`__exec`
+   expansion, on Linux/macOS, the write access to the configuration file must be
+   limited to the user running the
+   :binary:`~bin.mongod`/:binary:`~bin.mongos` process only.
+---
+ref: 4.2-changes-ese-key-rollover
+content: |
+
+   For :ref:`encrypted storage engine <encrypted-storage-engine>`
+   configured with ``AES256-GCM`` cipher:
+
+   - Restoring from Hot Backup
+         Starting in 4.2, if you restore from files taken via "hot"
+         backup (i.e. the :binary:`~bin.mongod` is running), MongoDB
+         can detect "dirty" keys on startup and automatically rollover
+         the database key to avoid IV (Initialization Vector) reuse.
+     
+   - Restoring from Cold Backup
+         However, if you restore from files taken via "cold" backup
+         (i.e. the :binary:`~bin.mongod` is not running), MongoDB
+         cannot detect "dirty" keys on startup, and reuse of IV voids
+         confidentiality and integrity guarantees.
+     
+         Starting in 4.2, to avoid the reuse of the keys after
+         restoring from a cold filesystem snapshot, MongoDB adds a new
+         command-line option :option:`--eseDatabaseKeyRollover <mongod
+         --eseDatabaseKeyRollover>`. When started with the
+         :option:`--eseDatabaseKeyRollover <mongod
+         --eseDatabaseKeyRollover>` option, the :binary:`~bin.mongod`
+         instance rolls over the database keys configured with
+         ``AES256-GCM`` cipher and exits.
+---
+ref: 4.2-changes-rollback-user-ops
+content: |
+   Starting in version 4.2, MongoDB kills all in-progress user
+   operations when a member enters the :replstate:`ROLLBACK` state.
+---
+ref: 4.2-changes-mongos-repl-connection-pool
+content: |
+   Starting in MongoDB 4.2, MongoDB adds the parameter
+   :parameter:`ShardingTaskExecutorPoolReplicaSetMatching` that
+   determines the minimum size (can vary during runtime) of the
+   :binary:`~bin.mongos` instance's connection pools to each member of
+   the sharded cluster.
+
+   By default, for each replica set in the sharded cluster (i.e. shard
+   replica set and config servers), :binary:`~bin.mongos` maintains
+   connection pools to each replica set secondary that are at least
+   equal to the size of its connection pool to the primary.
+
+   To modify, see :parameter:`ShardingTaskExecutorPoolReplicaSetMatching`.
+---
+ref: 4.2-changes-sharded-collection-replacement
+content: |
+
+   Starting in MongoDB 4.2,
+   
+   - Replace document operations, such as
+     :method:`db.collection.replaceOne()` or :ref:`db.collection.update(
+     query, replacement, ... ) <update-behavior-replacement-document>`,
+     attempt to target a single shard, first by using the query filter. If the
+     operation cannot target a single shard by the query filter, it then
+     attempts to target by the replacement document.
+
+     In earlier versions, the operation attempts to target using the
+     replacement document.
+   
+   - For a replace document operation that includes ``upsert: true``
+     and is on a sharded collection, the ``filter`` must include an
+     equality match on the full shard key.
+---
+ref: 4.2-changes-bulkWrite-txn-error-handling
+content: |
+
+   Starting in MongoDB 4.2, if a :method:`db.collection.bulkWrite()`
+   operation encounters an error inside a :doc:`transaction
+   </core/transactions>`, the method throws a :ref:`BulkWriteException
+   <bulkWrite-error-handling>` (same as outside a transaction). 
+
+   In 4.0, if the ``bulkWrite`` operation encounters an error inside a
+   transaction, the error thrown is not wrapped as a
+   ``BulkWriteException``.
+      
+   Inside a transaction, the first error in a bulk write causes the
+   entire bulk write to fail and aborts the transaction, even if the
+   bulk write is unordered.
 
 ...

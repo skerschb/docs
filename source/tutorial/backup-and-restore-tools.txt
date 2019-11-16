@@ -4,39 +4,53 @@ Back Up and Restore with MongoDB Tools
 
 .. default-domain:: mongodb
 
+.. role:: red(strong)
+   :class: text-danger
+
 .. contents:: On this page
    :local:
    :backlinks: none
    :depth: 1
    :class: singlecol
 
-MongoDB Atlas, the official MongoDB cloud service, provides 2 fully-managed
-methods for backups:
+This tutorial describes the process for creating backups and restoring data
+using the utilities provided with MongoDB. 
 
-1. :atlas:`Continuous Backups </backup/continuous-backups>`, which take
-   incremental backups of data in your cluster, ensuring your backups are
-   typically just a few seconds behind the operational system. Atlas continuous
-   backups allow you to restore from stored snapshots or from a selected point
-   in time within the last 24 hours.  You can also query a continuous backup
-   snapshot.
+.. topic:: MongoDB Atlas
 
-#. :atlas:`Cloud Provider Snapshots </backup/cloud-provider-snapshots>`, which
-   provide localized backup storage using the native snapshot functionality of
-   the cluster's cloud service provider.
+   MongoDB Atlas, the official MongoDB cloud service, provides 2 fully-managed
+   methods for backups:
+
+   1. :atlas:`Continuous Backups </backup/continuous-backups>`, which take
+      incremental backups of data in your cluster, ensuring your backups are
+      typically just a few seconds behind the operational system. Atlas continuous
+      backups allow you to restore from stored snapshots or from a selected point
+      in time within the last 24 hours.  You can also query a continuous backup
+      snapshot.
+
+   #. :atlas:`Cloud Provider Snapshots </backup/cloud-provider-snapshots>`, which
+      provide localized backup storage using the native snapshot functionality of
+      the cluster's cloud service provider.
+
+Considerations
+--------------
+
+Deployments
+~~~~~~~~~~~
+
+The :binary:`~bin.mongodump` and :binary:`~bin.mongorestore` utilities
+work with :doc:`BSON </reference/bson-types>` data dumps, and are
+useful for creating backups of small deployments. For resilient and
+non-disruptive backups, use a file system or block-level disk snapshot
+function, such as the methods described in the :doc:`/core/backups`
+document.
 
 .. note::
 
-   If you are not currently using MongoDB Atlas, you can learn how to migrate
-   your deployment into Atlas with minimal downtime. `Learn more
-   <https://www.mongodb.com/cloud/atlas/migrate?utm_source=backup-and-restore&utm_campaign=20-docs-in-20-days-migrations&utm_medium=docs>`_.
+   .. include:: /includes/extracts/sharded-clusters-backup-restore-mongodump-mongorestore-restriction.rst
 
-This tutorial describes the process for creating backups and restoring data
-using the utilities provided with MongoDB. The :binary:`~bin.mongodump`
-and :binary:`~bin.mongorestore` utilities work with
-:doc:`BSON </reference/bson-types>` data dumps, and are useful for creating
-backups of small deployments. For resilient and non-disruptive backups, use a
-file system or block-level disk snapshot function, such as the methods
-described in the :doc:`/core/backups` document.
+Performance Considerations
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. include:: /includes/extracts/tools-performance-considerations-dump-restore.rst
 
@@ -67,6 +81,10 @@ Procedures
 Back Up a Database with ``mongodump``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   .. include:: /includes/extracts/sharded-clusters-backup-restore-mongodump-mongorestore-restriction.rst
+
 Exclude ``local`` Database
 ``````````````````````````
 
@@ -81,7 +99,7 @@ Basic ``mongodump`` Operations
 ``````````````````````````````
 
 The :binary:`~bin.mongodump` utility backs up data by connecting to a
-running :binary:`~bin.mongod` or :binary:`~bin.mongos` instance.
+running :binary:`~bin.mongod`.
 
 The utility can create a backup for an entire server, database or collection,
 or can use a query to backup just part of a collection.
@@ -91,7 +109,7 @@ connects to the MongoDB instance on the local system
 (e.g. ``localhost``) on port ``27017`` and creates a
 database backup named ``dump/`` in the current directory.
 
-To backup data from a :binary:`~bin.mongod` or :binary:`~bin.mongos` instance
+To backup data from a :binary:`~bin.mongod` instance
 running on the same machine and on the default port of ``27017``,
 use the following command:
 
@@ -99,15 +117,13 @@ use the following command:
 
    mongodump
 
-.. include:: /includes/warning-mongodump-compatibility-2.2.rst
-
 You can also specify the :option:`--host <mongodump --host>` and
 :option:`--port <mongodump --port>` of the MongoDB instance that the
 :binary:`~bin.mongodump` should connect to. For example:
 
 .. code-block:: sh
 
-   mongodump --host mongodb.example.net --port 27017
+   mongodump --host=mongodb.example.net --port=27017
 
 :binary:`~bin.mongodump` will write :term:`BSON` files that hold a copy of
 data accessible via the :binary:`~bin.mongod` listening on port ``27017`` of
@@ -119,7 +135,7 @@ or -o <mongodump --out>` option:
 
 .. code-block:: sh
 
-   mongodump --out /data/backup/
+   mongodump --out=/data/backup/
 
 To limit the amount of data included in the database dump, you can
 specify :option:`--db <mongodump --db>` and
@@ -128,7 +144,7 @@ specify :option:`--db <mongodump --db>` and
 
 .. code-block:: none
 
-   mongodump --collection myCollection --db test
+   mongodump --collection=myCollection --db=test
 
 This operation creates a dump of the collection named ``myCollection``
 from the database ``test`` in a :file:`dump/` subdirectory of the
@@ -162,7 +178,7 @@ Consider the following example:
 
 .. code-block:: sh
 
-   mongodump --host mongodb1.example.net --port 3017 --username user --password "pass" --out /opt/backup/mongodump-2013-10-24
+   mongodump --host=mongodb1.example.net --port=3017 --username=user --password="pass" --out=/opt/backup/mongodump-2013-10-24
 
 On any :binary:`~bin.mongodump` command you may, as above, specify username
 and password credentials to specify database authentication.
@@ -172,8 +188,19 @@ and password credentials to specify database authentication.
 Restore a Database with ``mongorestore``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+   .. include:: /includes/extracts/sharded-clusters-backup-restore-mongodump-mongorestore-restriction.rst
+
 Access Control
 ``````````````
+
+To restore data to a MongoDB deployment that has :doc:`access control
+</core/authorization>` enabled, the :authrole:`restore` role provides
+the necessary privileges to restore data from backups *if* the data does
+not include :data:`system.profile <<database>.system.profile>`
+collection data and you run :binary:`~bin.mongorestore` without the
+:option:`--oplogReplay <mongorestore --oplogReplay>` option.
 
 .. include:: /includes/access-mongorestore-collections.rst
 
@@ -185,7 +212,7 @@ The :binary:`~bin.mongorestore` utility restores a binary backup created by
 database backup in the :file:`dump/` directory.
 
 The :binary:`~bin.mongorestore` utility restores data by connecting to a
-running :binary:`~bin.mongod` or :binary:`~bin.mongos` directly.
+running :binary:`~bin.mongod` directly.
 
 :binary:`~bin.mongorestore` can restore either an entire database backup
 or a subset of the backup.
@@ -193,11 +220,11 @@ or a subset of the backup.
 .. include:: /includes/fact-uuid-restore-from-backup.rst
 
 To use :binary:`~bin.mongorestore` to connect to an active
-:binary:`~bin.mongod` or :binary:`~bin.mongos`, use a command with the following prototype form:
+:binary:`~bin.mongod`, use a command with the following prototype form:
 
 .. code-block:: sh
 
-   mongorestore --port <port number> <path to the backup>
+   mongorestore --port=<port number> <path to the backup>
 
 
 Consider the following example:
@@ -240,11 +267,23 @@ default port (``27017``). If you want to restore to a different host or
 port, use the :option:`--host <mongorestore --host>` and :option:`--port
 <mongorestore --port>` options.
 
-Consider the following example:
+The following example that specifies the :option:`--host <mongorestore
+--host>` and :option:`--port <mongorestore --port>` options:
 
 .. code-block:: sh
 
-   mongorestore --host mongodb1.example.net --port 3017 --username user --password 'pass' /opt/backup/mongodump-2013-10-24
+   mongorestore --host=mongodb1.example.net --port=3017
 
-As above, you may specify username and password connections if your
-:binary:`~bin.mongod` requires authentication.
+If restoring to an instance that enforces access control, include the
+the :option:`--username <mongorestore --username>` and
+:option:`--authenticationDatabase <mongorestore
+--authenticationDatabase>` as well. Omit the :option:`--password
+<mongorestore --password>` option to have :binary:`~bin.mongorestore`
+prompt for the password:
+
+.. code-block:: sh
+
+   mongorestore --host=mongodb1.example.net --port=3017 --username=user  --authenticationDatabase=admin /opt/backup/mongodump-2013-10-24
+
+
+

@@ -10,8 +10,6 @@ Downgrade |newversion| Sharded Cluster to |oldversion|
    :depth: 1
    :class: singlecol
 
-.. include:: /includes/in-dev.rst
-
 Before you attempt any downgrade, familiarize yourself with the content
 of this document.
 
@@ -19,6 +17,9 @@ Downgrade Path
 --------------
 
 .. include:: /includes/downgrade-path.rst
+
+If you downgrade, you can only downgrade to a 4.0.12 or later version.
+You cannot downgrade to a 4.0.11 or earlier version.
 
 .. |downgrading| replace:: downgrading
 
@@ -130,6 +131,21 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
    Script to run on shards
       .. include:: /includes/extracts/4.2-downgrade-fcv-unique-index-script-local-users.rst
 
+2d. Remove Wildcard Indexes
+```````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
+
+2e. View Definitions/Collection Validation Definitions that Include 4.2 Operators
+`````````````````````````````````````````````````````````````````````````````````
+
+.. container::
+
+   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
+
+
 3. Update ``tls``-Prefixed Configuration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -176,6 +192,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
 
          - Set parameter :parameter:`skipShardingConfigurationChecks` to true.
 
+         - Set parameter ``disableLogicalSessionCacheRefresh`` to
+           ``true`` in the :setting:`setParameter` section.
+                   
          - Comment out the :ref:`replication <replication-options>`
            settings for your deployment.
 
@@ -193,6 +212,7 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
                   enabled: false
             setParameter:
                skipShardingConfigurationChecks: true
+               disableLogicalSessionCacheRefresh: true
             #replication:
             #   replSetName: shardA
             #sharding:
@@ -219,6 +239,10 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
            
            - Set parameter :parameter:`skipShardingConfigurationChecks` to true.
 
+           - Set parameter ``disableLogicalSessionCacheRefresh`` to
+             ``true`` in the :option:`--setParameter <mongod
+             --setParameter>` option.
+
            - Remove any :ref:`replication command-line options
              <cli-mongod-replica-set>` (such as :option:`--replSet
              <mongod --replSet>`).
@@ -231,7 +255,7 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
 
            .. code-block:: sh
 
-              mongod --nojournal --setParameter skipShardingConfigurationChecks=true --port <samePort> ...
+              mongod --nojournal --setParameter skipShardingConfigurationChecks=true --setParameter disableLogicalSessionCacheRefresh=true --port <samePort> ...
 
       #. Perform a clean shutdown of the :binary:`~bin.mongod` instance:
 
@@ -246,6 +270,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
          - Remove the :setting:`storage.journal.enabled` setting.
 
          - Remove the :parameter:`skipShardingConfigurationChecks` parameter setting.
+
+         - Remove the ``disableLogicalSessionCacheRefresh`` parameter
+           setting.
 
          - Uncomment the :ref:`replication <replication-options>`
            settings for your deployment.
@@ -290,6 +317,9 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
            - Remove the :option:`--nojournal <mongod --nojournal>` option.
 
            - Remove the :parameter:`skipShardingConfigurationChecks` parameter setting.
+
+           - Remove the ``disableLogicalSessionCacheRefresh`` parameter
+             setting.
 
            - Remove the :option:`--wiredTigerJournalCompressor <mongod
              --wiredTigerJournalCompressor>` command-line option to use
@@ -348,20 +378,6 @@ Remove all persisted 4.2 features that are :ref:`incompatible with 4.0
    .. include:: /includes/extracts/4.2-changes-zstd-network-compression.rst
 
 .. |binary| replace:: any :binary:`~bin.mongod`/:binary:`~bin.mongos` instance
-
-5. Update View Definitions that Include 4.2 Operators
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-view-definitions.rst
-
-6. Remove all Wildcard Indexes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. container::
-
-   .. include:: /includes/extracts/4.2-downgrade-fcv-wildcard-index.rst
 
 Procedure
 ---------

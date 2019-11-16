@@ -1,0 +1,121 @@
+.. _install-ubuntu-from-tarball:
+
+.. _install-enterprise-ubuntu-from-tarball:
+
+=======================================================
+Install MongoDB Enterprise on Ubuntu using .tgz Tarball
+=======================================================
+
+.. default-domain:: mongodb
+
+.. role:: red(strong)
+   :class: text-danger
+
+.. contents:: On this page
+   :local:
+   :backlinks: none
+   :depth: 1
+   :class: singlecol
+
+Overview
+--------
+
+.. _`MongoDB Download Center`: https://www.mongodb.com/download-center/enterprise?jmp=docs
+
+Although the recommended procedure to install is through the
+:ref:`package manager <install-enterprise-ubuntu-pkg>`, you can also
+install by directly downloading the ``.tgz`` file. The following
+tutorial downloads the ``.tgz`` tarball directly to install MongoDB
+{+version+} Enterprise Edition on LTS Ubuntu Linux systems.
+
+MongoDB Version
+~~~~~~~~~~~~~~~
+
+This tutorial installs MongoDB {+version+} Enterprise Edition on LTS
+Ubuntu Linux systems. For other versions of MongoDB, refer to the
+corresponding version of the manual.
+
+
+.. |package-name| replace:: ``{+package-name-org+}``
+.. |distro-name| replace:: Ubuntu
+
+Platform Support
+~~~~~~~~~~~~~~~~
+
+.. note::
+
+   - MongoDB 4.2 removes support for Ubuntu 14.04.
+
+   - MongoDB 4.2 removes support for Ubuntu 16.04 POWER/PPC64LE (Also
+     removed in version 3.6.13 and 3.4.21).
+   
+   - .. include:: /includes/admonition-power-ubuntu-restriction.rst
+   
+.. include:: /includes/fact-ubuntu-lts-support.rst
+
+Production Notes
+~~~~~~~~~~~~~~~~
+
+Before deploying MongoDB in a production environment, consider the
+:doc:`/administration/production-notes` document.
+
+Prerequisites
+-------------
+
+Click on the tab for your version of Ubuntu
+
+.. container::
+
+   .. include:: /includes/fact-tarball-dependencies.rst
+
+
+   .. tabs::
+
+      tabs:
+        - id: bionic
+          name: Ubuntu 18.04 (Bionic)
+          content: |
+
+              For Ubuntu 18.04 (Bionic), MongoDB Enterprise .tar.gz tarballs have the following dependencies:
+
+              .. code-block:: sh
+
+                sudo apt-get install libcurl4 libgssapi-krb5-2 libkrb5-dbg libldap-2.4-2 libpcap0.8 libsasl2-2 snmp openssl
+
+        - id: xenial
+          name: Ubuntu 16.04 (Xenial)
+          content: |
+
+              For Ubuntu 16.04 (Xenial), MongoDB Enterprise .tar.gz tarballs have the following dependencies:
+
+              .. include:: /includes/extracts/install-mongodb-enterprise-manually-debian-9.rst
+
+Install using the ``.tgz`` Tarball
+----------------------------------
+
+.. include:: /includes/fact-ubuntu-lts-support.rst
+
+.. container::
+
+   .. include:: /includes/steps/install-mongodb-on-ubuntu-tarball.rst
+
+Run MongoDB Enterprise Edition
+------------------------------
+
+Production Notes
+   Before deploying MongoDB in a production environment, consider the
+   :doc:`/administration/production-notes` document.
+
+ulimit Considerations
+   .. include:: /includes/fact-installation-ulimit.rst
+
+.. |mongod-user| replace:: ``mongodb``
+.. |mongod-datadir| replace:: ``/var/lib/mongodb``
+
+Configuration
+   You can configure the MongoDB instance (such as the
+   data directory and log directory specifications) using
+   either the command-line options or a :ref:`configuration file
+   <conf-file>`.
+
+.. include:: /includes/steps/run-mongodb-on-linux-tarball.rst

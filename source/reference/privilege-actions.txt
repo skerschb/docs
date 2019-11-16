@@ -505,8 +505,9 @@ Sharding Actions
 
 .. authaction:: splitChunk
 
-   User can perform the :dbcommand:`splitChunk` command. Apply this action to
-   database or collection resources.
+   User can perform the :dbcommand:`splitChunk` command and the
+   :dbcommand:`mergeChunks` command. Apply this action to database or
+   collection resources.
 
 .. authaction:: splitVector
 
@@ -625,14 +626,7 @@ Server Administration Actions
 .. authaction:: touch
 
    User can perform the :dbcommand:`touch` command. Apply this action to
-   the ``cluster`` resources.
-
-.. authaction:: trafficRecord
-
-   .. versionadded:: 4.2
-
-   User can perform the :dbcommand:`startRecordingTraffic` and :dbcommand:`stopRecordingTraffic` commands. 
-   Apply this action to the ``cluster`` resource.
+   the ``cluster`` resource.
 
 Session Actions
 ---------------

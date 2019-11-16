@@ -22,9 +22,10 @@ Index Builds on Populated Collections
 MongoDB index builds against a populated collection require an exclusive
 read-write lock against the collection. Operations that require a read
 or write lock on the collection must wait until the
-:binary:`~bin.mongod` releases the lock. MongoDB 4.2 optimizes the build
-process to minimize the amount of time it holds the exclusive
-lock.
+:binary:`~bin.mongod` releases the lock. MongoDB 4.2 uses an optimized
+build process that only holds the  exclusive lock at the beginning and
+end of the index build. The rest of the build process yields to
+interleaving read and write operations.
 
 The build process is summarized as follows:
 
@@ -165,13 +166,20 @@ Insufficient Available System Memory (RAM)
   to schedule a maintenance period to increase the total system RAM
   before you can modify the :binary:`~bin.mongod` RAM usage.
 
+.. _index-operations-replicated-build:
+
 Index Builds in Replicated Environments
 ---------------------------------------
 
-To minimize the impact of building an index on replica sets, including
-shard replica sets, use a rolling index build procedure as described
-in :doc:`/tutorial/build-indexes-on-replica-sets`. 
+To minimize the impact of building an index on:
 
+- Replica Sets, use a rolling index build procedure as described in
+  :doc:`/tutorial/build-indexes-on-replica-sets`.
+
+- Sharded Clusters with Shard Replica Sets, use a rolling index build
+  procedure as described in
+  :doc:`/tutorial/build-indexes-on-sharded-clusters`.
+  
 You can alternatively start the index build on the :term:`primary`. Once
 the index build completes, the secondaries replicate and start the index
 build. Consider the following risks *before* starting a replicated index
@@ -306,8 +314,10 @@ operation and drop the indexes *after* the index build completes.
 All further replication blocks behind the index build and drop. 
 
 To minimize the impact of building an index on replica
-sets and sharded clusters with replica set shards, see
-:doc:`/tutorial/build-indexes-on-replica-sets`.
+sets and sharded clusters with replica set shards, see:
+
+- :doc:`/tutorial/build-indexes-on-replica-sets`
+- :doc:`/tutorial/build-indexes-on-sharded-clusters`
 
 .. _index-build-process:
 
@@ -464,3 +474,4 @@ process:
    :hidden:
 
    /tutorial/build-indexes-on-replica-sets
+   /tutorial/build-indexes-on-sharded-clusters
