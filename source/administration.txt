@@ -6,7 +6,7 @@ Administration
 
 .. admin-introduction-start
 
-NEXT GEN TEST howdy this is the latest!!!!
+NEXT GEN TEST anooty testing Sunday night
 administration documentation addresses the ongoing operation and
 maintenance of MongoDB instances and deployments. This documentation
 includes both high level overviews of these concerns as well as
