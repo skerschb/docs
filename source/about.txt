@@ -1,8 +1,8 @@
 :orphan:
 
-===========================
-About MongoDB Documentation
-===========================
+=========================
+About MongoDB Documentati
+=========================
 
 .. default-domain:: mongodb
 
