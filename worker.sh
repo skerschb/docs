@@ -1,1 +1,1 @@
-"build-and-stage-next-gen//disable"
+"build-and-stage-next-gen"
