@@ -2,7 +2,7 @@
 MongoDB Manual Contents
 =======================
 
-See :doc:`/about` for more information about the MongoDB Documentation
+TEST See :doc:`/about` for more information about the MongoDB Documentation
 project, this Manual and additional editions of this text.
 
 .. toctree::

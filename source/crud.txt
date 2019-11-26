@@ -1,6 +1,6 @@
-=======================
-MongoDB CRUD Operations
-=======================
+======================
+MngoDB CRUD Operations
+======================
 
 .. default-domain:: mongodb
 
