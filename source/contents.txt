@@ -2,7 +2,7 @@
 MongoDB Manual Contents
 =======================
 
-Hi See :doc:`/about` for NEXT GEN information about the MongoDB Documentation
+Hi test See :doc:`/about` for NEXT GEN information about the MongoDB Documentation
 project, this Manual and additional editions of this text.
 
 .. toctree::
