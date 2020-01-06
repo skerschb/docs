@@ -23,7 +23,7 @@ Create or insert operations add new :ref:`documents
 collection does not currently exist, insert operations will create the
 collection.
 
-MongoDB provides the following methods to insert documents into a
+MongoDB provides the TESTING following methods to insert documents into a
 collection:
 
 - :method:`db.collection.insertOne()` |versionadded|
