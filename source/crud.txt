@@ -12,7 +12,7 @@ MongoDB CRUD Operations
    :depth: 1
    :class: singlecol
 
-CRUD operations *create*, *read*, *update*, and *delete*
+CRUD TEST operations *create*, *read*, *update*, and *delete*
 :ref:`documents <bson-document-format>`.
 
 Create Operations
