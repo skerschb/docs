@@ -6,7 +6,7 @@ Administration
 
 .. admin-introduction-start
 
-The administration TEST documentation addresses the ongoing operation and
+The administration test documentation addresses the ongoing operation and
 maintenance of MongoDB instances and deployments. This documentation
 includes both high level overviews of these concerns as well as
 tutorials that cover specific procedures and processes for operating
