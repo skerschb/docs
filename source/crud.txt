@@ -12,7 +12,7 @@ MongoDB CRUD Operations
    :depth: 1
    :class: singlecol
 
-CRUD operations *create*, *read*, *update*, and *delete*
+HELLOOOOOO CRUD operations *create*, *read*, *update*, and *delete*
 :ref:`documents <bson-document-format>`.
 
 Create Operations
@@ -69,7 +69,7 @@ For examples, see:
 Update Operations
 -----------------
 
-Update operations modify existing :ref:`documents
+Testing crud updates. Update operations modify existing :ref:`documents
 <bson-document-format>` in a :ref:`collection <collections>`. MongoDB
 provides the following methods to update documents of a collection:
 
