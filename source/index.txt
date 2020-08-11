@@ -15,7 +15,7 @@ The MongoDB |version| Manual
    <https://www.mongodb.com/download-center?jmp=docs#production>`_
    
 
-Welcome to the MongoDB |version| Manual! MongoDB is a 
+Local 4.0 Welcome to the MongoDB |version| Manual! MongoDB is a 
 document database designed for ease of development
 and scaling. The Manual introduces key concepts in MongoDB, presents the
 query language, and provides operational and administrative
